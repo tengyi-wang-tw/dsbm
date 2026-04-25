@@ -15,8 +15,8 @@
     --border2:#2e2e2e;
     --accent:#c8f060;
     --text:#e8e8e8;
-    --text-dim:#888;
-    --text-muted:#444;
+    --text-dim:#b0b0b0;
+    --text-muted:#707070;
     --red:#ff5c5c;
     --yellow:#f0c060;
     --green:#60d080;
@@ -173,6 +173,7 @@
   .callout.red{border-left-color:var(--red);}
   .callout.blue{border-left-color:var(--blue);}
   .callout.purple{border-left-color:var(--purple);}
+  .callout.yellow{border-left-color:var(--yellow);}
   .callout-label{
     font-family:'DM Mono',monospace;
     font-size:9px;
@@ -184,6 +185,7 @@
   .callout.red .callout-label{color:var(--red);}
   .callout.blue .callout-label{color:var(--blue);}
   .callout.purple .callout-label{color:var(--purple);}
+  .callout.yellow .callout-label{color:var(--yellow);}
 
   /* ── FORMULA BOX ── */
   .formula-box{
@@ -322,13 +324,6 @@
     margin-bottom:8px;
   }
   .quad-desc{font-size:12px;color:var(--text-dim);line-height:1.65;}
-
-  /* ── DIVIDER ── */
-  .divider{
-    border:none;
-    border-top:1px solid var(--border);
-    margin:40px 0;
-  }
 
   /* ── FOOTER ── */
   .doc-footer{
@@ -703,44 +698,112 @@
       <span class="section-num">08</span>
       <span class="section-title">計算範例</span>
     </div>
+    <div class="prose">
+      <p>以下兩個案例說明方向性修正的實際作用。收入與年齡設定相同，差異只在時數方向。</p>
+    </div>
 
-    <div class="prose"><p>以下兩個案例說明方向性修正的實際作用。輸入數值相同，差異只在時數方向。</p></div>
+    <div class="callout yellow">
+      <div class="callout-label">說明</div>
+      以下案例時數設定為極端示範值（30 / 90 小時），用於凸顯方向性修正的效果。現實中雙方每週勞動時數差距通常遠小於此，方向性修正的影響幅度也會相應縮小。
+    </div>
 
+    <!-- 案例 A -->
     <div class="case-box">
       <div class="case-header">案例 A — 互補分工</div>
       <div class="case-body">
-        <div class="case-row"><span class="case-key">自己：收入 / 時數 / 年齡</span><span class="case-val">8 萬 / 10 小時 / 32 歲</span></div>
-        <div class="case-row"><span class="case-key">對方：收入 / 時數 / 年齡</span><span class="case-val">3 萬 / 30 小時 / 28 歲</span></div>
-        <div class="case-row"><span class="case-key">φ_money</span><span class="case-val">0.545</span></div>
-        <div class="case-row"><span class="case-key">φ_time</span><span class="case-val">0.500</span></div>
-        <div class="case-row"><span class="case-key">φ 原始</span><span class="case-val">0.523</span></div>
-        <div class="case-row"><span class="case-key">方向類型</span><span class="case-val green">互補分工</span></div>
-        <div class="case-row"><span class="case-key">修正值</span><span class="case-val green">+0.023</span></div>
-        <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val accent">0.546 — 輕度不對稱</span></div>
-        <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val green">18% — 差距可接受</span></div>
-        <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val">φ↓ A↓ — 背景相近，貢獻待調整</span></div>
+        <div class="case-row">
+          <span class="case-key">自己：收入 / 時數 / 年齡</span>
+          <span class="case-val">8 萬 / 30 小時 / 32 歲</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">對方：收入 / 時數 / 年齡</span>
+          <span class="case-val">3 萬 / 90 小時 / 28 歲</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ_money</span>
+          <span class="case-val">0.545</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ_time</span>
+          <span class="case-val">0.500</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ 原始</span>
+          <span class="case-val">0.523</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">方向類型</span>
+          <span class="case-val green">互補分工</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">修正值</span>
+          <span class="case-val green">+0.023</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ 最終</span>
+          <span class="case-val yellow">0.546 — 中度不對稱</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">A（年齡差 4 歲，均值 30 歲）</span>
+          <span class="case-val accent">1.8% — 背景相近</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">交叉診斷</span>
+          <span class="case-val accent">φ↓ A↓ — 背景相近，貢獻待調整</span>
+        </div>
       </div>
     </div>
 
+    <!-- 案例 B -->
     <div class="case-box">
-      <div class="case-header">案例 B — 單邊過載（輸入完全相同，僅時數方向相反）</div>
+      <div class="case-header">案例 B — 單邊過載（收入與年齡相同，僅時數方向相反）</div>
       <div class="case-body">
-        <div class="case-row"><span class="case-key">自己：收入 / 時數 / 年齡</span><span class="case-val">8 萬 / 30 小時 / 32 歲</span></div>
-        <div class="case-row"><span class="case-key">對方：收入 / 時數 / 年齡</span><span class="case-val">3 萬 / 10 小時 / 28 歲</span></div>
-        <div class="case-row"><span class="case-key">φ_money</span><span class="case-val">0.545</span></div>
-        <div class="case-row"><span class="case-key">φ_time</span><span class="case-val">0.500</span></div>
-        <div class="case-row"><span class="case-key">φ 原始</span><span class="case-val">0.523</span></div>
-        <div class="case-row"><span class="case-key">方向類型</span><span class="case-val red">單邊過載</span></div>
-        <div class="case-row"><span class="case-key">修正值</span><span class="case-val red">−0.091</span></div>
-        <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val yellow">0.432 — 中度不對稱</span></div>
-        <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val green">18% — 差距可接受</span></div>
-        <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val">φ↓ A↓ — 背景相近，貢獻待調整</span></div>
+        <div class="case-row">
+          <span class="case-key">自己：收入 / 時數 / 年齡</span>
+          <span class="case-val">8 萬 / 90 小時 / 32 歲</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">對方：收入 / 時數 / 年齡</span>
+          <span class="case-val">3 萬 / 30 小時 / 28 歲</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ_money</span>
+          <span class="case-val">0.545</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ_time</span>
+          <span class="case-val">0.500</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ 原始</span>
+          <span class="case-val">0.523</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">方向類型</span>
+          <span class="case-val red">單邊過載</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">修正值</span>
+          <span class="case-val red">−0.091</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">φ 最終</span>
+          <span class="case-val red">0.432 — 高度不對稱</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">A（年齡差 4 歲，均值 30 歲）</span>
+          <span class="case-val accent">1.8% — 背景相近</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">交叉診斷</span>
+          <span class="case-val accent">φ↓ A↓ — 背景相近，貢獻待調整</span>
+        </div>
       </div>
     </div>
 
     <div class="callout">
       <div class="callout-label">結論</div>
-      案例 A 和 B 在 v2.0 中會得到完全相同的 φ = 0.523。v2.1 的方向性修正讓兩者的最終 φ 相差 0.114，對應不同的診斷狀態，反映了真實的結構差異。
+      案例 A 和 B 在 v2.0 中會得到完全相同的 φ = 0.523。v2.1 的方向性修正讓兩者的最終 φ 相差 0.114，對應不同的診斷狀態（中度 vs 高度不對稱），反映了真實的結構差異。
     </div>
   </div>
 
@@ -822,8 +885,8 @@
 
   <!-- FOOTER -->
   <div class="doc-footer">
-    <div class="doc-footer-left">本說明書適用於 DSBM v2.1。模型仍處於 Beta 階段，歡迎回饋。</div>
-    <div class="doc-footer-right">DSBM v2.1 Manual — Beta</div>
+    <span class="doc-footer-left">本說明書適用於 DSBM v2.1。模型仍處於 Beta 階段，歡迎回饋。</span>
+    <span class="doc-footer-right">DSBM v2.1 Manual — Beta</span>
   </div>
 
 </div>
