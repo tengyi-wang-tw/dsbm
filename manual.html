@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSBM v2.1 說明書</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:#0f0f0f;
+    --surface:#161616;
+    --surface2:#1a1a1a;
+    --border:#242424;
+    --border2:#2e2e2e;
+    --accent:#c8f060;
+    --text:#e8e8e8;
+    --text-dim:#888;
+    --text-muted:#444;
+    --red:#ff5c5c;
+    --yellow:#f0c060;
+    --green:#60d080;
+    --blue:#60b8f0;
+    --purple:#b08af0;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'DM Sans',sans-serif;
+    font-weight:300;
+    min-height:100vh;
+    padding:56px 20px 100px;
+    line-height:1.7;
+  }
+
+  .container{max-width:720px;margin:0 auto;}
+
+  /* ── COVER ── */
+  .cover{
+    border-bottom:1px solid var(--border);
+    padding-bottom:48px;
+    margin-bottom:56px;
+  }
+  .cover-tag{
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:var(--accent);
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .cover-tag::after{content:'';flex:1;height:1px;background:var(--border);}
+  .cover h1{
+    font-size:28px;
+    font-weight:400;
+    line-height:1.35;
+    letter-spacing:-.02em;
+    margin-bottom:16px;
+  }
+  .cover-desc{
+    font-size:13px;
+    color:var(--text-dim);
+    line-height:1.8;
+    max-width:520px;
+  }
+  .cover-meta{
+    display:flex;
+    gap:32px;
+    margin-top:28px;
+    padding-top:28px;
+    border-top:1px solid var(--border);
+  }
+  .cover-meta-item{display:flex;flex-direction:column;gap:4px;}
+  .cover-meta-key{
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    color:var(--text-muted);
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+  .cover-meta-val{
+    font-family:'DM Mono',monospace;
+    font-size:13px;
+    color:var(--text-dim);
+  }
+
+  /* ── TOC ── */
+  .toc{
+    background:var(--surface);
+    border:1px solid var(--border);
+    padding:24px 28px;
+    margin-bottom:56px;
+  }
+  .toc-title{
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    color:var(--text-muted);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .toc-list{list-style:none;}
+  .toc-list li{
+    display:flex;
+    align-items:baseline;
+    gap:0;
+    padding:5px 0;
+    border-bottom:1px solid #1a1a1a;
+  }
+  .toc-list li:last-child{border-bottom:none;}
+  .toc-num{
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:var(--accent);
+    width:28px;
+    flex-shrink:0;
+  }
+  .toc-text{font-size:13px;color:var(--text-dim);}
+  .toc-dots{flex:1;border-bottom:1px dotted var(--border2);margin:0 10px;position:relative;top:-3px;}
+  .toc-page{
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:var(--text-muted);
+  }
+
+  /* ── SECTIONS ── */
+  .doc-section{margin-bottom:56px;}
+  .section-header{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:28px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .section-num{
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    color:var(--accent);
+    letter-spacing:.1em;
+    flex-shrink:0;
+  }
+  .section-title{
+    font-size:18px;
+    font-weight:400;
+    letter-spacing:-.01em;
+  }
+
+  /* ── PROSE ── */
+  .prose{font-size:13px;color:var(--text-dim);line-height:1.85;}
+  .prose p+p{margin-top:14px;}
+  .prose strong{color:var(--text);font-weight:500;}
+  .prose em{color:var(--accent);font-style:normal;font-family:'DM Mono',monospace;font-size:12px;}
+
+  /* ── CALLOUT ── */
+  .callout{
+    background:var(--surface2);
+    border-left:3px solid var(--accent);
+    padding:16px 20px;
+    margin:20px 0;
+    font-size:13px;
+    color:var(--text-dim);
+    line-height:1.75;
+  }
+  .callout.red{border-left-color:var(--red);}
+  .callout.blue{border-left-color:var(--blue);}
+  .callout.purple{border-left-color:var(--purple);}
+  .callout-label{
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+    color:var(--accent);
+  }
+  .callout.red .callout-label{color:var(--red);}
+  .callout.blue .callout-label{color:var(--blue);}
+  .callout.purple .callout-label{color:var(--purple);}
+
+  /* ── FORMULA BOX ── */
+  .formula-box{
+    background:#111;
+    border:1px solid var(--border2);
+    padding:20px 24px;
+    margin:20px 0;
+    font-family:'DM Mono',monospace;
+    font-size:13px;
+    color:var(--accent);
+    line-height:2;
+  }
+  .formula-box .comment{color:var(--text-muted);font-size:11px;}
+
+  /* ── TABLE ── */
+  .doc-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:12px;}
+  .doc-table th{
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    color:var(--text-muted);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    text-align:left;
+    padding:10px 14px;
+    background:var(--surface2);
+    border-bottom:1px solid var(--border2);
+    font-weight:400;
+  }
+  .doc-table td{
+    padding:10px 14px;
+    border-bottom:1px solid #1e1e1e;
+    color:var(--text-dim);
+    vertical-align:top;
+  }
+  .doc-table td:first-child{
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    color:var(--text);
+    width:30%;
+  }
+  .doc-table tr:last-child td{border-bottom:none;}
+
+  /* ── STATUS CHIPS ── */
+  .chip{
+    display:inline-block;
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    padding:2px 8px;
+    border:1px solid;
+    letter-spacing:.06em;
+  }
+  .chip.green{color:var(--green);border-color:var(--green);}
+  .chip.accent{color:var(--accent);border-color:var(--accent);}
+  .chip.yellow{color:var(--yellow);border-color:var(--yellow);}
+  .chip.red{color:var(--red);border-color:var(--red);}
+  .chip.purple{color:var(--purple);border-color:var(--purple);}
+  .chip.blue{color:var(--blue);border-color:var(--blue);}
+
+  /* ── EXAMPLE CASE ── */
+  .case-box{
+    border:1px solid var(--border2);
+    margin:24px 0;
+    overflow:hidden;
+  }
+  .case-header{
+    background:var(--surface2);
+    padding:12px 20px;
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:var(--text-muted);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    border-bottom:1px solid var(--border);
+  }
+  .case-body{padding:20px;}
+  .case-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:6px 0;
+    border-bottom:1px solid #1a1a1a;
+    font-size:12px;
+  }
+  .case-row:last-child{border-bottom:none;}
+  .case-key{color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .case-val{color:var(--text);font-family:'DM Mono',monospace;}
+  .case-val.red{color:var(--red);}
+  .case-val.green{color:var(--green);}
+  .case-val.accent{color:var(--accent);}
+  .case-val.yellow{color:var(--yellow);}
+
+  /* ── AXIS DIAGRAM ── */
+  .axis-diagram{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--border);
+    margin:20px 0;
+  }
+  .axis-card{
+    background:var(--surface);
+    padding:20px;
+  }
+  .axis-card-label{
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    color:var(--text-muted);
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .axis-card-name{
+    font-size:15px;
+    font-weight:400;
+    margin-bottom:8px;
+    color:var(--text);
+  }
+  .axis-card-desc{font-size:12px;color:var(--text-dim);line-height:1.7;}
+
+  /* ── QUADRANT TABLE ── */
+  .quad-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--border);
+    margin:20px 0;
+  }
+  .quad-cell{
+    background:var(--surface2);
+    padding:18px 20px;
+  }
+  .quad-type{
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    letter-spacing:.08em;
+    margin-bottom:8px;
+  }
+  .quad-desc{font-size:12px;color:var(--text-dim);line-height:1.65;}
+
+  /* ── DIVIDER ── */
+  .divider{
+    border:none;
+    border-top:1px solid var(--border);
+    margin:40px 0;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer{
+    margin-top:60px;
+    padding-top:24px;
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .doc-footer-left{font-size:11px;color:var(--text-muted);}
+  .doc-footer-right{
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:var(--text-muted);
+    letter-spacing:.08em;
+  }
+
+  @media(max-width:560px){
+    .axis-diagram,.quad-grid{grid-template-columns:1fr;}
+    .cover h1{font-size:22px;}
+    .cover-meta{flex-wrap:wrap;gap:20px;}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-tag">使用說明書 — User Manual</div>
+    <h1>二元對稱瓶頸模型<br>DSBM v2.1</h1>
+    <p class="cover-desc">
+      本說明書說明 DSBM v2.1 的設計邏輯、輸入規範、計算公式與輸出詮釋方式。工具用於評估二元關係的結構對稱程度與年齡背景差距，提供雙軸診斷輸出。
+    </p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-key">版本</span>
+        <span class="cover-meta-val">v2.1 — 方向性修正版</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-key">模型類型</span>
+        <span class="cover-meta-val">結構診斷工具</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-key">主要指標</span>
+        <span class="cover-meta-val">φ（貢獻對稱）、A（年齡背景）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">目錄</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><span class="toc-text">模型概覽</span><span class="toc-dots"></span><span class="toc-page">§1</span></li>
+      <li><span class="toc-num">02</span><span class="toc-text">輸入規範</span><span class="toc-dots"></span><span class="toc-page">§2</span></li>
+      <li><span class="toc-num">03</span><span class="toc-text">第一軸 φ — 貢獻對稱係數</span><span class="toc-dots"></span><span class="toc-page">§3</span></li>
+      <li><span class="toc-num">04</span><span class="toc-text">方向性修正（v2.1 新增）</span><span class="toc-dots"></span><span class="toc-page">§4</span></li>
+      <li><span class="toc-num">05</span><span class="toc-text">第二軸 A — 年齡背景內耗比</span><span class="toc-dots"></span><span class="toc-page">§5</span></li>
+      <li><span class="toc-num">06</span><span class="toc-text">S — 背景脈絡參考值</span><span class="toc-dots"></span><span class="toc-page">§6</span></li>
+      <li><span class="toc-num">07</span><span class="toc-text">交叉診斷——四象限報告</span><span class="toc-dots"></span><span class="toc-page">§7</span></li>
+      <li><span class="toc-num">08</span><span class="toc-text">計算範例</span><span class="toc-dots"></span><span class="toc-page">§8</span></li>
+      <li><span class="toc-num">09</span><span class="toc-text">模型假設與局限性</span><span class="toc-dots"></span><span class="toc-page">§9</span></li>
+      <li><span class="toc-num">10</span><span class="toc-text">版本更新紀錄</span><span class="toc-dots"></span><span class="toc-page">§10</span></li>
+    </ul>
+  </div>
+
+  <!-- §1 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">模型概覽</span>
+    </div>
+    <div class="prose">
+      <p>DSBM（Dyadic Symmetry-Bottleneck Model，二元對稱瓶頸模型）是一個用於評估二元關係結構健康程度的診斷工具。它不測量情感滿意度、主觀幸福感，也不對關係做出價值判斷——它只測量<strong>結構</strong>。</p>
+      <p>v2.1 提供兩個獨立的診斷軸，各自衡量不同層次的結構問題：</p>
+    </div>
+
+    <div class="axis-diagram">
+      <div class="axis-card">
+        <div class="axis-card-label">第一軸</div>
+        <div class="axis-card-name">φ — 貢獻對稱係數</div>
+        <div class="axis-card-desc">衡量雙方在收入與勞動時數上的貢獻是否對稱。v2.1 加入方向性修正，區分互補分工與單邊過載。數值範圍 0–1，越高越對稱。</div>
+      </div>
+      <div class="axis-card">
+        <div class="axis-card-label">第二軸</div>
+        <div class="axis-card-name">A — 年齡背景內耗比</div>
+        <div class="axis-card-desc">衡量雙方年齡差距相對於平均年齡的比例，反映人生座標錯位的結構風險。數值範圍 0–100%，越高差距越大。</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">設計原則</div>
+      兩個軸完全獨立計算，不相互影響。φ 反映當下的貢獻分工；A 反映雙方的背景起點差距。診斷報告將兩個軸交叉詮釋，給出更完整的結構描述。
+    </div>
+  </div>
+
+  <!-- §2 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">輸入規範</span>
+    </div>
+    <div class="prose">
+      <p>共需填入六個數值，分為「自己」與「對方」兩組。</p>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>欄位</th>
+          <th>單位</th>
+          <th>範圍</th>
+          <th>說明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>月收入</td>
+          <td>萬元 / 月</td>
+          <td>≥ 0</td>
+          <td>稅前或稅後皆可，但雙方必須使用相同基準。包含固定薪資，可酌情納入穩定的兼職或獎金收入。</td>
+        </tr>
+        <tr>
+          <td>每週勞動時數</td>
+          <td>小時 / 週</td>
+          <td>0 – 168</td>
+          <td>包含正式工作、家務、照顧責任（子女、長輩）。建議以近三個月的平均值為準，而非單週特例。</td>
+        </tr>
+        <tr>
+          <td>年齡</td>
+          <td>歲</td>
+          <td>≥ 16</td>
+          <td>填入實際年齡（整數）。工具接受 16 歲以上的輸入值。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout red">
+      <div class="callout-label">注意</div>
+      雙方月收入合計（S）與每週勞動時數合計不得同時為 0，否則無法計算。全職照顧者（收入為 0）是合法的輸入值，只要對方有收入即可正常計算。
+    </div>
+  </div>
+
+  <!-- §3 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">第一軸 φ — 貢獻對稱係數</span>
+    </div>
+    <div class="prose">
+      <p>φ 衡量雙方在兩個貢獻維度上的對稱程度：收入（φ_money）與勞動時數（φ_time）。兩者平均後得到基礎 φ 值，再經方向性修正得到最終 φ。</p>
+    </div>
+
+    <div class="formula-box">
+      φ_money = 1 − |自己收入 − 對方收入| / (自己收入 + 對方收入)<br>
+      φ_time &nbsp;= 1 − |自己時數 − 對方時數| / (自己時數 + 對方時數)<br>
+      <br>
+      φ_原始 = (φ_money + φ_time) / 2<br>
+      <span class="comment">── 方向性修正後得到 φ 最終值（見 §4）</span>
+    </div>
+
+    <div class="prose"><p>φ 的診斷區間如下：</p></div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>φ 範圍</th><th>狀態</th><th>診斷意義</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0.80 – 1.00</td>
+          <td><span class="chip green">結構良好</span></td>
+          <td>雙方貢獻高度對稱，結構內耗 W 低，具備較強的外部壓力緩衝能力。</td>
+        </tr>
+        <tr>
+          <td>0.65 – 0.79</td>
+          <td><span class="chip accent">輕度不對稱</span></td>
+          <td>差距趨於明顯，尚未進入高風險區間。建議雙方確認現有分工是否為共識安排。</td>
+        </tr>
+        <tr>
+          <td>0.50 – 0.64</td>
+          <td><span class="chip yellow">中度不對稱</span></td>
+          <td>結構損耗偏高，有效韌性受限。長期維持此結構，壓力易在具體事件中顯現。</td>
+        </tr>
+        <tr>
+          <td>0.00 – 0.49</td>
+          <td><span class="chip red">高度不對稱</span></td>
+          <td>高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="prose">
+      <p><strong>W — 結構內耗值</strong>定義為 W = 1 − φ，代表系統在維持運作過程中消耗於結構不對稱的比例。W 越高，有效韌性越低。</p>
+    </div>
+  </div>
+
+  <!-- §4 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">方向性修正（v2.1 新增）</span>
+    </div>
+    <div class="prose">
+      <p>v2.0 的 φ 存在一個結構盲點：它無法區分<strong>互補分工</strong>與<strong>單邊過載</strong>。以下兩種情況在 v2.0 會得到相同的 φ 值，但現實意義截然不同：</p>
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">情境對比</div>
+      <strong>互補分工</strong>：甲方收入高、勞動時數少；乙方收入低、勞動時數多。雙方在不同維度各自貢獻，存在交換邏輯。<br><br>
+      <strong>單邊過載</strong>：甲方收入高、勞動時數也多；乙方收入低、勞動時數也少。一方在兩個維度均佔優，另一方在兩個維度均偏少。
+    </div>
+
+    <div class="prose"><p>v2.1 透過方向性修正解決此問題：</p></div>
+
+    <div class="formula-box">
+      income_gap = |自己收入 − 對方收入| / (自己收入 + 對方收入)<br>
+      hours_gap &nbsp;= |自己時數 − 對方時數| / (自己時數 + 對方時數)<br>
+      <br>
+      <span class="comment">── 若方向相同（單邊過載）：</span><br>
+      修正值 = −(income_gap × hours_gap × 0.4)<br>
+      <br>
+      <span class="comment">── 若方向相反（互補分工）：</span><br>
+      修正值 = +(income_gap × hours_gap × 0.1)<br>
+      <br>
+      φ 最終 = max(0, min(1, φ_原始 + 修正值))
+    </div>
+
+    <div class="prose">
+      <p>懲罰係數（0.4）與補償係數（0.1）的不對稱設計是有意識的：單邊過載的結構傷害，明顯大於互補分工帶來的結構收益。修正值的大小同時受兩個維度的不對稱幅度影響——只有在收入與時數都存在顯著差距時，方向性修正才會產生較大的影響。</p>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>方向類型</th><th>修正方向</th><th>修正係數</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>單邊過載</td>
+          <td><span class="chip red">扣分</span></td>
+          <td>× 0.4</td>
+          <td>收入高者時數也高，另一方雙重弱勢。</td>
+        </tr>
+        <tr>
+          <td>互補分工</td>
+          <td><span class="chip green">加分</span></td>
+          <td>× 0.1</td>
+          <td>收入高者時數少，形成跨維度交換。</td>
+        </tr>
+        <tr>
+          <td>無顯著方向</td>
+          <td>—</td>
+          <td>× 0</td>
+          <td>任一維度差距為零，不進行修正。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- §5 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">第二軸 A — 年齡背景內耗比</span>
+    </div>
+    <div class="prose">
+      <p>A 衡量雙方年齡差距相對於平均年齡的比例。它不直接測量「誰年紀大」，而是測量「差距有多顯著」——使用平均年齡作為分母，讓同樣的絕對差距在不同年齡層有不同的權重。</p>
+    </div>
+
+    <div class="formula-box">
+      gap &nbsp;= |自己年齡 − 對方年齡|<br>
+      mean = (自己年齡 + 對方年齡) / 2<br>
+      <br>
+      A_原始 = gap² / mean²<br>
+      A &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= min(1, A_原始) &nbsp;&nbsp;<span class="comment">── 上限 cap 至 100%</span>
+    </div>
+
+    <div class="prose">
+      <p>使用平方（gap²）而非線性差距，讓年齡差距的懲罰呈非線性增長——差距越大，影響速度越快。平均年齡作為分母則確保相對性：同樣差 10 歲，25 歲配 35 歲的衝擊遠大於 45 歲配 55 歲。</p>
+    </div>
+
+    <div class="callout purple">
+      <div class="callout-label">觸發 Cap 的條件</div>
+      當 gap = mean 時，A_原始 = 100%。這等同於「大的是小的三倍」（例如 20 歲配 60 歲）。在成人關係中，真正觸發 cap 的情況極少，但確實存在。當 A 被 cap 時，報告會標注原始計算值以供參考。
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>A 範圍</th><th>狀態</th><th>診斷意義</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0 – 9%</td>
+          <td><span class="chip green">背景相近</span></td>
+          <td>年齡差距極小，人生座標高度一致，背景因素不構成結構風險。</td>
+        </tr>
+        <tr>
+          <td>10 – 24%</td>
+          <td><span class="chip accent">差距可接受</span></td>
+          <td>存在一定差距，但在多數情境下不構成主要壓力來源。</td>
+        </tr>
+        <tr>
+          <td>25 – 49%</td>
+          <td><span class="chip yellow">差距明顯</span></td>
+          <td>人生階段、風險容忍度與長期預期可能存在顯著不一致，建議主動溝通。</td>
+        </tr>
+        <tr>
+          <td>50 – 100%</td>
+          <td><span class="chip red">差距顯著</span></td>
+          <td>背景差距是獨立的結構風險來源，在重大決策節點（生育、退休規劃）上影響尤為明顯。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="prose">
+      <p>A 衡量的是<strong>背景同步程度</strong>，而非貢獻是否對稱。它獨立於 φ，不影響也不被 φ 影響。</p>
+    </div>
+  </div>
+
+  <!-- §6 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">S — 背景脈絡參考值</span>
+    </div>
+    <div class="prose">
+      <p>S 為雙方月收入合計，定義為：</p>
+    </div>
+    <div class="formula-box">
+      S = 自己月收入 + 對方月收入
+    </div>
+    <div class="prose">
+      <p>S <strong>不影響</strong> φ 或 A 的計算，僅作為背景脈絡呈現。它的用途是修飾診斷文字的語氣——例如「資源充足但結構失衡」與「資源有限且結構失衡」描述的是不同的現實處境，即使 φ 值相同。</p>
+      <p>S 的診斷門檻設定為：S ≥ 15 萬元 / 月視為資源充足；S &lt; 6 萬元 / 月視為資源偏低。這些門檻是相對性的參考值，不代表絕對標準。</p>
+    </div>
+  </div>
+
+  <!-- §7 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">交叉診斷——四象限報告</span>
+    </div>
+    <div class="prose">
+      <p>φ 和 A 各自獨立輸出後，系統會根據兩個軸的組合生成交叉診斷報告。診斷的邊界設定為：φ ≥ 0.65 視為對稱（φ↑）；A &lt; 25% 視為背景相近（A↓）。</p>
+    </div>
+
+    <div class="quad-grid">
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--green)">φ↑ A↓ — 雙軸穩定型</div>
+        <div class="quad-desc">貢獻對稱且年齡背景差距小。兩個診斷軸均指向穩定狀態，系統具備較強的外部壓力緩衝能力。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--yellow)">φ↑ A↑ — 貢獻對稱，背景存差</div>
+        <div class="quad-desc">當下分工相對均衡，但年齡差距是潛在變數。風險通常在重大決策節點才浮現，而非日常運作中。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--accent)">φ↓ A↓ — 背景相近，貢獻待調整</div>
+        <div class="quad-desc">人生座標一致是有利條件，主要壓力來自貢獻不對稱。背景相近意味著調整相對容易——雙方對「公平」的感知基準接近。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--red)">φ↓ A↑ — 雙軸壓力型</div>
+        <div class="quad-desc">兩個軸均顯示結構壓力。年齡差距會持續影響雙方對「公平」的定義，使貢獻不對稱更難透過溝通單獨解決。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §8 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">計算範例</span>
+    </div>
+
+    <div class="prose"><p>以下兩個案例說明方向性修正的實際作用。輸入數值相同，差異只在時數方向。</p></div>
+
+    <div class="case-box">
+      <div class="case-header">案例 A — 互補分工</div>
+      <div class="case-body">
+        <div class="case-row"><span class="case-key">自己：收入 / 時數 / 年齡</span><span class="case-val">8 萬 / 10 小時 / 32 歲</span></div>
+        <div class="case-row"><span class="case-key">對方：收入 / 時數 / 年齡</span><span class="case-val">3 萬 / 30 小時 / 28 歲</span></div>
+        <div class="case-row"><span class="case-key">φ_money</span><span class="case-val">0.545</span></div>
+        <div class="case-row"><span class="case-key">φ_time</span><span class="case-val">0.500</span></div>
+        <div class="case-row"><span class="case-key">φ 原始</span><span class="case-val">0.523</span></div>
+        <div class="case-row"><span class="case-key">方向類型</span><span class="case-val green">互補分工</span></div>
+        <div class="case-row"><span class="case-key">修正值</span><span class="case-val green">+0.023</span></div>
+        <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val accent">0.546 — 輕度不對稱</span></div>
+        <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val green">18% — 差距可接受</span></div>
+        <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val">φ↓ A↓ — 背景相近，貢獻待調整</span></div>
+      </div>
+    </div>
+
+    <div class="case-box">
+      <div class="case-header">案例 B — 單邊過載（輸入完全相同，僅時數方向相反）</div>
+      <div class="case-body">
+        <div class="case-row"><span class="case-key">自己：收入 / 時數 / 年齡</span><span class="case-val">8 萬 / 30 小時 / 32 歲</span></div>
+        <div class="case-row"><span class="case-key">對方：收入 / 時數 / 年齡</span><span class="case-val">3 萬 / 10 小時 / 28 歲</span></div>
+        <div class="case-row"><span class="case-key">φ_money</span><span class="case-val">0.545</span></div>
+        <div class="case-row"><span class="case-key">φ_time</span><span class="case-val">0.500</span></div>
+        <div class="case-row"><span class="case-key">φ 原始</span><span class="case-val">0.523</span></div>
+        <div class="case-row"><span class="case-key">方向類型</span><span class="case-val red">單邊過載</span></div>
+        <div class="case-row"><span class="case-key">修正值</span><span class="case-val red">−0.091</span></div>
+        <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val yellow">0.432 — 中度不對稱</span></div>
+        <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val green">18% — 差距可接受</span></div>
+        <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val">φ↓ A↓ — 背景相近，貢獻待調整</span></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">結論</div>
+      案例 A 和 B 在 v2.0 中會得到完全相同的 φ = 0.523。v2.1 的方向性修正讓兩者的最終 φ 相差 0.114，對應不同的診斷狀態，反映了真實的結構差異。
+    </div>
+  </div>
+
+  <!-- §9 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">模型假設與局限性</span>
+    </div>
+    <div class="prose">
+      <p>DSBM 是一個結構診斷工具，而非完整的關係評估系統。使用者應理解以下假設與局限：</p>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>假設</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>等權假設</td>
+          <td>φ_money 和 φ_time 各佔 50%，預設收入對稱與時間對稱同等重要。現實中兩者的相對重要性因人而異。</td>
+        </tr>
+        <tr>
+          <td>線性折抵</td>
+          <td>互補分工的補償係數（0.1）遠小於單邊過載的懲罰係數（0.4），因為兩者的現實影響程度不對稱。</td>
+        </tr>
+        <tr>
+          <td>年齡門檻</td>
+          <td>A 的診斷門檻（10% / 25% / 50%）基於模型設計者的判斷，無外部學術來源支撐。</td>
+        </tr>
+        <tr>
+          <td>未納入維度</td>
+          <td>情緒勞動、決策權不對稱、原生家庭影響、地域因素等均未納入模型，但在現實關係中可能同等重要。</td>
+        </tr>
+        <tr>
+          <td>方向性中立</td>
+          <td>模型不區分性別、角色或社會文化脈絡——同樣的數值組合，無論誰是哪一方，得到的 φ 相同。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout red">
+      <div class="callout-label">重要提醒</div>
+      φ 低不代表關係不健康，A 高不代表關係必然有問題。模型輸出的是結構描述，不是關係判決。使用者應結合自身情境詮釋診斷結果。
+    </div>
+  </div>
+
+  <!-- §10 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">版本更新紀錄</span>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>版本</th><th>更新內容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>v1.0</td>
+          <td>初版發布。φ 為主要指標，W = 1 − φ 為結構內耗值。S 作為背景脈絡參考，不影響診斷。</td>
+        </tr>
+        <tr>
+          <td>v1.1</td>
+          <td>修正說明文字，明確標注 S 不影響 φ 診斷。新增分類型態標籤（完全對稱型 / 單邊過載型 / 互補分工型 / 輕度不對稱型）。</td>
+        </tr>
+        <tr>
+          <td>v2.0</td>
+          <td>重大架構更新。新增第二軸 A（年齡背景內耗比），公式為 gap² / mean²，上限 cap 至 100%。輸入擴展為六欄（收入、時數、年齡各兩筆）。新增四象限交叉診斷報告。</td>
+        </tr>
+        <tr>
+          <td>v2.1</td>
+          <td>新增方向性修正機制。區分互補分工（加分 × 0.1）與單邊過載（懲罰 × 0.4），修正 v2.0 中同樣輸入值因方向不同而診斷相同的結構盲點。計算明細欄位新增「φ 原始」、「方向類型」、「修正值」三列。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div class="doc-footer-left">本說明書適用於 DSBM v2.1。模型仍處於 Beta 階段，歡迎回饋。</div>
+    <div class="doc-footer-right">DSBM v2.1 Manual — Beta</div>
+  </div>
+
+</div>
+</body>
+</html>
