@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSBM v2.1 — 二元對稱瓶頸模型 — 關係結構診斷工具</title>
+<title>DSBM v3.0 — 二元對稱瓶頸模型 — 關係結構診斷工具</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
   :root {
     --bg:#0f0f0f;--surface:#161616;--border:#2a2a2a;--accent:#c8f060;
     --text:#e8e8e8;--text-dim:#b0b0b0;--text-muted:#707070;
-    --red:#ff5c5c;--yellow:#f0c060;--green:#60d080;--blue:#60b8f0;
+    --red:#ff5c5c;--yellow:#f0c060;--green:#60d080;--blue:#60b8f0;--orange:#f0a060;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding:40px 20px 80px;}
@@ -24,19 +24,37 @@
   .input-group{display:flex;flex-direction:column;gap:6px;}
   .input-label{font-size:12px;color:var(--text-dim);}
   .input-sublabel{font-size:10px;color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .optional-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;color:var(--orange);border:1px solid var(--orange);padding:1px 5px;letter-spacing:.06em;margin-left:6px;vertical-align:middle;}
   input[type=number]{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:10px 12px;width:100%;outline:none;transition:border-color .2s;-moz-appearance:textfield;}
   input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
   input[type=number]:focus{border-color:var(--accent);}
+  input[type=number].optional{border-color:#333;border-style:dashed;}
+  input[type=number].optional:focus{border-color:var(--orange);border-style:solid;}
   .btn{background:var(--accent);color:#0f0f0f;border:none;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;letter-spacing:.08em;padding:14px 32px;cursor:pointer;width:100%;margin-top:8px;transition:background .2s,transform .1s;}
   .btn:hover{background:#d4f570;}
   .btn:active{transform:scale(.99);}
+
+  /* F軸對照表 */
+  .f-ref{background:#111;border:1px solid #333;border-left:3px solid var(--orange);margin-top:8px;overflow:hidden;}
+  .f-ref-toggle{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;cursor:pointer;user-select:none;}
+  .f-ref-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;}
+  .f-ref-arrow{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);transition:transform .2s;}
+  .f-ref-arrow.open{transform:rotate(180deg);}
+  .f-ref-body{display:none;padding:0 14px 12px;}
+  .f-ref-body.open{display:block;}
+  .f-ref-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #1e1e1e;font-size:11px;}
+  .f-ref-row:last-child{border-bottom:none;}
+  .f-ref-grade{font-family:'DM Mono',monospace;color:var(--orange);}
+  .f-ref-amount{color:var(--text-muted);}
+  .f-ref-note{font-size:10px;color:var(--text-muted);margin-top:8px;line-height:1.5;}
+
   .result-box{display:none;background:var(--surface);border:1px solid var(--border);padding:28px;margin-top:32px;}
   .result-box.visible{display:block;}
-  .phi-display{display:flex;align-items:baseline;gap:12px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border);}
-  .phi-value{font-family:'DM Mono',monospace;font-size:52px;font-weight:500;line-height:1;}
-  .phi-meta{display:flex;flex-direction:column;gap:4px;}
-  .phi-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.1em;}
-  .phi-status{font-size:14px;font-weight:500;}
+  .axis-display{display:flex;align-items:baseline;gap:12px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+  .axis-value{font-family:'DM Mono',monospace;font-size:52px;font-weight:500;line-height:1;}
+  .axis-meta{display:flex;flex-direction:column;gap:4px;}
+  .axis-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.1em;}
+  .axis-status{font-size:14px;font-weight:500;}
   .metrics-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
   .metric{display:flex;flex-direction:column;gap:4px;}
   .metric-name{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;}
@@ -51,7 +69,7 @@
   .type-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;padding:4px 10px;margin-bottom:16px;border:1px solid;}
   .report-text{font-size:13px;color:var(--text-dim);line-height:1.8;}
   .report-text p+p{margin-top:10px;}
-  .bar-container{margin-top:20px;padding-top:20px;border-top:1px solid var(--border);}
+  .bar-container{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
   .bar-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
   .bar-track{background:#1e1e1e;height:6px;width:100%;}
   .bar-fill{height:100%;transition:width .8s cubic-bezier(.4,0,.2,1);}
@@ -62,13 +80,15 @@
   .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1e1e1e;font-size:12px;}
   .breakdown-key{color:var(--text-dim);font-family:'DM Mono',monospace;}
   .breakdown-val{color:var(--text);font-family:'DM Mono',monospace;}
+  .f-axis-box{display:none;background:#111;border:1px solid var(--border);border-left:3px solid var(--orange);padding:20px;margin-top:20px;}
+  .f-axis-box.visible{display:block;}
   .note{margin-top:32px;padding:16px;border-left:2px solid var(--border);font-size:12px;color:var(--text-muted);line-height:1.6;}
   .version{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);text-align:right;margin-top:40px;letter-spacing:.08em;}
   @media(max-width:500px){
     .input-grid{grid-template-columns:1fr 1fr;}
     .metrics-row{grid-template-columns:1fr 1fr;}
     h1{font-size:18px;}
-    .phi-value{font-size:40px;}
+    .axis-value{font-size:40px;}
   }
 </style>
 </head>
@@ -76,18 +96,27 @@
 <div class="container">
 
   <header>
-    <div class="label-tag">DSBM v2.1 — Dyadic Symmetry-Bottleneck Model</div>
+    <div class="label-tag">DSBM v3.0 — Dyadic Symmetry-Bottleneck Model</div>
     <h1>二元對稱瓶頸模型<br>關係結構診斷工具</h1>
-    <p class="subtitle">第一軸 φ：貢獻對稱係數（收入 + 勞動時數），含方向性懲罰修正<br>第二軸 A：年齡背景內耗比（差距相對於平均年齡）<br>S：雙方月收入合計，作為背景脈絡參考，不影響任何診斷指標。</p>
+    <p class="subtitle">
+      第一軸 φ：貢獻對稱係數（收入 + 勞動時數），含方向性修正<br>
+      第二軸 A：年齡背景內耗比（差距相對於平均年齡）<br>
+      第三軸 F：家境背景內耗比（選填，不填則回歸雙軸診斷）<br>
+      S：雙方月收入合計，作為背景脈絡參考，不影響任何診斷指標。
+    </p>
   </header>
 
   <div class="section">
     <div class="section-title">01 資料輸入</div>
+
+    <!-- 欄位標題 -->
     <div class="input-grid" style="margin-bottom:16px;">
       <div class="input-group"><span class="input-label">項目</span></div>
       <div class="input-group"><span class="input-label">自己</span></div>
       <div class="input-group"><span class="input-label">對方</span></div>
     </div>
+
+    <!-- 月收入 -->
     <div class="input-grid" style="margin-bottom:12px;">
       <div class="input-group">
         <span class="input-label">月收入</span>
@@ -100,6 +129,8 @@
         <input type="number" id="income_other" placeholder="例：3" min="0" step="0.1">
       </div>
     </div>
+
+    <!-- 勞動時數 -->
     <div class="input-grid" style="margin-bottom:12px;">
       <div class="input-group">
         <span class="input-label">每週勞動時數</span>
@@ -112,10 +143,12 @@
         <input type="number" id="hours_other" placeholder="例：30" min="0" max="168" step="1">
       </div>
     </div>
+
+    <!-- 年齡 -->
     <div class="input-grid" style="margin-bottom:12px;">
       <div class="input-group">
         <span class="input-label">年齡</span>
-        <span class="input-sublabel">實際歲數</span>
+        <span class="input-sublabel">實際歲數（≥ 16）</span>
       </div>
       <div class="input-group">
         <input type="number" id="age_self" placeholder="例：32" min="16" step="1">
@@ -124,18 +157,56 @@
         <input type="number" id="age_other" placeholder="例：28" min="16" step="1">
       </div>
     </div>
+
+    <!-- 家境等級（選填） -->
+    <div class="input-grid" style="margin-bottom:4px;">
+      <div class="input-group">
+        <span class="input-label">家境等級<span class="optional-badge">選填</span></span>
+        <span class="input-sublabel">1=最富　10=最低</span>
+      </div>
+      <div class="input-group">
+        <input type="number" id="grade_self" placeholder="1–10" min="1" max="10" step="1" class="optional">
+      </div>
+      <div class="input-group">
+        <input type="number" id="grade_other" placeholder="1–10" min="1" max="10" step="1" class="optional">
+      </div>
+    </div>
+
+    <!-- 對照表（可展開） -->
+    <div class="f-ref" style="margin-bottom:16px;">
+      <div class="f-ref-toggle" onclick="toggleRef()">
+        <span class="f-ref-label">家境等級對照表（主計處資料）</span>
+        <span class="f-ref-arrow" id="ref-arrow">▾</span>
+      </div>
+      <div class="f-ref-body" id="ref-body">
+        <div class="f-ref-row"><span class="f-ref-grade">1 級</span><span class="f-ref-amount">家庭淨資產 &gt; 3,391 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">2 級</span><span class="f-ref-amount">家庭淨資產 ≈ 3,391 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">3 級</span><span class="f-ref-amount">家庭淨資產 ≈ 2,134 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">4 級</span><span class="f-ref-amount">家庭淨資產 ≈ 1,547 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">5 級</span><span class="f-ref-amount">家庭淨資產 ≈ 1,171 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">6 級</span><span class="f-ref-amount">家庭淨資產 ≈ 894 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">7 級</span><span class="f-ref-amount">家庭淨資產 ≈ 677 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">8 級</span><span class="f-ref-amount">家庭淨資產 ≈ 490 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">9 級</span><span class="f-ref-amount">家庭淨資產 ≈ 319 萬</span></div>
+        <div class="f-ref-row"><span class="f-ref-grade">10 級</span><span class="f-ref-amount">家庭淨資產 &lt; 143 萬</span></div>
+        <div class="f-ref-note">資料來源：行政院主計總處家庭收支調查。填入最接近自身家庭狀況的整數等級。兩欄均填寫時才啟動 F 軸計算。</div>
+      </div>
+    </div>
+
     <button class="btn" onclick="calculate()">▸ 執行診斷</button>
   </div>
 
+  <!-- 結果區塊 -->
   <div class="result-box" id="result">
 
+    <!-- 第一軸 φ -->
     <div class="section-title">第一軸 — 貢獻對稱係數 φ</div>
-    <div class="phi-display">
-      <div class="phi-value" id="phi_display">—</div>
-      <div class="phi-meta">
-        <span class="phi-label">φ 貢獻對稱係數</span>
-        <span class="phi-status" id="phi_status">—</span>
-        <span class="phi-label" id="w_label" style="margin-top:4px;">W = —（內耗值）</span>
+    <div class="axis-display">
+      <div class="axis-value" id="phi_display">—</div>
+      <div class="axis-meta">
+        <span class="axis-label">φ 貢獻對稱係數</span>
+        <span class="axis-status" id="phi_status">—</span>
+        <span class="axis-label" id="w_label" style="margin-top:4px;">W = —（內耗值）</span>
       </div>
     </div>
 
@@ -152,17 +223,18 @@
       </div>
       <div class="metric">
         <span class="metric-name">方向修正</span>
-        <span class="metric-val" id="dir_type">—</span>
+        <span class="metric-val" id="dir_type" style="font-size:14px;">—</span>
         <span class="metric-desc" id="dir_adj">—</span>
       </div>
     </div>
 
+    <!-- 第二軸 A -->
     <div class="section-title" style="margin-top:28px;">第二軸 — 年齡背景內耗比 A</div>
-    <div class="phi-display">
-      <div class="phi-value" id="a_display">—</div>
-      <div class="phi-meta">
-        <span class="phi-label">A 年齡背景內耗比</span>
-        <span class="phi-status" id="a_status">—</span>
+    <div class="axis-display">
+      <div class="axis-value" id="a_display">—</div>
+      <div class="axis-meta">
+        <span class="axis-label">A 年齡背景內耗比</span>
+        <span class="axis-status" id="a_status">—</span>
       </div>
     </div>
 
@@ -179,12 +251,42 @@
       </div>
       <div class="metric">
         <span class="metric-name">交叉診斷</span>
-        <span class="metric-val" id="cross_tag" style="font-size:13px;">—</span>
+        <span class="metric-val" id="cross_tag" style="font-size:12px;line-height:1.4;">—</span>
         <span class="metric-desc" id="cross_desc">—</span>
       </div>
     </div>
 
-    <div class="s-box">
+    <!-- 第三軸 F（選填，有填才顯示） -->
+    <div class="f-axis-box" id="f_axis_box">
+      <div class="section-title" style="border-bottom-color:#333;color:var(--orange);">第三軸 — 家境背景內耗比 F</div>
+      <div class="axis-display" style="border-bottom-color:#333;">
+        <div class="axis-value" id="f_display" style="color:var(--orange);">—</div>
+        <div class="axis-meta">
+          <span class="axis-label">F 家境背景內耗比</span>
+          <span class="axis-status" id="f_status">—</span>
+        </div>
+      </div>
+      <div class="metrics-row" style="border-bottom-color:#333;">
+        <div class="metric">
+          <span class="metric-name">自己等級²</span>
+          <span class="metric-val" id="f_grade_self_sq">—</span>
+          <span class="metric-desc" id="f_grade_self_label">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-name">對方等級²</span>
+          <span class="metric-val" id="f_grade_other_sq">—</span>
+          <span class="metric-desc" id="f_grade_other_label">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-name">F 公式</span>
+          <span class="metric-val" id="f_formula" style="font-size:12px;line-height:1.4;">—</span>
+          <span class="metric-desc">|自己²−對方²| / 100</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- S -->
+    <div class="s-box" style="margin-top:20px;">
       <div class="s-box-title">S — 月收入合計（背景參考，不影響診斷指標）</div>
       <div class="s-box-row">
         <span class="s-box-label">雙方月收入合計</span>
@@ -193,14 +295,14 @@
       <div class="s-box-context" id="s_context">—</div>
     </div>
 
+    <!-- 類型標籤 + 報告 -->
     <div id="type_tag" class="type-tag">—</div>
     <div class="report-text" id="report_text"></div>
 
+    <!-- 進度條 -->
     <div class="bar-container">
       <div class="bar-label">φ 對稱係數位置</div>
-      <div class="bar-track">
-        <div class="bar-fill" id="bar_phi" style="width:0%"></div>
-      </div>
+      <div class="bar-track"><div class="bar-fill" id="bar_phi" style="width:0%"></div></div>
       <div class="bar-ticks">
         <span class="bar-tick">0.0<br>不對稱</span>
         <span class="bar-tick">0.5</span>
@@ -208,11 +310,9 @@
       </div>
     </div>
 
-    <div class="bar-container" style="margin-top:16px;">
+    <div class="bar-container">
       <div class="bar-label">A 年齡背景內耗比位置</div>
-      <div class="bar-track">
-        <div class="bar-fill" id="bar_a" style="width:0%"></div>
-      </div>
+      <div class="bar-track"><div class="bar-fill" id="bar_a" style="width:0%"></div></div>
       <div class="bar-ticks">
         <span class="bar-tick">0%<br>無差距</span>
         <span class="bar-tick">50%</span>
@@ -220,6 +320,17 @@
       </div>
     </div>
 
+    <div class="bar-container" id="bar_f_container" style="display:none;">
+      <div class="bar-label">F 家境背景內耗比位置</div>
+      <div class="bar-track"><div class="bar-fill" id="bar_f" style="width:0%;background:var(--orange);"></div></div>
+      <div class="bar-ticks">
+        <span class="bar-tick">0%<br>相近</span>
+        <span class="bar-tick">50%</span>
+        <span class="bar-tick" style="text-align:right">100%<br>高風險</span>
+      </div>
+    </div>
+
+    <!-- 計算明細 φ -->
     <div class="breakdown">
       <div class="breakdown-title">計算明細 — 第一軸 φ</div>
       <div class="breakdown-row"><span class="breakdown-key">自己收入</span><span class="breakdown-val" id="d_income_self">—</span></div>
@@ -235,6 +346,7 @@
       <div class="breakdown-row"><span class="breakdown-key">W = 1 − φ</span><span class="breakdown-val" id="d_w">—</span></div>
     </div>
 
+    <!-- 計算明細 A -->
     <div class="breakdown" style="margin-top:16px;">
       <div class="breakdown-title">計算明細 — 第二軸 A</div>
       <div class="breakdown-row"><span class="breakdown-key">自己年齡</span><span class="breakdown-val" id="d_age_self">—</span></div>
@@ -247,15 +359,34 @@
       <div class="breakdown-row"><span class="breakdown-key">A（cap 後）</span><span class="breakdown-val" id="d_a_final">—</span></div>
     </div>
 
+    <!-- 計算明細 F（有填才顯示） -->
+    <div class="breakdown" id="breakdown_f" style="margin-top:16px;display:none;">
+      <div class="breakdown-title" style="color:var(--orange);">計算明細 — 第三軸 F</div>
+      <div class="breakdown-row"><span class="breakdown-key">自己家境等級</span><span class="breakdown-val" id="d_grade_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方家境等級</span><span class="breakdown-val" id="d_grade_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">自己等級²</span><span class="breakdown-val" id="d_grade_self_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方等級²</span><span class="breakdown-val" id="d_grade_other_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">|自己²− 對方²|</span><span class="breakdown-val" id="d_f_diff">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F = 差值 / 100</span><span class="breakdown-val" id="d_f_final">—</span></div>
+    </div>
+
   </div>
 
   <div class="note">
-    本工具基於二元對稱瓶頸模型（DSBM v2.1）。第一軸 φ 衡量雙方貢獻的結構對稱程度，並加入方向性懲罰修正——當收入較高者同時勞動時數也較高（單邊過載），φ 會額外扣分；當雙方形成互補分工，φ 會小幅加分。第二軸 A 衡量年齡差距相對於雙方平均年齡的背景內耗比。S 為雙方月收入合計，作為背景脈絡，不影響任何診斷指標。本工具不測量情感滿意度或主觀幸福感，結果僅供結構性參考。
+    本工具基於二元對稱瓶頸模型（DSBM v3.0）。第一軸 φ 衡量雙方貢獻的結構對稱程度，含方向性修正——單邊過載扣分（× 0.4），互補分工加分（× 0.1）。第二軸 A 衡量年齡差距相對於平均年齡的背景內耗比。第三軸 F 為選填項，衡量雙方家境等級平方差，等級定義參考主計處家庭財富分佈資料（1 級最富，10 級最低）。S 為雙方月收入合計，作為背景脈絡，不影響任何診斷指標。本工具不測量情感滿意度或主觀幸福感，結果僅供結構性參考。
   </div>
-  <div class="version">DSBM v2.1 — 方向性修正版 Beta</div>
+  <div class="version">DSBM v3.0 — 三軸架構版 Beta</div>
 
 </div>
+
 <script>
+function toggleRef() {
+  const body = document.getElementById('ref-body');
+  const arrow = document.getElementById('ref-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
 function getSContext(s, phi) {
   const hi = s >= 15, lo = s < 6, hp = phi >= 0.70, lp = phi < 0.50;
   if (hi && hp) return '資源充足且結構對稱。系統在面對外部衝擊時具備較強的緩衝能力。';
@@ -267,28 +398,63 @@ function getSContext(s, phi) {
   return '資源規模中等。結構健康度（φ）是當前主要參考指標。';
 }
 
+function getFStatus(f) {
+  if (f < 0.10) return { text: '家境相近',   color: 'var(--green)' };
+  if (f < 0.30) return { text: '差距可接受', color: 'var(--accent)' };
+  if (f < 0.60) return { text: '差距明顯',   color: 'var(--yellow)' };
+  return            { text: '差距顯著',   color: 'var(--red)' };
+}
+
+function getCrossTag(phi_up, a_down, hasF, f_down) {
+  if (!hasF) {
+    if (phi_up && a_down)  return { tag: 'φ↑ A↓ — 雙軸穩定型',         desc: '貢獻對稱且年齡背景相近，系統具備較強的外部壓力緩衝能力。' };
+    if (phi_up)            return { tag: 'φ↑ A↑ — 貢獻對稱，背景存差', desc: '當下分工均衡，年齡差距是潛在變數，風險在重大決策節點才浮現。' };
+    if (a_down)            return { tag: 'φ↓ A↓ — 背景相近，貢獻待調整', desc: '年齡背景一致是有利條件，主要壓力來自貢獻不對稱，調整相對容易。' };
+    return                        { tag: 'φ↓ A↑ — 雙軸壓力型',         desc: '兩軸均顯示結構壓力，年齡差距使貢獻不對稱更難透過溝通單獨解決。' };
+  }
+  // 三軸模式
+  if (phi_up && a_down && f_down)  return { tag: 'φ↑ A↓ F↓ — 三軸穩定型',       desc: '三個診斷軸均指向穩定狀態，系統抗壓能力最強。' };
+  if (phi_up && a_down && !f_down) return { tag: 'φ↑ A↓ F↑ — 貢獻穩定，家境存差', desc: '當下運作穩定，家境差距在重大財務決策時較易浮現。' };
+  if (phi_up && !a_down && f_down) return { tag: 'φ↑ A↑ F↓ — 貢獻對稱，年齡存差', desc: '家境背景一致降低部分風險，但年齡差距仍是潛在變數。' };
+  if (phi_up && !a_down && !f_down)return { tag: 'φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差', desc: '當下分工均衡，但年齡與家境差距同時存在，重大決策節點壓力較集中。' };
+  if (!phi_up && a_down && f_down) return { tag: 'φ↓ A↓ F↓ — 背景一致，貢獻待調整', desc: '年齡與家境均相近，主要問題來自貢獻不對稱，調整成本相對較低。' };
+  if (!phi_up && a_down && !f_down)return { tag: 'φ↓ A↓ F↑ — 貢獻失衡，家境存差', desc: '家境差距使公平感基準不一致，可能加深對貢獻不對稱的感知落差。' };
+  if (!phi_up && !a_down && f_down)return { tag: 'φ↓ A↑ F↓ — 年齡存差，貢獻失衡', desc: '家境相近是相對有利條件，但年齡差距與貢獻不對稱同時存在。' };
+  return                                  { tag: 'φ↓ A↑ F↑ — 三軸壓力型',       desc: '三軸均顯示結構壓力，貢獻失衡、年齡差距、家境落差三者並存，風險最集中。' };
+}
+
 function calculate() {
-  const is = parseFloat(document.getElementById('income_self').value);
-  const io = parseFloat(document.getElementById('income_other').value);
-  const hs = parseFloat(document.getElementById('hours_self').value);
-  const ho = parseFloat(document.getElementById('hours_other').value);
+  const is  = parseFloat(document.getElementById('income_self').value);
+  const io  = parseFloat(document.getElementById('income_other').value);
+  const hs  = parseFloat(document.getElementById('hours_self').value);
+  const ho  = parseFloat(document.getElementById('hours_other').value);
   const as_ = parseFloat(document.getElementById('age_self').value);
   const ao  = parseFloat(document.getElementById('age_other').value);
+  const gs_raw = document.getElementById('grade_self').value.trim();
+  const go_raw = document.getElementById('grade_other').value.trim();
 
-  if ([is,io,hs,ho,as_,ao].some(v=>isNaN(v)||v<0)) {
-    alert('請填入所有欄位的有效數值（需大於等於 0）。'); return;
+  // 必填驗證
+  if ([is,io,hs,ho,as_,ao].some(v => isNaN(v) || v < 0)) {
+    alert('請填入所有必填欄位的有效數值（月收入、勞動時數、年齡）。'); return;
   }
-  if (hs>168||ho>168) { alert('每週勞動時數不得超過 168 小時。'); return; }
-  if (as_<16||ao<16)  { alert('年齡需為 16 歲以上。'); return; }
-  if (is+io===0||hs+ho===0) { alert('收入合計與時數合計不得皆為 0。'); return; }
+  if (hs > 168 || ho > 168) { alert('每週勞動時數不得超過 168 小時。'); return; }
+  if (as_ < 16 || ao < 16)  { alert('年齡需為 16 歲以上。'); return; }
+  if (is + io === 0 || hs + ho === 0) { alert('收入合計與時數合計不得皆為 0。'); return; }
 
-  // φ 計算
-  const phi_m = 1 - Math.abs(is-io)/(is+io);
-  const phi_t = 1 - Math.abs(hs-ho)/(hs+ho);
+  // 家境等級（選填）
+  const gs = parseFloat(gs_raw);
+  const go = parseFloat(go_raw);
+  const hasF = !isNaN(gs) && !isNaN(go) && gs >= 1 && gs <= 10 && go >= 1 && go <= 10;
+  if ((gs_raw !== '' || go_raw !== '') && !hasF) {
+    alert('家境等級需為 1–10 的整數，或兩欄皆留空（不計算 F 軸）。'); return;
+  }
+
+  // ── 第一軸 φ ──
+  const phi_m   = 1 - Math.abs(is - io) / (is + io);
+  const phi_t   = 1 - Math.abs(hs - ho) / (hs + ho);
   const phi_raw = (phi_m + phi_t) / 2;
-
-  const inc_gap = Math.abs(is-io)/(is+io);
-  const hrs_gap = Math.abs(hs-ho)/(hs+ho);
+  const inc_gap = Math.abs(is - io) / (is + io);
+  const hrs_gap = Math.abs(hs - ho) / (hs + ho);
   const inc_hi_self = is >= io;
   const hrs_hi_self = hs >= ho;
 
@@ -296,23 +462,16 @@ function calculate() {
   if (inc_gap === 0 || hrs_gap === 0) {
     dirType = '無顯著方向'; dirAdj = '修正值 0';
   } else if (inc_hi_self === hrs_hi_self) {
-    adjVal = -(inc_gap * hrs_gap * 0.4);
+    adjVal  = -(inc_gap * hrs_gap * 0.4);
     dirType = '單邊過載'; dirAdj = '扣分 × 0.4';
   } else {
-    adjVal = +(inc_gap * hrs_gap * 0.1);
+    adjVal  = +(inc_gap * hrs_gap * 0.1);
     dirType = '互補分工'; dirAdj = '加分 × 0.1';
   }
   const phi = Math.max(0, Math.min(1, phi_raw + adjVal));
-  const w = 1 - phi;
-  const s = is + io;
+  const w   = 1 - phi;
+  const s   = is + io;
 
-  // A 計算
-  const gap  = Math.abs(as_ - ao);
-  const mean = (as_ + ao) / 2;
-  const a_raw = (gap * gap) / (mean * mean);
-  const a = Math.min(1, a_raw);
-
-  // φ 狀態
   let phiStatus, phiColor, report;
   if (phi >= 0.80) {
     phiStatus = '結構良好'; phiColor = 'var(--green)';
@@ -328,90 +487,145 @@ function calculate() {
     report = `<p>結構處於高度不對稱狀態，內耗值 W = ${w.toFixed(3)}，屬高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</p><p>建議認真檢視現有分工結構的合理性，評估雙方是否對此結構有共識。</p>`;
   }
 
-  // A 狀態
+  // ── 第二軸 A ──
+  const gap    = Math.abs(as_ - ao);
+  const mean   = (as_ + ao) / 2;
+  const a_raw  = (gap * gap) / (mean * mean);
+  const a      = Math.min(1, a_raw);
+
   let aStatus, aColor;
   if (a < 0.10)      { aStatus = '背景相近';   aColor = 'var(--green)'; }
   else if (a < 0.25) { aStatus = '差距可接受'; aColor = 'var(--accent)'; }
   else if (a < 0.50) { aStatus = '差距明顯';   aColor = 'var(--yellow)'; }
   else               { aStatus = '差距顯著';   aColor = 'var(--red)'; }
 
+  // ── 第三軸 F ──
+  let f = 0, fStatus = '', fColor = '', f_down = true;
+  if (hasF) {
+    const diff = Math.abs(gs * gs - go * go);
+    f = diff / 100;
+    const fs = getFStatus(f);
+    fStatus = fs.text; fColor = fs.color;
+    f_down = f < 0.30;
+  }
+
   // 交叉診斷
-  const phi_up = phi >= 0.65, a_down = a < 0.25;
-  let crossTag, crossDesc;
-  if (phi_up && a_down)  { crossTag = 'φ↑ A↓ 雙軸穩定型';         crossDesc = '貢獻對稱且背景相近，系統具備較強的緩衝能力。'; }
-  else if (phi_up)       { crossTag = 'φ↑ A↑ 貢獻對稱，背景存差'; crossDesc = '當下分工均衡，年齡差距是潛在變數，風險在決策節點才浮現。'; }
-  else if (a_down)       { crossTag = 'φ↓ A↓ 背景相近，貢獻待調整'; crossDesc = '背景一致是有利條件，主要壓力來自貢獻不對稱，調整相對容易。'; }
-  else                   { crossTag = 'φ↓ A↑ 雙軸壓力型';         crossDesc = '兩軸均顯示結構壓力，年齡差距使貢獻不對稱更難透過溝通單獨解決。'; }
+  const phi_up = phi >= 0.65;
+  const a_down = a < 0.25;
+  const cross  = getCrossTag(phi_up, a_down, hasF, f_down);
 
   // 類型標籤
   let typeLabel, typeColor;
-  if (is===io && hs===ho) { typeLabel='完全對稱型'; typeColor='var(--green)'; }
-  else if (inc_hi_self===hrs_hi_self && inc_gap>0.1) { typeLabel='單邊過載型'; typeColor='var(--red)'; }
-  else if (inc_hi_self!==hrs_hi_self) { typeLabel='互補分工型'; typeColor='var(--yellow)'; }
-  else { typeLabel='輕度不對稱型'; typeColor='var(--text-dim)'; }
+  if (is === io && hs === ho)                         { typeLabel = '完全對稱型';   typeColor = 'var(--green)'; }
+  else if (inc_hi_self === hrs_hi_self && inc_gap > 0.1) { typeLabel = '單邊過載型'; typeColor = 'var(--red)'; }
+  else if (inc_hi_self !== hrs_hi_self)               { typeLabel = '互補分工型';   typeColor = 'var(--yellow)'; }
+  else                                                { typeLabel = '輕度不對稱型'; typeColor = 'var(--text-dim)'; }
 
-  // Render
-  document.getElementById('phi_display').textContent = phi.toFixed(2);
-  document.getElementById('phi_display').style.color = phiColor;
+  // ── Render ──
+  // φ
+  const phiEl = document.getElementById('phi_display');
+  phiEl.textContent = phi.toFixed(2);
+  phiEl.style.color = phiColor;
   document.getElementById('phi_status').textContent = phiStatus;
   document.getElementById('phi_status').style.color = phiColor;
   document.getElementById('w_label').textContent = `W = ${w.toFixed(3)}（內耗值）`;
   document.getElementById('phi_money').textContent = phi_m.toFixed(3);
-  document.getElementById('phi_time').textContent = phi_t.toFixed(3);
-  document.getElementById('dir_type').textContent = dirType;
-  document.getElementById('dir_type').style.color = adjVal < 0 ? 'var(--red)' : adjVal > 0 ? 'var(--yellow)' : 'var(--text-dim)';
+  document.getElementById('phi_time').textContent  = phi_t.toFixed(3);
+  const dirEl = document.getElementById('dir_type');
+  dirEl.textContent = dirType;
+  dirEl.style.color = adjVal < 0 ? 'var(--red)' : adjVal > 0 ? 'var(--yellow)' : 'var(--text-dim)';
   document.getElementById('dir_adj').textContent = dirAdj;
 
-  document.getElementById('a_display').textContent = (a*100).toFixed(1)+'%';
-  document.getElementById('a_display').style.color = aColor;
+  // A
+  const aEl = document.getElementById('a_display');
+  aEl.textContent = (a * 100).toFixed(1) + '%';
+  aEl.style.color = aColor;
   document.getElementById('a_status').textContent = aStatus;
   document.getElementById('a_status').style.color = aColor;
-  document.getElementById('age_gap').textContent = gap+' 歲';
-  document.getElementById('age_mean').textContent = mean.toFixed(1)+' 歲';
-  document.getElementById('cross_tag').textContent = crossTag;
-  document.getElementById('cross_desc').textContent = crossDesc;
+  document.getElementById('age_gap').textContent  = gap + ' 歲';
+  document.getElementById('age_mean').textContent = mean.toFixed(1) + ' 歲';
+  document.getElementById('cross_tag').textContent  = cross.tag;
+  document.getElementById('cross_desc').textContent = cross.desc;
 
-  document.getElementById('s_value').textContent = s.toFixed(1)+' 萬元／月';
+  // F（條件顯示）
+  const fBox     = document.getElementById('f_axis_box');
+  const fBreak   = document.getElementById('breakdown_f');
+  const fBarCont = document.getElementById('bar_f_container');
+  if (hasF) {
+    fBox.classList.add('visible');
+    fBreak.style.display = 'block';
+    fBarCont.style.display = 'block';
+
+    document.getElementById('f_display').textContent = (f * 100).toFixed(1) + '%';
+    document.getElementById('f_status').textContent  = fStatus;
+    document.getElementById('f_status').style.color  = fColor;
+    document.getElementById('f_grade_self_sq').textContent  = (gs * gs).toFixed(0);
+    document.getElementById('f_grade_self_label').textContent = `自己 ${gs} 級`;
+    document.getElementById('f_grade_other_sq').textContent  = (go * go).toFixed(0);
+    document.getElementById('f_grade_other_label').textContent = `對方 ${go} 級`;
+    document.getElementById('f_formula').textContent = `|${(gs*gs).toFixed(0)}−${(go*go).toFixed(0)}| / 100`;
+
+    document.getElementById('d_grade_self').textContent    = gs + ' 級';
+    document.getElementById('d_grade_other').textContent   = go + ' 級';
+    document.getElementById('d_grade_self_sq').textContent = (gs * gs).toFixed(0);
+    document.getElementById('d_grade_other_sq').textContent= (go * go).toFixed(0);
+    document.getElementById('d_f_diff').textContent        = Math.abs(gs*gs - go*go).toFixed(0);
+    document.getElementById('d_f_final').textContent       = (f * 100).toFixed(2) + '%';
+
+    setTimeout(() => {
+      document.getElementById('bar_f').style.width = (f * 100) + '%';
+    }, 100);
+  } else {
+    fBox.classList.remove('visible');
+    fBreak.style.display = 'none';
+    fBarCont.style.display = 'none';
+  }
+
+  // S
+  document.getElementById('s_value').textContent   = s.toFixed(1) + ' 萬元／月';
   document.getElementById('s_context').textContent = getSContext(s, phi);
 
+  // 類型標籤
   const typeEl = document.getElementById('type_tag');
-  typeEl.textContent = typeLabel;
-  typeEl.style.color = typeColor;
+  typeEl.textContent   = typeLabel;
+  typeEl.style.color   = typeColor;
   typeEl.style.borderColor = typeColor;
 
+  // 報告
   document.getElementById('report_text').innerHTML = report;
 
   // 明細
-  document.getElementById('d_income_self').textContent = is.toFixed(1)+' 萬元';
-  document.getElementById('d_income_other').textContent = io.toFixed(1)+' 萬元';
-  document.getElementById('d_hours_self').textContent = hs+' 小時／週';
-  document.getElementById('d_hours_other').textContent = ho+' 小時／週';
-  document.getElementById('d_phi_money').textContent = phi_m.toFixed(4);
-  document.getElementById('d_phi_time').textContent = phi_t.toFixed(4);
-  document.getElementById('d_phi_raw').textContent = phi_raw.toFixed(4);
-  document.getElementById('d_dir_type').textContent = dirType;
-  document.getElementById('d_dir_adj').textContent = adjVal >= 0 ? '+'+adjVal.toFixed(4) : adjVal.toFixed(4);
-  document.getElementById('d_phi_final').textContent = phi.toFixed(4);
-  document.getElementById('d_w').textContent = w.toFixed(4);
-  document.getElementById('d_age_self').textContent = as_+' 歲';
-  document.getElementById('d_age_other').textContent = ao+' 歲';
-  document.getElementById('d_gap').textContent = gap+' 歲';
-  document.getElementById('d_mean').textContent = mean.toFixed(1)+' 歲';
-  document.getElementById('d_gap2').textContent = (gap*gap).toFixed(0);
-  document.getElementById('d_mean2').textContent = (mean*mean).toFixed(2);
-  document.getElementById('d_a_raw').textContent = (a_raw*100).toFixed(2)+'%';
-  document.getElementById('d_a_final').textContent = (a*100).toFixed(2)+'%'+(a_raw>1?' （已 cap）':'');
+  document.getElementById('d_income_self').textContent  = is.toFixed(1) + ' 萬元';
+  document.getElementById('d_income_other').textContent = io.toFixed(1) + ' 萬元';
+  document.getElementById('d_hours_self').textContent   = hs.toFixed(0) + ' 小時／週';
+  document.getElementById('d_hours_other').textContent  = ho.toFixed(0) + ' 小時／週';
+  document.getElementById('d_phi_money').textContent    = phi_m.toFixed(4);
+  document.getElementById('d_phi_time').textContent     = phi_t.toFixed(4);
+  document.getElementById('d_phi_raw').textContent      = phi_raw.toFixed(4);
+  document.getElementById('d_dir_type').textContent     = dirType;
+  document.getElementById('d_dir_adj').textContent      = adjVal === 0 ? '0' : adjVal.toFixed(4);
+  document.getElementById('d_phi_final').textContent    = phi.toFixed(4);
+  document.getElementById('d_w').textContent            = w.toFixed(4);
+  document.getElementById('d_age_self').textContent     = as_ + ' 歲';
+  document.getElementById('d_age_other').textContent    = ao + ' 歲';
+  document.getElementById('d_gap').textContent          = gap + ' 歲';
+  document.getElementById('d_mean').textContent         = mean.toFixed(1) + ' 歲';
+  document.getElementById('d_gap2').textContent         = (gap * gap).toFixed(0);
+  document.getElementById('d_mean2').textContent        = (mean * mean).toFixed(2);
+  document.getElementById('d_a_raw').textContent        = (a_raw * 100).toFixed(2) + '%';
+  document.getElementById('d_a_final').textContent      = (a * 100).toFixed(2) + '%' + (a_raw > 1 ? '（已 cap）' : '');
 
-  setTimeout(()=>{
-    document.getElementById('bar_phi').style.width=(phi*100)+'%';
-    document.getElementById('bar_phi').style.background=phiColor;
-    document.getElementById('bar_a').style.width=(a*100)+'%';
-    document.getElementById('bar_a').style.background=aColor;
-  },50);
+  // 進度條
+  setTimeout(() => {
+    document.getElementById('bar_phi').style.width       = (phi * 100) + '%';
+    document.getElementById('bar_phi').style.background  = phiColor;
+    document.getElementById('bar_a').style.width         = (a * 100) + '%';
+    document.getElementById('bar_a').style.background    = aColor;
+  }, 50);
 
   const r = document.getElementById('result');
   r.classList.add('visible');
-  r.scrollIntoView({behavior:'smooth',block:'start'});
+  r.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
 </body>
