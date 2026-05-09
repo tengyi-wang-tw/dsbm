@@ -153,7 +153,7 @@
     <div class="cover-meta">
       <div class="cover-meta-item">
         <span class="cover-meta-key">版本</span>
-        <span class="cover-meta-val">v3.0 — 三軸架構版</span>
+        <span class="cover-meta-val">v3.1 — F 軸修正版</span>
       </div>
       <div class="cover-meta-item">
         <span class="cover-meta-key">模型類型</span>
@@ -448,14 +448,19 @@
     <div class="formula-box">
       <span class="comment">── 等級定義：1 級最富（淨資產 &gt; 3,391 萬），10 級最低（&lt; 143 萬）</span><br>
       <br>
-      F = |自己等級² − 對方等級²| / 100<br>
+      F_gap &nbsp;= |自己等級² − 對方等級²| / 100<br>
+      F_base = ((自己等級 + 對方等級) / 2) / 10<br>
+      F &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= min(1, F_gap × 0.7 + F_base × 0.3)<br>
       <br>
-      <span class="comment">── 最大值：1 級配 10 級 → |1 − 100| / 100 = 99%</span><br>
-      <span class="comment">── 最小值：同級配對 → 0%</span>
+      <span class="comment">── F_gap 捕捉家境差距所產生的價值觀摩擦</span><br>
+      <span class="comment">── F_base 捕捉雙方絕對資源不足的生存壓力</span><br>
+      <span class="comment">── 最大值：1 級配 10 級 → 約 86%</span><br>
+      <span class="comment">── 雙方同為 10 級 → F_gap=0，F_base=1.0，F=30%（資源匱乏仍構成壓力）</span>
     </div>
 
     <div class="prose">
-      <p>使用平方差（等級²）而非線性差距，使懲罰呈非線性增長——等級差距越大，F 值上升速度越快。同時，底層等級之間的差距（如 8 級配 10 級）比頂層等級之間的差距（如 1 級配 3 級）產生更高的 F 值，反映底層資源落差在現實中的衝擊更為直接。</p>
+      <p>v3.0 的 F 軸由兩個子項組成：<strong>F_gap</strong> 捕捉雙方家境差距所產生的價值觀摩擦，<strong>F_base</strong> 捕捉雙方絕對資源水準不足所產生的生存壓力。兩者以 7:3 的權重合併，反映差距問題通常比資源匱乏更直接影響關係結構，但資源匱乏的影響不應被忽略。</p>
+      <p>這個設計修正了舊版公式的一個盲點：當雙方家境同樣偏低時，舊版會得到 F = 0（無風險），但現實中兩個都很窮的組合面臨的是生存壓力直接壓縮關係空間的問題，風險並非為零。</p>
     </div>
 
     <table class="doc-table">
@@ -488,11 +493,12 @@
 
     <div class="callout orange">
       <div class="callout-label">計算範例</div>
-      1 級配 3 級：|1 − 9| / 100 = <strong>8%</strong>（家境相近）<br>
-      3 級配 7 級：|9 − 49| / 100 = <strong>40%</strong>（差距明顯）<br>
-      1 級配 10 級：|1 − 100| / 100 = <strong>99%</strong>（差距顯著）<br>
-      8 級配 10 級：|64 − 100| / 100 = <strong>36%</strong>（差距明顯）<br><br>
-      注意：同樣差 2 個等級，頂層（1 配 3）與底層（8 配 10）的 F 值差異顯著，反映底層差距的現實衝擊更大。
+      1 級配 3 級：F_gap=8%，F_base=20%，F = <strong>8.6%</strong>（家境相近）<br>
+      3 級配 7 級：F_gap=40%，F_base=50%，F = <strong>43%</strong>（差距明顯）<br>
+      1 級配 10 級：F_gap=99%，F_base=55%，F = <strong>86%</strong>（差距顯著）<br>
+      8 級配 10 級：F_gap=36%，F_base=90%，F = <strong>52%</strong>（差距明顯）<br>
+      10 級配 10 級：F_gap=0%，F_base=100%，F = <strong>30%</strong>（差距可接受，但資源匱乏構成壓力）<br><br>
+      注意：雙方家境同樣偏低時，雖然差距為零，但絕對資源不足仍會對關係結構造成壓力，F 值不為零。
     </div>
 
     <div class="callout orange">
@@ -723,13 +729,17 @@
           <td style="color:var(--accent)">v3.0</td>
           <td>重大架構更新。新增第三軸 F（家境背景內耗比），公式為 |自己等級² − 對方等級²| / 100，參考主計處家庭財富十等級分佈資料。F 軸為選填項，不填時系統回歸雙軸診斷。交叉診斷從四象限擴展為八象限三軸組合報告。輸入規範新增家境等級欄位說明。</td>
         </tr>
+        <tr>
+          <td style="color:var(--accent)">v3.1</td>
+          <td>F 軸公式修正。原公式僅捕捉家境差距（F_gap），忽略雙方絕對資源不足的生存壓力。v3.1 引入雙項合併公式：F = min(1, F_gap × 0.7 + F_base × 0.3)，其中 F_base = 平均等級 / 10，修正雙底層家境得到 F=0 的設計盲點。</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
   <div class="doc-footer">
     <span class="doc-footer-left">本說明書適用於 DSBM v3.0。模型仍處於 Beta 階段，歡迎回饋。</span>
-    <span class="doc-footer-right">DSBM v3.0 Manual — Beta</span>
+    <span class="doc-footer-right">DSBM v3.1 Manual — Beta</span>
   </div>
 
 </div>

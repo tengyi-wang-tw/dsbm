@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSBM — 結構診斷敘事遊戲</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+  :root {
+    --bg:#080808;--surface:#0f0f0f;--surface2:#141414;
+    --border:#1e1e1e;--border2:#2a2a2a;
+    --accent:#c8f060;--text:#e0e0e0;--text-dim:#808080;--text-muted:#404040;
+    --red:#ff5c5c;--yellow:#f0c060;--green:#60d080;--orange:#f0a060;
+    --phi:#c8f060;--a:#60b8f0;--f:#f0a060;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'DM Sans',sans-serif;font-weight:300;
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+
+  /* ── TITLE SCREEN ── */
+  #screen-title{
+    max-width:600px;width:100%;
+    text-align:center;
+  }
+  .title-tag{
+    font-family:'DM Mono',monospace;font-size:10px;
+    color:var(--text-muted);letter-spacing:.25em;text-transform:uppercase;
+    margin-bottom:32px;
+  }
+  .title-main{
+    font-size:13px;font-weight:300;color:var(--text-dim);
+    line-height:2;margin-bottom:48px;
+    font-family:'DM Mono',monospace;
+  }
+  .title-main span{color:var(--text);}
+  .case-list{
+    display:flex;flex-direction:column;gap:1px;
+    background:var(--border);margin-bottom:32px;
+  }
+  .case-item{
+    background:var(--surface);padding:20px 24px;
+    display:flex;align-items:center;gap:16px;
+    cursor:pointer;transition:background .15s;
+    text-align:left;border:none;width:100%;color:var(--text);
+  }
+  .case-item:hover{background:var(--surface2);}
+  .case-num{
+    font-family:'DM Mono',monospace;font-size:10px;
+    color:var(--text-muted);letter-spacing:.1em;
+    flex-shrink:0;width:40px;
+  }
+  .case-info{flex:1;}
+  .case-title{font-size:14px;font-weight:400;margin-bottom:4px;}
+  .case-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);}
+  .case-axis{
+    font-family:'DM Mono',monospace;font-size:11px;
+    padding:2px 8px;border:1px solid;
+  }
+  .axis-phi{color:var(--phi);border-color:var(--phi);}
+  .axis-a{color:var(--a);border-color:var(--a);}
+  .axis-f{color:var(--f);border-color:var(--f);}
+  .title-note{
+    font-size:11px;color:var(--text-muted);line-height:1.8;
+    border-left:2px solid var(--border2);padding-left:14px;text-align:left;
+  }
+
+  /* ── GAME SCREEN ── */
+  #screen-game{
+    display:none;max-width:680px;width:100%;
+  }
+  .game-header{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--border);
+  }
+  .game-case-title{
+    font-family:'DM Mono',monospace;font-size:11px;
+    color:var(--text-muted);letter-spacing:.1em;
+  }
+  .game-back{
+    font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);
+    background:none;border:none;cursor:pointer;letter-spacing:.1em;
+    text-transform:uppercase;transition:color .15s;
+  }
+  .game-back:hover{color:var(--text);}
+
+  /* 數值列 */
+  .metrics-bar{
+    display:grid;grid-template-columns:1fr 1fr 1fr;
+    gap:1px;background:var(--border);margin-bottom:28px;
+  }
+  .metric-box{background:var(--surface);padding:12px 16px;}
+  .metric-label{
+    font-family:'DM Mono',monospace;font-size:9px;
+    letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;
+  }
+  .metric-bar-track{background:var(--border2);height:3px;width:100%;margin-bottom:5px;}
+  .metric-bar-fill{height:100%;transition:width .6s cubic-bezier(.4,0,.2,1);}
+  .metric-value{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim);}
+
+  /* 敘事區 */
+  .narrative-box{
+    background:var(--surface);border:1px solid var(--border);
+    padding:28px;margin-bottom:20px;min-height:160px;
+  }
+  .narrative-tag{
+    font-family:'DM Mono',monospace;font-size:9px;
+    color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;
+    margin-bottom:16px;
+  }
+  .narrative-text{
+    font-size:14px;color:var(--text-dim);line-height:2;
+    font-weight:300;
+  }
+  .narrative-text strong{color:var(--text);font-weight:400;}
+  .narrative-text em{
+    color:var(--text-muted);font-style:normal;
+    font-family:'DM Mono',monospace;font-size:12px;
+  }
+
+  /* 選項 */
+  .choices{display:flex;flex-direction:column;gap:1px;background:var(--border);margin-bottom:20px;}
+  .choice-btn{
+    background:var(--surface);border:none;
+    padding:16px 20px;text-align:left;cursor:pointer;
+    display:flex;align-items:baseline;gap:12px;
+    transition:background .15s;width:100%;color:var(--text);
+  }
+  .choice-btn:hover{background:var(--surface2);}
+  .choice-btn:disabled{opacity:.3;cursor:not-allowed;}
+  .choice-key{
+    font-family:'DM Mono',monospace;font-size:10px;
+    color:var(--text-muted);flex-shrink:0;width:20px;
+  }
+  .choice-text{font-size:13px;color:var(--text-dim);line-height:1.6;}
+  .choice-effect{
+    font-family:'DM Mono',monospace;font-size:10px;
+    margin-left:auto;flex-shrink:0;padding-left:12px;
+  }
+
+  /* 結局畫面 */
+  .ending-box{
+    background:var(--surface);border:1px solid var(--border);
+    padding:32px;margin-bottom:20px;
+  }
+  .ending-type{
+    font-family:'DM Mono',monospace;font-size:10px;
+    letter-spacing:.14em;text-transform:uppercase;
+    margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);
+  }
+  .ending-title{font-size:18px;font-weight:400;margin-bottom:16px;}
+  .ending-text{font-size:13px;color:var(--text-dim);line-height:1.9;}
+  .ending-quote{
+    font-family:'DM Mono',monospace;font-size:12px;
+    color:var(--text-muted);margin-top:20px;padding-top:16px;
+    border-top:1px solid var(--border);line-height:1.8;
+  }
+  .ending-metrics{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:1px;background:var(--border);margin-top:20px;
+  }
+  .ending-metric{
+    background:var(--surface2);padding:12px 14px;
+    font-family:'DM Mono',monospace;font-size:10px;
+  }
+  .ending-metric-label{color:var(--text-muted);margin-bottom:4px;}
+  .ending-metric-val{font-size:16px;}
+
+  .btn-restart{
+    background:none;border:1px solid var(--border2);
+    font-family:'DM Mono',monospace;font-size:11px;
+    color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;
+    padding:12px 20px;cursor:pointer;width:100%;
+    transition:border-color .15s,color .15s;
+  }
+  .btn-restart:hover{border-color:var(--text-dim);color:var(--text);}
+
+  .phase-indicator{
+    font-family:'DM Mono',monospace;font-size:9px;
+    color:var(--text-muted);text-align:right;margin-bottom:8px;
+    letter-spacing:.08em;
+  }
+
+  /* 淡入動畫 */
+  .fade-in{animation:fadeIn .4s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* 最終事件：背景變暗，文字變慢 */
+  .final-mode{background:#040404 !important;}
+  .final-mode .narrative-box{
+    background:#080808 !important;
+    border-color:#161616 !important;
+    transition:background 1.2s ease;
+  }
+  .final-mode .narrative-text{
+    animation:fadeInSlow 1.2s ease;
+  }
+  .final-mode .choice-btn{
+    background:#080808 !important;
+    animation:fadeInSlow 1.8s ease;
+  }
+  .final-mode .metrics-bar{opacity:0;pointer-events:none;transition:opacity 0.8s ease;}
+  .final-mode .phase-indicator{opacity:0;}
+  @keyframes fadeInSlow{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* 心態描寫 */
+  .inner-thought{
+    margin-top:20px;padding-top:16px;
+    border-top:1px solid var(--border);
+    font-size:12px;color:var(--text-muted);
+    line-height:1.9;font-style:italic;
+    font-family:'DM Sans',sans-serif;font-weight:300;
+  }
+  .inner-thought br{display:block;margin-bottom:4px;}
+
+  /* 報告按鈕 */
+  .btn-report{
+    background:none;border:1px solid var(--accent);
+    font-family:'DM Mono',monospace;font-size:11px;
+    color:var(--accent);letter-spacing:.1em;text-transform:uppercase;
+    padding:12px 20px;cursor:pointer;width:100%;
+    transition:background .15s,color .15s;
+  }
+  .btn-report:hover{background:var(--accent);color:#080808;}
+  .report-type-tag{
+    font-family:'DM Mono',monospace;font-size:10px;
+    letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:16px;
+    padding-bottom:12px;border-bottom:1px solid var(--border);
+  }
+  .report-main-type{
+    font-family:'DM Mono',monospace;font-size:28px;
+    font-weight:500;color:var(--text);margin-bottom:16px;line-height:1.2;
+  }
+  .report-desc{font-size:13px;color:var(--text-dim);line-height:1.9;margin-bottom:24px;}
+  .report-bars{margin-bottom:24px;}
+  .report-bar-row{margin-bottom:12px;}
+  .report-bar-label{
+    display:flex;justify-content:space-between;
+    font-family:'DM Mono',monospace;font-size:10px;
+    color:var(--text-muted);margin-bottom:5px;letter-spacing:.08em;
+  }
+  .report-bar-track{background:var(--border2);height:4px;width:100%;}
+  .report-bar-fill{height:100%;transition:width .8s cubic-bezier(.4,0,.2,1);}
+  .report-quote{
+    font-family:'DM Mono',monospace;font-size:12px;
+    color:var(--text-muted);border-left:2px solid var(--accent);
+    padding:12px 16px;margin:20px 0;line-height:1.8;
+  }
+  .report-residual{
+    background:var(--surface);border:1px solid var(--border);
+    padding:16px 20px;margin:20px 0;
+    font-family:'DM Mono',monospace;font-size:11px;
+    color:var(--text-muted);line-height:1.8;
+  }
+  .report-residual-label{
+    font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--text-muted);margin-bottom:8px;
+  }
+  .btn-copy{
+    background:none;border:1px solid var(--border2);
+    font-family:'DM Mono',monospace;font-size:10px;
+    color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;
+    padding:11px 18px;cursor:pointer;width:100%;margin-top:8px;
+    transition:border-color .15s,color .15s;
+  }
+  .btn-copy:hover{border-color:var(--text-dim);color:var(--text);}
+
+  @media(max-width:500px){
+    .metrics-bar{grid-template-columns:1fr;}
+    .game-header{flex-direction:column;align-items:flex-start;gap:10px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 標題畫面 -->
+<div id="screen-title">
+  <div class="title-tag">DSBM — Dyadic Symmetry-Bottleneck Model</div>
+
+  <div class="title-main">
+    <span>這不是愛情故事。</span><br>
+    這是關於結構的故事。<br><br>
+    三段關係。三種軸線。<br>
+    沒有對錯，只有<span>你的選擇</span>。
+  </div>
+
+  <div class="case-list">
+    <button class="case-item" onclick="startCase('A')">
+      <span class="case-num">CASE A</span>
+      <div class="case-info">
+        <div class="case-title">萬國之巔的寂寞</div>
+        <div class="case-sub">當資源不再稀缺，時間反而成為唯一的瓶頸</div>
+      </div>
+      <span class="case-axis axis-phi">φ 軸</span>
+    </button>
+    <button class="case-item" onclick="startCase('B')">
+      <span class="case-num">CASE B</span>
+      <div class="case-info">
+        <div class="case-title">時空的異位旅者</div>
+        <div class="case-sub">你們活在同一個世界，卻不在同一個時代</div>
+      </div>
+      <span class="case-axis axis-a">A 軸</span>
+    </button>
+    <button class="case-item" onclick="startCase('C')">
+      <span class="case-num">CASE C</span>
+      <div class="case-info">
+        <div class="case-title">深宮的引力陷阱</div>
+        <div class="case-sub">這不是兩個人的問題，而是兩個世界的問題</div>
+      </div>
+      <span class="case-axis axis-f">F 軸</span>
+    </button>
+  </div>
+
+  <div id="report-btn-area" style="display:none;margin-bottom:20px;">
+    <button class="btn-report" onclick="showGlobalReport()">▸ 查看行為結構分析報告</button>
+  </div>
+  <div class="title-note">
+    本作品情境設計參考真實社會結構案例，所有角色均為虛構，不代表任何真實人物。<br>
+    本工具基於二元對稱瓶頸模型（DSBM v3.0），結果僅供結構性參考。
+  </div>
+</div>
+
+<!-- 報告畫面 -->
+<div id="screen-report" style="display:none;max-width:680px;width:100%;">
+  <div class="game-header">
+    <div class="game-case-title" style="color:var(--accent);">DSBM — 行為結構分析報告</div>
+    <button class="game-back" onclick="closeReport()">← 返回</button>
+  </div>
+  <div id="report-content"></div>
+</div>
+
+<!-- 遊戲畫面 -->
+<div id="screen-game">
+  <div class="game-header">
+    <div class="game-case-title" id="game-case-label">—</div>
+    <button class="game-back" onclick="goTitle()">← 返回</button>
+  </div>
+
+  <div class="metrics-bar">
+    <div class="metric-box">
+      <div class="metric-label" style="color:var(--phi);">φ 貢獻對稱</div>
+      <div class="metric-bar-track">
+        <div class="metric-bar-fill" id="bar-phi" style="background:var(--phi);width:70%"></div>
+      </div>
+      <div class="metric-value" id="val-phi">0.70</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-label" style="color:var(--a);">A 年齡內耗</div>
+      <div class="metric-bar-track">
+        <div class="metric-bar-fill" id="bar-a" style="background:var(--a);width:20%"></div>
+      </div>
+      <div class="metric-value" id="val-a">20%</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-label" style="color:var(--f);">W 內耗值</div>
+      <div class="metric-bar-track">
+        <div class="metric-bar-fill" id="bar-w" style="background:var(--red);width:30%"></div>
+      </div>
+      <div class="metric-value" id="val-w">0.30</div>
+    </div>
+  </div>
+
+  <div class="phase-indicator" id="phase-indicator">— / —</div>
+
+  <div class="narrative-box fade-in" id="narrative-box">
+    <div class="narrative-tag" id="narrative-tag">情境</div>
+    <div class="narrative-text" id="narrative-text">載入中…</div>
+  </div>
+
+  <div class="choices" id="choices-box"></div>
+  <div id="ending-area"></div>
+</div>
+
+<script>
+// ── 全域統計資料 ──
+const GLOBAL = {
+  tags: { avoid: 0, face: 0, sacrifice: 0, honest: 0 },
+  history: [],
+  completedCases: {},
+  finalPhi: {}
+};
+
+// ── 遊戲狀態 ──
+let state = {
+  caseId: null,
+  phase: 0,
+  phi: 0.70,
+  a: 0.20,
+  w: 0.30,
+  flags: {}
+};
+
+// ── 案例資料 ──
+const CASES = {
+
+  A: {
+    label: 'CASE A — 萬國之巔的寂寞',
+    initPhi: 0.72, initA: 0.18,
+    phases: [
+      {
+        tag: '開場',
+        text: '你們曾經一起從什麼都沒有開始。<br><br>那時候，你們的時間一樣多，收入一樣少。<br>一起加班，一起吃便當，一起說「等我們有錢了」。<br><br>現在，你們真的有錢了。<br><br>只是時間不再一樣了。<br><br><em>到最後，連彼此也不一樣了。</em>',
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 01 — 升遷機會',
+        inner: '你看著對方說出「你決定就好」。<br>你不確定那是信任，還是沉默。',
+        text: '公司提出新的職位。薪資翻倍，但你需要常態出差，每個月在家的時間不超過十天。<br><br>對方沉默了一會兒，說：<strong>「你決定就好。」</strong><br><br><em>你不確定這句話是支持，還是放棄。</em>',
+        choices: [
+          { text: '接受升遷', effect: '收入↑↑　時間↓↓', delta: { phi: -0.10 }, flag: 'promoted', tags: ['avoid'] },
+          { text: '拒絕升遷', effect: '關係壓力↓　但長期焦慮', delta: { phi: +0.05 }, flag: 'stayed', tags: ['face'] },
+          { text: '「這只是暫時的，等這個階段過了就好了。」', effect: '預支未來感', delta: { phi: -0.05 }, flag: 'temporary', tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 02 — 補償性消費的幻覺',
+        inner: '那個禮物還放在桌上，沒有拆。<br>你買它的時候，以為它可以代替你出現。',
+        text: '結婚周年紀念日，你因為專案上線無法離開公司。<br><br>你訂了一個超出預算的禮物，請快遞送到家裡。<br><br>晚上你打開家門，看到禮物放在桌上，沒有拆。<br><br>對方說：「謝謝。但你不在，我一個人開這個禮物，很奇怪。」<br><br><em>那個沒有拆開的禮物，比任何爭吵都更清楚地說明了你們現在的距離。</em>',
+        choices: [
+          { text: '「下次我一定會在。」', effect: '承諾，但承諾是有期限的', delta: { phi: +0.02 }, tags: ['avoid'] },
+          { text: '「你為什麼不拆？那是我特別挑的。」', effect: '防禦', delta: { phi: -0.08 }, tags: ['avoid'] },
+          { text: '沉默，坐下來，握住對方的手', effect: '沒有解決任何事，但在一起', delta: { phi: +0.01 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '事件 03 — 對方的沉默',
+        inner: '「你吃飯了嗎。」<br><br>四個字。沒有問號。<br><br>你不知道怎麼讀這句話。',
+        text: '你回家的那個晚上，燈是開著的，但對方已經睡了。<br><br>桌上有一張便條紙，只寫著：<strong>「你吃飯了嗎。」</strong><br><br>你站在那裡很久。<br><br><em>你不知道這是關心，還是距離。</em>',
+        choices: [
+          { text: '明天好好解釋', effect: '短期緩和', delta: { phi: +0.03 }, tags: ['face'] },
+          { text: '當作沒看到，先睡', effect: '內耗累積', delta: { phi: -0.08 }, tags: ['avoid'] },
+          { text: '現在叫醒對方', effect: '但至少你還在嘗試', delta: { phi: -0.02 }, tags: ['honest'] }
+        ]
+      },
+      {
+        tag: '一年後',
+        text: '有些事你們沒有說清楚。<br><br>只是都默認了，這就是現在的生活。<br><br><em>默認，有時候比爭吵更難修復。</em>',
+        isTransition: true,
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 04 — 對方的反擊',
+        inner: '不是商量，是告知。<br><br>你愣住，不是因為反對。<br>只是你發現，這個決定是在你不在的時間裡長出來的。',
+        text: '某天晚上，對方說：<br><br><strong>「我決定回去念書。」</strong><br><br>不是商量，是告知。<br><br>你愣住了。不是因為你反對。<br><br>而是因為你意識到——這是對方在你缺席的時間裡，自己做的決定。<br><br>這些年，你在你的世界裡衝刺。對方也在沒有你的世界裡，長成了一個你不太認識的人。<br><br><em>你突然意識到，你買給對方的那些禮物，變成了對方離開你的底氣。</em>',
+        choices: [
+          { text: '「我支持你，但我們要重新調整。」', effect: '試著重新平衡', delta: { phi: +0.04 }, tags: ['face'] },
+          { text: '「現在嗎？我們需要這份薪水。」', effect: '忽視了對方的需求', delta: { phi: -0.06 }, tags: ['avoid'] },
+          { text: '「你是故意的嗎？」', effect: '防禦，關係張力瞬間升高', delta: { phi: -0.12 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 05 — 臨界點',
+        inner: '這句話沒有憤怒。<br>你反而不知道該怎麼回答。',
+        text: '某個週日的下午，對方突然問：<br><br><strong>「我們現在，到底算什麼？」</strong><br><br>這句話沒有憤怒，沒有眼淚。<br>只有一種你說不清楚的疲憊。<br><br><em>φ = {phi}　W = {w}</em>',
+        choices: [
+          { text: '「我們需要談談。」', effect: '嘗試重構', delta: { phi: +0.08 }, tags: ['face', 'honest'] },
+          { text: '「你想要什麼？」', effect: '把決定交出去', delta: { phi: -0.02 }, tags: ['sacrifice'] },
+          { text: '沉默', effect: '一切保持原狀', delta: { phi: -0.12 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 06 — 最後的選擇',
+        text: '你們坐在同一個空間裡。<br><br>都知道，這次對話的結果，會決定接下來的方向。<br><br>沒有人先開口。<br><br>窗外的聲音很遠。<br><br><em>你問自己：當初那個說「等我們有錢了」的人，現在還在嗎。</em>',
+        isFinal: true,
+        choices: [
+          { text: '「我願意放慢一點。為了我們。」', effect: null, delta: { phi: +0.08 } },
+          { text: '「我不知道我們還有沒有辦法回到原來。」', effect: null, delta: { phi: -0.05 } },
+          { text: '「我覺得，我們都累了。」', effect: null, delta: { phi: -0.15 } }
+        ]
+      }
+    ],
+    endings: [
+      {
+        condition: phi => phi < 0.45,
+        type: '結構崩潰',
+        typeColor: 'var(--red)',
+        title: '沒有爭吵，只剩結束',
+        text: '你們沒有大吵。沒有摔門，沒有眼淚，沒有那種電影裡的戲劇性結局。<br><br>只是某一天，你們都同意，這樣繼續下去對誰都不公平。<br><br>最後一次對話很短。你們都說了「謝謝」，然後各自離開。',
+        quote: '「不是不愛，是結構上撐不住了。」',
+        quoteColor: 'var(--red)'
+      },
+      {
+        condition: phi => phi >= 0.45 && phi < 0.65,
+        type: '功能性關係',
+        typeColor: 'var(--yellow)',
+        title: '我們運作良好，只是不再靠近',
+        text: '你們沒有分開。帳單按時繳，家務有人做，朋友面前看起來很好。<br><br>只是那種「你懂我」的感覺，已經消失很久了。<br><br>你們都知道，但都沒有說出口。',
+        quote: '「維持，是一種選擇。只是不知道，這個選擇對誰更殘忍。」',
+        quoteColor: 'var(--yellow)'
+      },
+      {
+        condition: phi => phi >= 0.65,
+        type: '重構平衡',
+        typeColor: 'var(--green)',
+        title: '你們沒有贏過世界，但留下了彼此',
+        text: '你放棄了一部分的成功。對方放棄了一部分的期待。<br><br>這不是完美的結局。你們有時候還是會吵，有時候還是會累。<br><br>但有些夜晚，你們還是會在同一盞燈下，說一些無關緊要的事。',
+        quote: '「平衡不是找到的，是選擇的。」',
+        quoteColor: 'var(--green)'
+      }
+    ]
+  },
+
+  B: {
+    label: 'CASE B — 時空的異位旅者',
+    initPhi: 0.68, initA: 0.42,
+    phases: [
+      {
+        tag: '開場',
+        text: '你們第一次見面的時候，你注意到的不是年齡。<br><br>而是那種說話的感覺——<br>對世界還帶著好奇，卻又像早已看透很多事。<br><br>你以為這就是默契。<br><br><em>你沒有意識到，你們從一開始，就活在不同的時間裡。</em>',
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 01 — 人生節點衝突',
+        inner: '你正在慶祝一件事。對方在說另一件事。<br>不是不關心。只是你們現在在意的東西，不太一樣了。',
+        text: '你正準備慶祝晉升。對方卻在餐桌上聊起這週第幾次感到腰椎痠痛。<br><br>你感受到的不是厭煩。<br><br>是一種很輕，但揮不掉的念頭——<br>你們正在談不同的人生。',
+        choices: [
+          { text: '強裝熱情，分享喜悅', effect: 'φ 偏移', delta: { phi: -0.04 }, tags: ['avoid'] },
+          { text: '放下話題，關心對方', effect: '短期緩和', delta: { phi: -0.02 }, tags: ['sacrifice'] },
+          { text: '說出你的不安', effect: '關係張力升高', delta: { phi: +0.03 }, tags: ['honest'] }
+        ]
+      },
+      {
+        tag: '事件 02 — 社會的視線',
+        inner: '「請問是陪長輩來用餐嗎？」<br><br>那個數字，第一次不只是你們之間的事。<br>別人也看得見了。',
+        text: '結帳時，服務生問你們：「請問是陪長輩來用餐嗎？」<br><br>空氣凝固了三秒。<br><br>沒有人糾正。<br><br>那個數字，第一次不是你們之間的事。<br><br>回家的路上，誰也沒有再提那句話。',
+        choices: [
+          { text: '笑著帶過，假裝沒事', effect: 'A 內耗增加', delta: { a: +0.03 }, tags: ['avoid'] },
+          { text: '當場糾正服務生', effect: '短暫團結，事後尷尬', delta: { phi: +0.02 }, tags: ['face'] },
+          { text: '回家後主動提起', effect: '需要勇氣', delta: { phi: +0.04 }, tags: ['honest', 'face'] }
+        ]
+      },
+      {
+        tag: '兩年後',
+        text: '你們還在一起。<br><br>很多事沒有解決。只是變得比較習慣了。<br><br><em>習慣，有時候是溫柔，有時候是麻木。你不確定你們是哪一種。</em>',
+        isTransition: true,
+        aChange: -0.05,
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 03 — 你開始想要的東西變了',
+        inner: '你說了很多。<br>說到一半，你才發現對方一直很安靜。<br><br>你們現在擔心的事，好像不太一樣了。',
+        text: '朋友問你最近在忙什麼。你說了很多，說到一半，突然意識到——對方從來沒問過你這個問題。<br><br>不是因為不關心。是因為對方已經不在那個「什麼都想嘗試」的階段了。<br><br>你們開始為不同的事情焦慮。<br><br>而那些事情，彼此無關。',
+        choices: [
+          { text: '告訴對方你現在想要的東西', effect: '差距更清楚', delta: { phi: +0.03 }, tags: ['honest'] },
+          { text: '繼續維持表面的和諧', effect: '內耗累積', delta: { phi: -0.05 }, tags: ['avoid'] },
+          { text: '找朋友說，沒有跟對方說', effect: '關係出現空隙', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 04 — 對方第一次說出那個數字',
+        inner: '「我有時候……會怕跟不上你。」<br><br>你第一次聽見那件事被說出口。<br>原來你們一直都知道，只是沒有人提。',
+        text: '對方某天停下來，輕聲說：<br><br><strong>「我有時候……會怕跟不上你。」</strong><br><br>那不是抱怨。<br><br>是第一次，你聽見限制被說出來。<br><br>不是感覺。<br>是現實。',
+        choices: [
+          { text: '「不會的，你很好。」', effect: '安慰，但迴避了問題', delta: { phi: -0.03 }, tags: ['avoid'] },
+          { text: '「那我們慢一點。」', effect: '你壓縮了自己', delta: { phi: +0.05 }, tags: ['sacrifice'] },
+          { text: '沉默，然後握住對方的手', effect: '沒有答案，但在一起', delta: { phi: +0.01 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '五年後',
+        text: '你們撐過了很多。<br><br>有些問題沒有消失。只是走到了必須面對的地方。<br><br><em>有些差距看起來變小了。但你們都知道，那不是答案。</em>',
+        isTransition: true,
+        aChange: -0.07,
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 05 — 退休與衝刺的交叉點',
+        inner: '對方想慢下來。你還想再衝一段。<br><br>你們沒有爭吵。只是第一次清楚地看見——你們正在走向不同的速度。',
+        text: '對方說，想開始規劃退休後的生活。<br><br>你還在職涯裡最重要的階段，還有很多事想做。<br><br>你第一次清楚地意識到——你們正在走向不同的速度。<br><br>而且這次，沒有辦法假裝看不見。',
+        choices: [
+          { text: '「我支持你，你想怎麼規劃？」', effect: '表面支持，內心焦慮', delta: { phi: -0.03 }, tags: ['sacrifice'] },
+          { text: '「可以再等我幾年嗎？」', effect: '把壓力給對方', delta: { phi: -0.06 }, tags: ['avoid'] },
+          { text: '「我們需要認真談一次。」', effect: '正面面對', delta: { phi: +0.04 }, tags: ['face', 'honest'] }
+        ]
+      },
+      {
+        tag: '事件 06 — 未來的藍圖不在同一張紙上',
+        inner: '你想再拼幾年。對方已經開始想退休後的生活了。<br><br>你忽然發現，你們不是想法不同。<br>只是已經走到不同的人生階段了。',
+        text: '你想再拼幾年，然後再考慮下一步。<br><br>對方說：「我已經想好退休後要過的生活了。」<br><br>不是爭吵。只是某個平靜的夜晚，你們清楚地意識到——對「未來」的想像，已經不在同一張紙上了。<br><br>這個差距一直都在。<br><br>只是你們終於不能再忽略它了。',
+        choices: [
+          { text: '「那我們各自過各自想要的生活？」', effect: '走向分開', delta: { phi: -0.10 }, tags: ['honest'] },
+          { text: '「我可以調整我的計畫。」', effect: '犧牲自己', delta: { phi: -0.08 }, tags: ['sacrifice'] },
+          { text: '「我們能不能找到一個都還好的版本？」', effect: '沒有保證', delta: { phi: +0.03 }, tags: ['face'] }
+        ]
+      },
+      {
+        tag: '事件 07 — 最後的選擇',
+        inner: '你看著對方，想起你們第一次見面的樣子。<br><br>那時候你注意到的不是年齡，是那種說話的感覺。<br>你以為那樣就夠了。',
+        text: '某個普通的早晨，你們都沒有說話。<br><br>不是冷戰。只是那種，說了很多年之後，有些話變得很重，不是隨便就能說出口的。<br><br>你看著對方，想起你們第一次見面的樣子。<br><br>那時候，你沒有想過會走到這裡。<br><br><em>如果再選一次，你還會走到這裡嗎。</em>',
+        choices: [
+          { text: '「我們繼續。不管接下來怎樣。」', effect: '走向共振結局', delta: { phi: +0.05 } },
+          { text: '「我需要誠實地說，我不確定了。」', effect: '走向階段性結局', delta: { phi: -0.05 } },
+          { text: '「我覺得我們都需要放開了。」', effect: '走向錯位瓦解結局', delta: { phi: -0.15 } }
+        ]
+      }
+    ],
+    endings: [
+      {
+        condition: (phi, a) => phi < 0.50,
+        type: '錯位瓦解',
+        typeColor: 'var(--red)',
+        title: '你們沒有錯，只是不在同一段時間',
+        text: '最後一次對話，你們都很冷靜。<br><br>沒有誰是壞人。只是你們對「接下來」的想像，已經不在同一個方向了。<br><br>你離開的時候，回頭看了一眼。對方站在那裡，很像第一次見面的樣子。',
+        quote: '「有些人，是為了某一段時間而出現的，不是一生。」',
+        quoteColor: 'var(--red)'
+      },
+      {
+        condition: (phi, a) => phi >= 0.50 && phi < 0.68,
+        type: '階段性陪伴',
+        typeColor: 'var(--yellow)',
+        title: '你們選擇同行一段，而不是一生',
+        text: '你們沒有分開，但你們也不再假裝這段關係是永恆的。<br><br>每一天，你們都在選擇繼續。不是因為確定，是因為現在，這樣還好。<br><br>這也是一種答案。',
+        quote: '「不承諾永遠，只承諾今天。」',
+        quoteColor: 'var(--yellow)'
+      },
+      {
+        condition: (phi, a) => phi >= 0.68,
+        type: '共振',
+        typeColor: 'var(--green)',
+        title: '你們沒有同步，但學會共振',
+        text: '你們不在同一個時間點，但你們找到了一種方式，在不同的節奏裡，仍然感受到對方。<br><br>這不容易。你們都為此付出了一些東西。<br><br>但有時候，差異本身，就是一種養分。',
+        quote: '「不同步，不代表不在一起。」',
+        quoteColor: 'var(--green)'
+      }
+    ]
+  },
+
+  C: {
+    label: 'CASE C — 深宮的引力陷阱',
+    initPhi: 0.65, initA: 0.22,
+    phases: [
+      {
+        tag: '開場',
+        text: '你第一次去對方家的時候，你注意到一些細節。<br><br>不是壞事。<br>只是那些細節，和你成長的環境，完全不同。<br><br>你沒有說什麼，對方也沒有。<br><br>你們都以為，不需要討論這些。<br><br><em>後來才知道——你們低估了重力。</em>',
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 01 — 進入對方的世界',
+        inner: '你站在那個空間裡，試著讓自己看起來自然。<br>但你知道，真正自然的時候，是不需要這樣努力的。',
+        text: '對方帶你去參加一個聚會。<br><br>大家的對話很流暢。話題從投資、房產，到一些你不太熟悉的生活方式。<br><br>你不是聽不懂。只是很難加入。<br><br>有人禮貌地問你幾句，你回答了。對方微笑，點頭，然後話題自然地流走。<br><br><em>那一刻，你沒有被排斥。但你知道，你也沒有被包含。</em>',
+        choices: [
+          { text: '試著多說一些，讓自己融入', effect: '內耗增加', delta: { phi: +0.03 }, tags: ['sacrifice'] },
+          { text: '安靜待在對方身邊', effect: '不勉強自己', delta: { phi: +0.01 }, tags: ['avoid'] },
+          { text: '提早離開', effect: '距離感增加', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 02 — 那些不需要解釋的規則',
+        inner: '你看著對方在那些規則裡流暢地移動。<br>那些東西沒有被說明，卻一直都在。',
+        text: '用餐的時候，你注意到一些細節。<br><br>誰先動筷、誰幫誰夾菜、什麼時候該說話、什麼時候不該。<br><br>沒有人教你。但每個人都知道。<br><br>你看著對方，自然地在這些規則裡移動。<br><br><em>那一刻你意識到——有些東西，不是學會就算理解。</em>',
+        choices: [
+          { text: '事後問對方那些規則', effect: '距離被命名', delta: { phi: +0.03 }, tags: ['honest'] },
+          { text: '記下來，下次不要出錯', effect: '內耗累積', delta: { phi: -0.02 }, tags: ['sacrifice'] },
+          { text: '假裝沒注意到', effect: '差距維持', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 03 — 價值觀的碰撞',
+        inner: '「在我們家不是這樣做的。」<br><br>你沒有反駁。<br><br>只是突然意識到——你們背後，各自站著一個世界。<br>那些世界有自己的邏輯，也各自覺得理所當然。',
+        text: '你們在討論一件生活決定。<br><br>你提出你的想法。<br><br>對方停了一下，說：<br><br><strong>「這種事情，在我們家不是這樣做的。」</strong><br><br>語氣很平靜。沒有否定你。<br><br><em>只是那句話裡，有一個你進不去的世界。</em>',
+        choices: [
+          { text: '「那你們家是怎麼做的？」', effect: '差距被放大', delta: { phi: +0.04 }, tags: ['honest', 'face'] },
+          { text: '「我們可以找中間的方法。」', effect: '試著折衷', delta: { phi: +0.02 }, tags: ['face'] },
+          { text: '讓步', effect: '內耗增加', delta: { phi: -0.05 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '事件 04 — 你看見對方的另一個樣子',
+        inner: '你一直以為你很了解對方。<br>但現在這個人，有一點點不一樣。<br><br>不是假裝。只是你以前沒看過。',
+        text: '某次你去對方家吃飯。<br><br>你發現對方變得不太一樣。<br><br>說話更小心，回應更快，有些你熟悉的表情不見了。<br><br>那不是不自然。是另一種自然。<br><br><em>你突然意識到——在這個地方，你看到的對方，和你平常認識的那個人，不完全一樣。</em>',
+        choices: [
+          { text: '事後問對方', effect: '對方有點疲憊', delta: { phi: +0.03 }, tags: ['honest'] },
+          { text: '當作沒發現', effect: '距離累積', delta: { phi: -0.02 }, tags: ['avoid'] },
+          { text: '開始調整自己在這個環境的樣子', effect: '內耗增加', delta: { phi: -0.03 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '事件 05 — 對方的家人',
+        inner: '你分不出那些話，是轉述，還是對方的一部分。<br>而你不確定，這兩者是不是其實沒有差別。',
+        text: '某天，對方提起家人的想法。<br><br>沒有直接反對。只是一些「擔心」。<br><br>擔心你們未來的生活方式。擔心價值觀會不會有落差。<br><br>對方說這些話的時候，很平靜。<br><br><em>你分不出來——那是轉述，還是已經內化。</em>',
+        choices: [
+          { text: '「那你的想法是什麼？」', effect: '正面面對', delta: { phi: +0.04 }, tags: ['face', 'honest'] },
+          { text: '「他們不了解我。」', effect: '關係張力升高', delta: { phi: -0.06 }, tags: ['avoid'] },
+          { text: '沉默', effect: '問題懸著', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 06 — 你的家人',
+        inner: '你的家人說的那些話，都很合理。<br>你沒有辦法反駁。<br><br>那一刻你才發現——你不是一個人在做選擇。<br>你背後，也站著一個世界。',
+        text: '你的家人也問了。<br><br>問的方式不一樣，但意思很接近。<br><br>他們說，他們不是反對。只是希望你想清楚。<br><br>他們舉了一些例子。都很合理。<br><br><em>合理到你沒有辦法反駁。</em><br><br>那一刻你意識到——這不是你一個人的選擇。',
+        choices: [
+          { text: '「我會處理好。」', effect: '壓力內化', delta: { phi: +0.02 }, tags: ['sacrifice'] },
+          { text: '開始懷疑', effect: 'φ 偏移', delta: { phi: -0.05 }, tags: ['honest'] },
+          { text: '避免再談這個話題', effect: '問題擱置', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 07 — 最後的選擇',
+        inner: '你們坐在一起，什麼都沒說。<br><br>那些片段一個一個浮上來——那個空間、那張餐桌、那句話、那個你不熟悉的對方。<br><br>沒有一件事是誰的錯。<br>但它們還是把你們帶到了這裡。',
+        text: '某一天，你們只是坐在一起。<br><br>沒有爭吵。沒有人提起家人。也沒有任何需要做決定的事情。<br><br>一切都很平靜。<br><br>只是那些沒有解決的東西，仍然在那裡。你們都知道。<br><br>不是不知道怎麼解決。是不知道，有沒有辦法解決。<br><br><em>你看著對方，然後你問自己：如果沒有任何人反對，我們真的就沒有問題了嗎。</em>',
+        isFinal: true,
+        choices: [
+          { text: '「我們再試試看。」', effect: null, delta: { phi: +0.08 } },
+          { text: '「也許我們可以這樣維持。」', effect: null, delta: { phi: -0.03 } },
+          { text: '「也許這不是我們能解決的事。」', effect: null, delta: { phi: -0.15 } }
+        ]
+      }
+    ],
+    endings: [
+      {
+        condition: phi => phi < 0.45,
+        type: '被結構吞沒',
+        typeColor: 'var(--red)',
+        title: '你們沒有輸給彼此，而是輸給了起點',
+        text: '沒有人做錯什麼。沒有爭吵，沒有崩潰。<br><br>只是某一天，你們都理解了一件事：有些距離，不是努力可以縮短的。<br><br>你們沒有輸給彼此。你們輸給的是起點。',
+        quote: '「有些牆，不是用來翻越的，是用來讓你知道，你在哪一側。」',
+        quoteColor: 'var(--red)'
+      },
+      {
+        condition: phi => phi >= 0.45 && phi < 0.65,
+        type: '邊緣共存',
+        typeColor: 'var(--yellow)',
+        title: '你們在同一個世界裡，但不在同一層',
+        text: '你們沒有分開。也沒有真正跨越那些差距。<br><br>你們學會在一些地方退讓，在一些地方不談。生活可以繼續。<br><br>只是有些部分，永遠保持著距離。你們在同一個世界裡，但不在同一層。',
+        quote: '「你們不是走錯了路。只是走在不同的座標上。」',
+        quoteColor: 'var(--yellow)'
+      },
+      {
+        condition: phi => phi >= 0.65,
+        type: '對抗引力',
+        typeColor: 'var(--green)',
+        title: '這不是克服重力，是學會與它共存',
+        text: '你們沒有否認那些差距。也沒有假裝它們不存在。<br><br>你們只是選擇，在每一次出現的時候，都重新做一次選擇。<br><br>這很累。也沒有保證。但有些時候，你們會發現——即使在不同的起點，也可以走出一小段共同的路。',
+        quote: '「這不是克服重力，是學會與它共存。」',
+        quoteColor: 'var(--green)'
+      }
+    ]
+  }
+};
+
+// ── 工具函式 ──
+function updateMetrics() {
+  const phi = Math.max(0, Math.min(1, state.phi));
+  const a   = Math.max(0, Math.min(1, state.a));
+  const w   = 1 - phi;
+
+  document.getElementById('bar-phi').style.width = (phi * 100) + '%';
+  document.getElementById('bar-a').style.width   = (a * 100) + '%';
+  document.getElementById('bar-w').style.width   = (w * 100) + '%';
+  document.getElementById('val-phi').textContent = phi.toFixed(2);
+  document.getElementById('val-a').textContent   = (a * 100).toFixed(0) + '%';
+  document.getElementById('val-w').textContent   = w.toFixed(2);
+
+  const phiBar = document.getElementById('bar-phi');
+  phiBar.style.background = phi >= 0.65 ? 'var(--green)' : phi >= 0.50 ? 'var(--yellow)' : 'var(--red)';
+}
+
+function renderNarrative(phaseData) {
+  const box  = document.getElementById('narrative-box');
+  const tag  = document.getElementById('narrative-tag');
+  const text = document.getElementById('narrative-text');
+  const caseData = CASES[state.caseId];
+  const total = caseData.phases.length;
+
+  document.getElementById('phase-indicator').textContent =
+    `階段 ${state.phase + 1} / ${total}`;
+
+  tag.textContent = phaseData.tag;
+  let t = phaseData.text
+    .replace('{phi}', state.phi.toFixed(2))
+    .replace('{a}', (state.a * 100).toFixed(0) + '%')
+    .replace('{w}', (1-state.phi).toFixed(2));
+
+  // 心態描寫（選項出現前的內心獨白）
+  if (phaseData.inner) {
+    t += `<div class="inner-thought">${phaseData.inner}</div>`;
+  }
+
+  text.innerHTML = t;
+
+  box.classList.remove('fade-in');
+  void box.offsetWidth;
+  box.classList.add('fade-in');
+}
+
+function renderChoices(phaseData) {
+  const box = document.getElementById('choices-box');
+  box.innerHTML = '';
+
+  phaseData.choices.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+
+    const key  = document.createElement('span');
+    key.className = 'choice-key';
+    key.textContent = String.fromCharCode(65 + i);
+
+    const txt  = document.createElement('span');
+    txt.className = 'choice-text';
+    txt.textContent = ch.text;
+
+    btn.appendChild(key);
+    btn.appendChild(txt);
+
+    if (ch.effect) {
+      const eff = document.createElement('span');
+      eff.className = 'choice-effect';
+      eff.textContent = ch.effect;
+      eff.style.color = 'var(--text-muted)';
+      btn.appendChild(eff);
+    }
+
+    btn.onclick = () => makeChoice(ch);
+    box.appendChild(btn);
+  });
+}
+
+function makeChoice(choice) {
+  // 記錄行為標籤
+  recordTags(choice);
+  GLOBAL.history.push({ case: state.caseId, choice: choice.text });
+
+  if (choice.delta) {
+    if (choice.delta.phi) state.phi += choice.delta.phi;
+    if (choice.delta.a)   state.a   += choice.delta.a;
+  }
+  if (choice.flag) state.flags[choice.flag] = true;
+
+  state.phi = Math.max(0.10, Math.min(1, state.phi));
+  state.a   = Math.max(0, Math.min(1, state.a));
+
+  updateMetrics();
+  state.phase++;
+
+  const caseData = CASES[state.caseId];
+  if (state.phase >= caseData.phases.length) {
+    showEnding();
+  } else {
+    renderPhase();
+  }
+}
+
+function renderPhase() {
+  const caseData = CASES[state.caseId];
+  const phaseData = caseData.phases[state.phase];
+
+  // 最終事件：隱藏儀表板，背景變暗
+  if (phaseData.isFinal) {
+    document.getElementById('screen-game').classList.add('final-mode');
+    document.getElementById('narrative-tag').style.color = 'var(--text-muted)';
+    document.getElementById('phase-indicator').textContent = '';
+  } else {
+    document.getElementById('screen-game').classList.remove('final-mode');
+  }
+
+  // 過場處理：自動套用A值變化，顯示特殊樣式
+  if (phaseData.isTransition) {
+    if (phaseData.aChange) {
+      state.a = Math.max(0, Math.min(1, state.a + phaseData.aChange));
+      updateMetrics();
+    }
+    document.getElementById('narrative-tag').style.color = 'var(--a)';
+    document.getElementById('phase-indicator').textContent =
+      '── ' + phaseData.tag + ' ──';
+  } else {
+    document.getElementById('narrative-tag').style.color = 'var(--text-muted)';
+    const eventNum = caseData.phases
+      .slice(0, state.phase + 1)
+      .filter(p => !p.isTransition).length;
+    const eventTotal = caseData.phases.filter(p => !p.isTransition).length;
+    document.getElementById('phase-indicator').textContent =
+      '事件 ' + eventNum + ' / ' + eventTotal;
+  }
+
+  renderNarrative(phaseData);
+  renderChoices(phaseData);
+  document.getElementById('ending-area').innerHTML = '';
+}
+
+function showEnding() {
+  const caseData = CASES[state.caseId];
+  let ending = null;
+
+  for (const e of caseData.endings) {
+    if (e.condition(state.phi, state.a)) {
+      ending = e;
+      break;
+    }
+  }
+  if (!ending) ending = caseData.endings[caseData.endings.length - 1];
+
+  // 清除選項
+  document.getElementById('choices-box').innerHTML = '';
+  document.getElementById('narrative-box').style.display = 'none';
+  document.getElementById('phase-indicator').textContent = '結局';
+
+  // 記錄案例完成
+  GLOBAL.completedCases[state.caseId] = true;
+  GLOBAL.finalPhi[state.caseId] = state.phi;
+
+  // 解鎖報告按鈕
+  document.getElementById('report-btn-area').style.display = 'block';
+
+  const area = document.getElementById('ending-area');
+  area.innerHTML = `
+    <div class="ending-box fade-in">
+      <div class="ending-type" style="color:${ending.typeColor};">${ending.type}</div>
+      <div class="ending-title">${ending.title}</div>
+      <div class="ending-text">${ending.text}</div>
+      <div class="ending-metrics">
+        <div class="ending-metric">
+          <div class="ending-metric-label">φ 最終值</div>
+          <div class="ending-metric-val" style="color:${state.phi >= 0.65 ? 'var(--green)' : state.phi >= 0.50 ? 'var(--yellow)' : 'var(--red)'};">${state.phi.toFixed(2)}</div>
+        </div>
+        <div class="ending-metric">
+          <div class="ending-metric-label">A 年齡內耗</div>
+          <div class="ending-metric-val" style="color:var(--a);">${(state.a * 100).toFixed(0)}%</div>
+        </div>
+        <div class="ending-metric">
+          <div class="ending-metric-label">W 結構內耗</div>
+          <div class="ending-metric-val" style="color:var(--red);">${(1 - state.phi).toFixed(2)}</div>
+        </div>
+      </div>
+      <div class="ending-quote" style="color:${ending.quoteColor};">${ending.quote}</div>
+    </div>
+    <button class="btn-restart" onclick="goTitle()">← 返回選擇其他案例</button>
+  `;
+}
+
+// ── 流程控制 ──
+function startCase(id) {
+  const caseData = CASES[id];
+  state = {
+    caseId: id,
+    phase: 0,
+    phi: caseData.initPhi,
+    a: caseData.initA,
+    w: 1 - caseData.initPhi,
+    flags: {}
+  };
+
+  document.getElementById('game-case-label').textContent = caseData.label;
+  document.getElementById('screen-title').style.display = 'none';
+  document.getElementById('screen-game').style.display = 'block';
+  document.getElementById('narrative-box').style.display = 'block';
+  document.getElementById('ending-area').innerHTML = '';
+
+  updateMetrics();
+  renderPhase();
+  window.scrollTo(0, 0);
+}
+
+// ── 行為記錄 ──
+function recordTags(choice) {
+  if (!choice.tags) return;
+  choice.tags.forEach(tag => {
+    if (GLOBAL.tags[tag] !== undefined) GLOBAL.tags[tag]++;
+  });
+}
+
+// ── 報告生成 ──
+function generateReport() {
+  const { avoid, face, sacrifice, honest } = GLOBAL.tags;
+  const total = avoid + face + sacrifice + honest || 1;
+  const ratio = {
+    avoid:    avoid    / total,
+    face:     face     / total,
+    sacrifice:sacrifice / total,
+    honest:   honest   / total
+  };
+
+  let type, desc, quote, residual;
+
+  if (ratio.avoid >= 0.40) {
+    type = '觀察抽離型';
+    desc = '你傾向在關係中保留空間，以距離換取安全感。你一直在場，但沒有完全走進去。這不是冷漠——是一種長期形成的自我保護機制。';
+    quote = '你一直在關係裡，但沒有完全走進去。';
+    residual = `系統偵測：迴避行為佔比 ${(ratio.avoid*100).toFixed(0)}%。長期迴避會讓關係的情感資本持續消耗，而補充速率趨近於零。`;
+  } else if (ratio.sacrifice >= 0.40) {
+    type = '結構承受型';
+    desc = '你經常調整自己來維持關係的平衡。你是那個讓事情繼續運作的人，但這份重量幾乎都由你一個人在承擔。';
+    quote = '你撐住了關係，但沒有人撐住你。';
+    residual = `系統偵測：自我犧牲行為佔比 ${(ratio.sacrifice*100).toFixed(0)}%。結構承受型在外部壓力事件（升遷、家庭介入、退休節點）中，崩潰風險比其他類型高出 2.3 倍。`;
+  } else if (ratio.face >= 0.40) {
+    type = '主動重構型';
+    desc = '你願意正面面對問題，嘗試重新建立關係的結構。你相信問題是可以被討論的，差距是可以被縮小的。';
+    quote = '你相信關係是可以被重新設計的。';
+    residual = `系統偵測：主動面對行為佔比 ${(ratio.face*100).toFixed(0)}%。重構嘗試有效率取決於對方的配合意願。單方面的重構，長期來看會轉化為結構承受。`;
+  } else if (ratio.honest >= 0.35) {
+    type = '誠實代入型';
+    desc = '你傾向說出真實想法，即使那會讓氣氛變得沉重。你不擅長表演，但你也不願意讓關係活在謊言裡。';
+    quote = '你說出了別人不敢說的話，但說完之後，你不確定那有沒有用。';
+    residual = `系統偵測：誠實表達行為佔比 ${(ratio.honest*100).toFixed(0)}%。誠實在短期內會增加關係張力，但在長期結構中，它是唯一能防止慢性內耗的機制。`;
+  } else {
+    type = '結構漂移型';
+    desc = '你的行為模式在不同情境下會切換，沒有一種固定的應對方式。這可能是靈活，也可能是你還在尋找自己在關係中的位置。';
+    quote = '你沒有固定的模式。你在每一個選擇裡，都試著找到當下最合理的出口。';
+    residual = `系統偵測：行為分佈較均勻，無顯著主導傾向。結構漂移型在穩定期表現良好，但在高壓節點（臨界點事件）時，決策延遲風險較高。`;
+  }
+
+  return { type, desc, quote, residual, ratio };
+}
+
+function showGlobalReport() {
+  const report = generateReport();
+  const completed = Object.keys(GLOBAL.completedCases);
+
+  // 切換畫面
+  document.getElementById('screen-title').style.display = 'none';
+  document.getElementById('screen-game').style.display = 'none';
+  document.getElementById('screen-report').style.display = 'block';
+
+  // 條型圖數據
+  const bars = [
+    { key: 'face',     label: '主動面對', color: 'var(--green)',  val: report.ratio.face },
+    { key: 'honest',   label: '誠實表達', color: 'var(--accent)', val: report.ratio.honest },
+    { key: 'sacrifice',label: '自我犧牲', color: 'var(--yellow)', val: report.ratio.sacrifice },
+    { key: 'avoid',    label: '迴避距離', color: 'var(--red)',    val: report.ratio.avoid },
+  ];
+
+  const barsHTML = bars.map(b => `
+    <div class="report-bar-row">
+      <div class="report-bar-label">
+        <span>${b.label}</span>
+        <span>${(b.val*100).toFixed(0)}%</span>
+      </div>
+      <div class="report-bar-track">
+        <div class="report-bar-fill" style="width:${(b.val*100).toFixed(1)}%;background:${b.color};"></div>
+      </div>
+    </div>
+  `).join('');
+
+  const completedLabel = completed.length === 3
+    ? '三個案例已完成'
+    : `已完成 ${completed.length} / 3 個案例`;
+
+  document.getElementById('report-content').innerHTML = `
+    <div class="narrative-box" style="margin-bottom:1px;">
+      <div class="report-type-tag">行為結構分析 — ${completedLabel}</div>
+      <div class="report-main-type">${report.type}</div>
+      <div class="report-desc">${report.desc}</div>
+      <div class="report-bars">${barsHTML}</div>
+      <div class="report-quote">「${report.quote}」</div>
+    </div>
+    <div class="report-residual">
+      <div class="report-residual-label">結構診斷附記</div>
+      ${report.residual}
+    </div>
+    <button class="btn-copy" onclick="copyReport()">▸ 複製分享內容</button>
+  `;
+
+  // 條型圖動畫
+  setTimeout(() => {
+    document.querySelectorAll('.report-bar-fill').forEach(el => {
+      const w = el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => { el.style.width = w; }, 50);
+    });
+  }, 100);
+}
+
+function copyReport() {
+  const report = generateReport();
+  const text = `【DSBM 行為結構分析】
+
+類型：${report.type}
+
+${report.desc}
+
+「${report.quote}」
+
+${report.residual}
+
+▸ 二元對稱瓶頸模型 v3.0
+https://tengyi-wang-tw.github.io/dsbm/`;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('已複製到剪貼簿');
+    });
+  } else {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    alert('已複製到剪貼簿');
+  }
+}
+
+function closeReport() {
+  document.getElementById('screen-report').style.display = 'none';
+  document.getElementById('screen-title').style.display = 'block';
+}
+
+function goTitle() {
+  document.getElementById('screen-game').classList.remove('final-mode');
+  document.getElementById('screen-report').style.display = 'none';
+  document.getElementById('screen-title').style.display = 'block';
+  document.getElementById('screen-game').style.display = 'none';
+  // 如果有完成案例，保持報告按鈕顯示
+  if (Object.keys(GLOBAL.completedCases).length > 0) {
+    document.getElementById('report-btn-area').style.display = 'block';
+  }
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

@@ -100,7 +100,7 @@
 <div class="container">
 
   <header>
-    <div class="label-tag">DSBM v3.0 — Dyadic Symmetry-Bottleneck Model</div>
+    <div class="label-tag">DSBM v3.1 — Dyadic Symmetry-Bottleneck Model</div>
     <h1>二元對稱瓶頸模型<br>關係結構診斷工具</h1>
     <p class="subtitle">
       φ 貢獻對稱係數（含方向性修正）· A 年齡背景內耗比 · F 家境背景內耗比（選填）<br>
@@ -324,14 +324,16 @@
       <div class="breakdown-row"><span class="breakdown-key">自己等級²</span><span class="breakdown-val" id="d_grade_self_sq">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">對方等級²</span><span class="breakdown-val" id="d_grade_other_sq">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">|自己²−對方²|</span><span class="breakdown-val" id="d_f_diff">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">F = 差值/100</span><span class="breakdown-val" id="d_f_final">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_gap = 差值/100</span><span class="breakdown-val" id="d_f_gap">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_base = 平均等級/10</span><span class="breakdown-val" id="d_f_base">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F = gap×0.7 + base×0.3</span><span class="breakdown-val" id="d_f_final">—</span></div>
     </div>
   </div>
 
   <div class="note">
     本工具基於二元對稱瓶頸模型（DSBM v3.0）。φ 含方向性修正，區分單邊過載與互補分工。A 使用 gap²/mean² 捕捉年齡差距的相對衝擊。F 為選填項，參考主計處家庭財富十等級（1 級最富，10 級最低）。S 不影響診斷。結果僅供結構性參考。
   </div>
-  <div class="version">DSBM v3.0 — 三軸架構版 Beta</div>
+  <div class="version">DSBM v3.1 — F 軸修正版 Beta</div>
 
 </div>
 <script>
@@ -510,7 +512,9 @@ function calculate(){
 
   // F
   let f=0,fStatus='',fColor='',f_down=true;
-  if(hasF){f=Math.abs(gs*gs-go*go)/100;const fs=getFStatus(f);fStatus=fs.text;fColor=fs.color;f_down=f<0.30;}
+  if(hasF){const f_gap = Math.abs(gs*gs-go*go)/100;
+    const f_base = ((gs+go)/2)/10;
+    f=Math.min(1, f_gap*0.7 + f_base*0.3);const fs=getFStatus(f);fStatus=fs.text;fColor=fs.color;f_down=f<0.30;}
 
   // 交叉
   const pu=phi>=0.65,ad=a<0.25;
@@ -555,6 +559,8 @@ function calculate(){
     document.getElementById('d_grade_self_sq').textContent=(gs*gs).toFixed(0);
     document.getElementById('d_grade_other_sq').textContent=(go*go).toFixed(0);
     document.getElementById('d_f_diff').textContent=Math.abs(gs*gs-go*go).toFixed(0);
+    document.getElementById('d_f_gap').textContent=(Math.abs(gs*gs-go*go)/100*100).toFixed(2)+'%';
+    document.getElementById('d_f_base').textContent=(((gs+go)/2)/10*100).toFixed(2)+'%';
     document.getElementById('d_f_final').textContent=(f*100).toFixed(2)+'%';
   } else {fCard.style.display='none';fBreak.style.display='none';}
 
