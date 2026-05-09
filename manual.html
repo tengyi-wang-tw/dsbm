@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSBM v3.0 說明書</title>
+<title>DSBM v3.1 說明書</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -146,9 +146,9 @@
   <!-- COVER -->
   <div class="cover">
     <div class="cover-tag">使用說明書 — User Manual</div>
-    <h1>二元對稱瓶頸模型<br>DSBM v3.0</h1>
+    <h1>二元對稱瓶頸模型<br>DSBM v3.1</h1>
     <p class="cover-desc">
-      本說明書說明 DSBM v3.0 的設計邏輯、輸入規範、計算公式與輸出詮釋方式。v3.0 為重大架構更新版本，在原有雙軸基礎上新增第三軸 F（家境背景內耗比），模型從二維平面診斷演進為三維結構診斷。F 軸為選填項，不填時模型回歸雙軸運算。
+      本說明書說明 DSBM v3.1 的設計邏輯、輸入規範、計算公式與輸出詮釋方式。v3.0 為重大架構更新版本，在原有雙軸基礎上新增第三軸 F（家境背景內耗比），模型從二維平面診斷演進為三維結構診斷。F 軸為選填項，不填時模型回歸雙軸運算。
     </p>
     <div class="cover-meta">
       <div class="cover-meta-item">
@@ -192,7 +192,7 @@
     </div>
     <div class="prose">
       <p>DSBM（Dyadic Symmetry-Bottleneck Model，二元對稱瓶頸模型）是一個用於評估二元關係結構健康程度的診斷工具。它不測量情感滿意度、主觀幸福感，也不對關係做出價值判斷——它只測量<strong>結構</strong>。</p>
-      <p>v3.0 為重大架構更新版本。在原有 φ 軸與 A 軸的基礎上，新增第三軸 F（家境背景內耗比），模型自由度從二維演進為三維，能同時描述貢獻分工、年齡背景與原生家庭資源三個層次的結構問題。</p>
+      <p>v3.1 為重大架構更新版本。在原有 φ 軸與 A 軸的基礎上，新增第三軸 F（家境背景內耗比），模型自由度從二維演進為三維，能同時描述貢獻分工、年齡背景與原生家庭資源三個層次的結構問題。</p>
     </div>
 
     <div class="axis-diagram">
@@ -459,7 +459,7 @@
     </div>
 
     <div class="prose">
-      <p>v3.0 的 F 軸由兩個子項組成：<strong>F_gap</strong> 捕捉雙方家境差距所產生的價值觀摩擦，<strong>F_base</strong> 捕捉雙方絕對資源水準不足所產生的生存壓力。兩者以 7:3 的權重合併，反映差距問題通常比資源匱乏更直接影響關係結構，但資源匱乏的影響不應被忽略。</p>
+      <p>v3.1 的 F 軸由兩個子項組成：<strong>F_gap</strong> 捕捉雙方家境差距所產生的價值觀摩擦，<strong>F_base</strong> 捕捉雙方絕對資源水準不足所產生的生存壓力。兩者以 7:3 的權重合併，反映差距問題通常比資源匱乏更直接影響關係結構，但資源匱乏的影響不應被忽略。</p>
       <p>這個設計修正了舊版公式的一個盲點：當雙方家境同樣偏低時，舊版會得到 F = 0（無風險），但現實中兩個都很窮的組合面臨的是生存壓力直接壓縮關係空間的問題，風險並非為零。</p>
     </div>
 
@@ -738,7 +738,7 @@
   </div>
 
   <div class="doc-footer">
-    <span class="doc-footer-left">本說明書適用於 DSBM v3.0。模型仍處於 Beta 階段，歡迎回饋。</span>
+    <span class="doc-footer-left">本說明書適用於 DSBM v3.1。模型仍處於 Beta 階段，歡迎回饋。</span>
     <span class="doc-footer-right">DSBM v3.1 Manual — Beta</span>
   </div>
 
