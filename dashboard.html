@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSBM v3.0 — 二元對稱瓶頸模型</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+  :root {
+    --bg:#0a0a0a;--surface:#111;--surface2:#161616;--border:#222;--border2:#2a2a2a;
+    --accent:#c8f060;--text:#e8e8e8;--text-dim:#909090;--text-muted:#505050;
+    --red:#ff5c5c;--yellow:#f0c060;--green:#60d080;--blue:#60b8f0;--orange:#f0a060;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding:40px 20px 80px;}
+  .container{max-width:760px;margin:0 auto;}
+  header{border-bottom:1px solid var(--border);padding-bottom:24px;margin-bottom:36px;}
+  .label-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;}
+  h1{font-size:20px;font-weight:400;line-height:1.4;margin-bottom:6px;}
+  .subtitle{font-size:12px;color:var(--text-muted);line-height:1.7;}
+  .section{margin-bottom:32px;}
+  .section-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+  .input-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end;margin-bottom:10px;}
+  .input-group{display:flex;flex-direction:column;gap:5px;}
+  .input-label{font-size:11px;color:var(--text-dim);}
+  .input-sublabel{font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .optional-badge{font-family:'DM Mono',monospace;font-size:8px;color:var(--orange);border:1px solid var(--orange);padding:1px 4px;margin-left:5px;vertical-align:middle;}
+  input[type=number]{background:var(--surface);border:1px solid var(--border2);color:var(--text);font-family:'DM Mono',monospace;font-size:15px;padding:9px 11px;width:100%;outline:none;transition:border-color .2s;-moz-appearance:textfield;}
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+  input[type=number]:focus{border-color:var(--accent);}
+  input[type=number].optional{border-style:dashed;border-color:#2a2a2a;}
+  input[type=number].optional:focus{border-style:solid;border-color:var(--orange);}
+  .f-ref{background:#0d0d0d;border:1px solid #1e1e1e;border-left:2px solid var(--orange);margin-bottom:14px;}
+  .f-ref-toggle{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;cursor:pointer;user-select:none;}
+  .f-ref-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:.12em;text-transform:uppercase;}
+  .f-ref-arrow{font-size:10px;color:var(--text-muted);transition:transform .2s;}
+  .f-ref-arrow.open{transform:rotate(180deg);}
+  .f-ref-body{display:none;padding:0 13px 11px;}
+  .f-ref-body.open{display:block;}
+  .f-ref-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);}
+  .f-ref-cell{background:var(--surface);padding:7px 10px;}
+  .f-ref-grade{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);}
+  .f-ref-amt{font-size:10px;color:var(--text-muted);margin-top:2px;}
+  .f-ref-note{font-size:9px;color:var(--text-muted);margin-top:9px;line-height:1.5;padding-top:8px;border-top:1px solid var(--border);}
+  .btn{background:var(--accent);color:#0a0a0a;border:none;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.1em;padding:13px 28px;cursor:pointer;width:100%;margin-top:6px;transition:background .2s,transform .1s;}
+  .btn:hover{background:#d4f570;}
+  .btn:active{transform:scale(.99);}
+  .result-box{display:none;margin-top:28px;}
+  .result-box.visible{display:block;}
+  /* SVG矩陣 */
+  .matrix-wrapper{margin-bottom:28px;}
+  .matrix-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+  #matrix-svg{width:100%;display:block;border:1px solid var(--border);background:#000;}
+  .matrix-caption{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:8px;letter-spacing:.06em;}
+  /* SVG泡泡動畫 */
+  #svg-bubble-g{transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);}
+  #svg-circle{transition:r 0.8s cubic-bezier(0.25,0.46,0.45,0.94);}
+  /* 其他UI */
+  .axes-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .axis-card{background:var(--surface2);padding:20px 22px;}
+  .axis-card.orange-top{border-top:2px solid var(--orange);}
+  .axis-num{font-family:'DM Mono',monospace;font-size:44px;font-weight:500;line-height:1;margin-bottom:6px;}
+  .axis-meta-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;}
+  .axis-status{font-size:12px;font-weight:400;}
+  .axis-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:6px;}
+  .metrics-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-bottom:1px;}
+  .metric-cell{background:var(--surface);padding:14px 16px;}
+  .metric-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+  .metric-val{font-family:'DM Mono',monospace;font-size:18px;}
+  .metric-desc{font-size:10px;color:var(--text-muted);margin-top:3px;}
+  .cross-box{background:var(--surface2);border-left:3px solid var(--accent);padding:16px 20px;margin-bottom:1px;}
+  .cross-box.danger{border-left-color:var(--red);}
+  .cross-tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;margin-bottom:6px;}
+  .cross-desc{font-size:12px;color:var(--text-dim);line-height:1.7;}
+  .s-box{background:#0d0d0d;border:1px solid var(--border);border-left:2px solid var(--blue);padding:13px 16px;margin-bottom:20px;margin-top:16px;}
+  .s-box-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+  .s-box-val{font-family:'DM Mono',monospace;font-size:20px;color:var(--blue);}
+  .s-box-context{font-size:11px;color:var(--text-muted);margin-top:7px;line-height:1.6;}
+  .type-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;padding:3px 9px;border:1px solid;margin-bottom:12px;}
+  .report-text{font-size:12px;color:var(--text-dim);line-height:1.85;margin-bottom:20px;}
+  .report-text p+p{margin-top:10px;}
+  .breakdown{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+  .breakdown-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;}
+  .breakdown-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #181818;font-size:11px;}
+  .breakdown-key{color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .breakdown-val{color:var(--text);font-family:'DM Mono',monospace;}
+  .note{margin-top:28px;padding:14px;border-left:2px solid var(--border);font-size:11px;color:var(--text-muted);line-height:1.65;}
+  .version{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-align:right;margin-top:32px;letter-spacing:.1em;}
+  @media(max-width:520px){
+    .input-grid{grid-template-columns:1fr 1fr;}
+    .axes-row{grid-template-columns:1fr;}
+    .metrics-strip{grid-template-columns:1fr 1fr;}
+    h1{font-size:17px;}
+    .axis-num{font-size:36px;}
+    .f-ref-grid{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="label-tag">DSBM v3.1 — Dyadic Symmetry-Bottleneck Model</div>
+    <h1>二元對稱瓶頸模型<br>關係結構診斷工具</h1>
+    <p class="subtitle">
+      φ 貢獻對稱係數（含方向性修正）· A 年齡背景內耗比 · F 家境背景內耗比（選填）<br>
+      S 月收入合計為背景參考，不影響任何診斷指標。本工具不測量情感滿意度。
+    </p>
+  </header>
+
+  <div class="section">
+    <div class="section-title">01 資料輸入</div>
+    <div class="input-grid" style="margin-bottom:14px;">
+      <div class="input-group"><span class="input-label" style="color:var(--text-muted);">項目</span></div>
+      <div class="input-group"><span class="input-label">自己</span></div>
+      <div class="input-group"><span class="input-label">對方</span></div>
+    </div>
+    <div class="input-grid">
+      <div class="input-group"><span class="input-label">月收入</span><span class="input-sublabel">萬元／月</span></div>
+      <div class="input-group"><input type="number" id="income_self" placeholder="例：8" min="0" step="0.1"></div>
+      <div class="input-group"><input type="number" id="income_other" placeholder="例：3" min="0" step="0.1"></div>
+    </div>
+    <div class="input-grid" style="margin-top:10px;">
+      <div class="input-group"><span class="input-label">每週勞動時數</span><span class="input-sublabel">工作＋家務＋照顧</span></div>
+      <div class="input-group"><input type="number" id="hours_self" placeholder="例：10" min="0" max="168" step="1"></div>
+      <div class="input-group"><input type="number" id="hours_other" placeholder="例：30" min="0" max="168" step="1"></div>
+    </div>
+    <div class="input-grid" style="margin-top:10px;">
+      <div class="input-group"><span class="input-label">年齡</span><span class="input-sublabel">實際歲數（≥16）</span></div>
+      <div class="input-group"><input type="number" id="age_self" placeholder="例：32" min="16" step="1"></div>
+      <div class="input-group"><input type="number" id="age_other" placeholder="例：28" min="16" step="1"></div>
+    </div>
+    <div class="input-grid" style="margin-top:10px;margin-bottom:4px;">
+      <div class="input-group"><span class="input-label">家境等級<span class="optional-badge">選填</span></span><span class="input-sublabel">1=最富　10=最低</span></div>
+      <div class="input-group"><input type="number" id="grade_self" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
+      <div class="input-group"><input type="number" id="grade_other" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
+    </div>
+    <div class="f-ref">
+      <div class="f-ref-toggle" onclick="toggleRef()">
+        <span class="f-ref-label">家境等級對照表（主計處）</span>
+        <span class="f-ref-arrow" id="ref-arrow">▾</span>
+      </div>
+      <div class="f-ref-body" id="ref-body">
+        <div class="f-ref-grid">
+          <div class="f-ref-cell"><div class="f-ref-grade">1 級</div><div class="f-ref-amt">&gt;3,391萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">2 級</div><div class="f-ref-amt">≈3,391萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">3 級</div><div class="f-ref-amt">≈2,134萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">4 級</div><div class="f-ref-amt">≈1,547萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">5 級</div><div class="f-ref-amt">≈1,171萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">6 級</div><div class="f-ref-amt">≈894萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">7 級</div><div class="f-ref-amt">≈677萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">8 級</div><div class="f-ref-amt">≈490萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">9 級</div><div class="f-ref-amt">≈319萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">10 級</div><div class="f-ref-amt">&lt;143萬</div></div>
+        </div>
+        <div class="f-ref-note">兩欄均填寫時才啟動 F 軸計算。填入最接近自身家庭狀況的整數等級。</div>
+      </div>
+    </div>
+    <button class="btn" onclick="calculate()">▸ 執行診斷</button>
+  </div>
+
+  <div class="result-box" id="result">
+
+    <!-- SVG矩陣：用viewBox，完全不依賴DOM尺寸 -->
+    <div class="matrix-wrapper">
+      <div class="matrix-title">結構座標矩陣 — φ · A · F 三軸定位</div>
+      <!--
+        viewBox座標系：720×360
+        繪圖區：x=60~700, y=30~330  (plotW=640, plotH=300)
+        φ軸：x方向，0=左(60), 1=右(700)
+        A軸：y方向，0=下(330), 1=上(30)  ← Y反轉
+        邊界：φ=0.65 → x=60+0.65*640=476, A=25% → y=330-0.25*300=255
+      -->
+      <svg id="matrix-svg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <rect width="720" height="360" fill="#000"/>
+
+        <!-- 格線 -->
+        <g stroke="#1c1c1c" stroke-width="0.5">
+          <line x1="60" y1="30" x2="60" y2="330"/><line x1="124" y1="30" x2="124" y2="330"/>
+          <line x1="188" y1="30" x2="188" y2="330"/><line x1="252" y1="30" x2="252" y2="330"/>
+          <line x1="316" y1="30" x2="316" y2="330"/><line x1="380" y1="30" x2="380" y2="330"/>
+          <line x1="444" y1="30" x2="444" y2="330"/><line x1="508" y1="30" x2="508" y2="330"/>
+          <line x1="572" y1="30" x2="572" y2="330"/><line x1="636" y1="30" x2="636" y2="330"/>
+          <line x1="700" y1="30" x2="700" y2="330"/>
+          <line x1="60" y1="30"  x2="700" y2="30"/> <line x1="60" y1="60"  x2="700" y2="60"/>
+          <line x1="60" y1="90"  x2="700" y2="90"/> <line x1="60" y1="120" x2="700" y2="120"/>
+          <line x1="60" y1="150" x2="700" y2="150"/><line x1="60" y1="180" x2="700" y2="180"/>
+          <line x1="60" y1="210" x2="700" y2="210"/><line x1="60" y1="240" x2="700" y2="240"/>
+          <line x1="60" y1="270" x2="700" y2="270"/><line x1="60" y1="300" x2="700" y2="300"/>
+          <line x1="60" y1="330" x2="700" y2="330"/>
+        </g>
+
+        <!-- 危險區（φ<0.65, A>25% → x<476, y<207.5） -->
+        <rect id="svg-danger" x="60" y="30" width="416" height="225" fill="rgba(255,60,60,0.03)"/>
+
+        <!-- 邊界線 -->
+        <line id="svg-vline" x1="476" y1="30" x2="476" y2="330" stroke="rgba(70,150,90,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line id="svg-hline" x1="60" y1="255" x2="700" y2="255" stroke="rgba(70,150,90,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- 邊界標籤 -->
+        <text id="svg-vlabel" x="480" y="42" fill="rgba(70,150,90,0.5)" font-family="monospace" font-size="9">φ=0.65</text>
+        <text id="svg-hlabel" x="64" y="251" fill="rgba(70,150,90,0.5)" font-family="monospace" font-size="9">A=25%</text>
+        <text id="svg-collapse" x="64" y="46" fill="rgba(255,80,80,0.2)" font-family="monospace" font-size="9">COLLAPSE ZONE</text>
+
+        <!-- 軸刻度 -->
+        <g fill="#3a3a3a" font-family="monospace" font-size="9">
+          <text x="54"  y="344">0.0</text>
+          <text x="372" y="344">0.5</text>
+          <text x="692" y="344">1.0</text>
+          <text x="680" y="356">φ →</text>
+          <text x="2"  y="333">0%</text>
+          <text x="2"  y="183">50%</text>
+          <text x="2"  y="36">100%</text>
+        </g>
+        <text x="16" y="190" fill="#3a3a3a" font-family="monospace" font-size="9" transform="rotate(-90,16,190)">A ↑</text>
+
+        <!-- 泡泡群組（用transform定位，CSS transition做慣性） -->
+        <g id="svg-bubble-g" transform="translate(380,180)" style="transition:transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94);" opacity="0">
+          <!-- 外圓（虛線=無F，實心=有F） -->
+          <circle id="svg-circle" cx="0" cy="0" r="14"
+            fill="none" stroke="#c8f060" stroke-width="1.5" stroke-dasharray="3,3"
+            style="transition:r 0.9s cubic-bezier(0.25,0.46,0.45,0.94);"/>
+          <!-- 實心填充層（有F才顯示） -->
+          <circle id="svg-fill" cx="0" cy="0" r="14" fill="rgba(200,240,96,0.15)" opacity="0"
+            style="transition:r 0.9s cubic-bezier(0.25,0.46,0.45,0.94);"/>
+          <!-- 中心點 -->
+          <circle id="svg-dot" cx="0" cy="0" r="2.5" fill="#c8f060"/>
+          <!-- 座標標籤 -->
+          <text id="svg-lphi" x="18" y="-4"  fill="#c8f060" font-family="monospace" font-size="9" opacity="0.85"></text>
+          <text id="svg-la"   x="18" y="9"   fill="#c8f060" font-family="monospace" font-size="9" opacity="0.85"></text>
+          <text id="svg-lf"   x="18" y="22"  fill="#f0a060" font-family="monospace" font-size="9" opacity="0.85"></text>
+        </g>
+      </svg>
+      <div class="matrix-caption">Bubble position: φ (x, right=symmetric) · A (y, up=risk) · Bubble size: F gap · Dashed circle = F not provided</div>
+      <div class="matrix-caption" style="margin-top:5px;color:#484848;">泡泡大小代表家境差距（F 軸）——視覺上刻意放大，因為家境對價值觀的影響往往比薪資或年齡更深遠，但屬於個人隱私，故設計為選填。越大越不穩定，如同充氣越足的氣球，越容易在外部壓力下破裂。</div>
+    </div>
+
+    <div class="axes-row">
+      <div class="axis-card">
+        <div class="axis-meta-label">第一軸 — 貢獻對稱係數</div>
+        <div class="axis-num" id="phi_display">—</div>
+        <div class="axis-status" id="phi_status">—</div>
+        <div class="axis-sub" id="w_label">W = —</div>
+      </div>
+      <div class="axis-card">
+        <div class="axis-meta-label">第二軸 — 年齡背景內耗比</div>
+        <div class="axis-num" id="a_display">—</div>
+        <div class="axis-status" id="a_status">—</div>
+        <div class="axis-sub" id="age_info">—</div>
+      </div>
+    </div>
+    <div id="f_card_row" style="display:none;margin-top:1px;">
+      <div class="axis-card orange-top">
+        <div class="axis-meta-label" style="color:var(--orange);">第三軸 — 家境背景內耗比（選填）</div>
+        <div class="axis-num" id="f_display" style="color:var(--orange);">—</div>
+        <div class="axis-status" id="f_status">—</div>
+        <div class="axis-sub" id="f_info">—</div>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin-top:1px;"></div>
+    <div class="metrics-strip">
+      <div class="metric-cell">
+        <div class="metric-name">φ_money</div>
+        <div class="metric-val" id="phi_money">—</div>
+        <div class="metric-desc">收入對稱</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-name">φ_time</div>
+        <div class="metric-val" id="phi_time">—</div>
+        <div class="metric-desc">時間對稱</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-name">方向修正</div>
+        <div class="metric-val" id="dir_type" style="font-size:14px;">—</div>
+        <div class="metric-desc" id="dir_adj">—</div>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin-top:1px;"></div>
+    <div class="cross-box" id="cross_box">
+      <div class="cross-tag" id="cross_tag">—</div>
+      <div class="cross-desc" id="cross_desc">—</div>
+    </div>
+
+    <div class="s-box">
+      <div class="s-box-title">S — 月收入合計（背景參考）</div>
+      <div class="s-box-val" id="s_value">—</div>
+      <div class="s-box-context" id="s_context">—</div>
+    </div>
+
+    <div id="type_tag" class="type-tag">—</div>
+    <div class="report-text" id="report_text"></div>
+
+    <div class="breakdown">
+      <div class="breakdown-title">計算明細 — 第一軸 φ</div>
+      <div class="breakdown-row"><span class="breakdown-key">自己收入</span><span class="breakdown-val" id="d_income_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方收入</span><span class="breakdown-val" id="d_income_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">自己時數</span><span class="breakdown-val" id="d_hours_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方時數</span><span class="breakdown-val" id="d_hours_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ_money</span><span class="breakdown-val" id="d_phi_money">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ_time</span><span class="breakdown-val" id="d_phi_time">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ 原始</span><span class="breakdown-val" id="d_phi_raw">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">方向類型</span><span class="breakdown-val" id="d_dir_type">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">修正值</span><span class="breakdown-val" id="d_dir_adj">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ 最終</span><span class="breakdown-val" id="d_phi_final">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">W = 1 − φ</span><span class="breakdown-val" id="d_w">—</span></div>
+    </div>
+    <div class="breakdown" style="margin-top:16px;">
+      <div class="breakdown-title">計算明細 — 第二軸 A</div>
+      <div class="breakdown-row"><span class="breakdown-key">自己年齡</span><span class="breakdown-val" id="d_age_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方年齡</span><span class="breakdown-val" id="d_age_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">gap</span><span class="breakdown-val" id="d_gap">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">mean</span><span class="breakdown-val" id="d_mean">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">gap²</span><span class="breakdown-val" id="d_gap2">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">mean²</span><span class="breakdown-val" id="d_mean2">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">gap²/mean²</span><span class="breakdown-val" id="d_a_raw">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">A（cap後）</span><span class="breakdown-val" id="d_a_final">—</span></div>
+    </div>
+    <div class="breakdown" id="breakdown_f" style="margin-top:16px;display:none;">
+      <div class="breakdown-title" style="color:var(--orange);">計算明細 — 第三軸 F</div>
+      <div class="breakdown-row"><span class="breakdown-key">自己家境等級</span><span class="breakdown-val" id="d_grade_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方家境等級</span><span class="breakdown-val" id="d_grade_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">自己等級²</span><span class="breakdown-val" id="d_grade_self_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方等級²</span><span class="breakdown-val" id="d_grade_other_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">|自己²−對方²|</span><span class="breakdown-val" id="d_f_diff">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_gap = 差值/100</span><span class="breakdown-val" id="d_f_gap">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_base = 平均等級/10</span><span class="breakdown-val" id="d_f_base">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F = gap×0.7 + base×0.3</span><span class="breakdown-val" id="d_f_final">—</span></div>
+    </div>
+  </div>
+
+  <div class="note">
+    本工具基於二元對稱瓶頸模型（DSBM v3.0）。φ 含方向性修正，區分單邊過載與互補分工。A 使用 gap²/mean² 捕捉年齡差距的相對衝擊。F 為選填項，參考主計處家庭財富十等級（1 級最富，10 級最低）。S 不影響診斷。結果僅供結構性參考。
+  </div>
+  <div class="version">DSBM v3.1 — F 軸修正版 Beta</div>
+
+</div>
+<script>
+// ── 對照表 ──
+function toggleRef(){
+  document.getElementById('ref-body').classList.toggle('open');
+  document.getElementById('ref-arrow').classList.toggle('open');
+}
+
+// ── SVG矩陣更新（不依賴任何DOM尺寸）──
+// viewBox座標系：繪圖區 x=60~700(plotW=640), y=20~270(plotH=250)
+// φ → x = 60 + phi*640
+// A → y = 270 - a*250  （Y反轉：A大=上=y小）
+function updateMatrix(phi, a, f, hasF, color, inDanger){
+  const plotX = 60, plotW = 640, plotY0 = 330, plotH = 300;
+  const tx = plotX + phi * plotW;
+  const ty = plotY0 - a * plotH;
+  const r  = hasF ? Math.max(10, Math.min(65, 10 + f*56)) : 12;
+
+  // 移動泡泡群組
+  const g = document.getElementById('svg-bubble-g');
+  g.setAttribute('transform', `translate(${tx.toFixed(1)},${ty.toFixed(1)})`);
+  g.setAttribute('opacity','1');
+
+  // 圓圈樣式
+  const circle = document.getElementById('svg-circle');
+  const fill   = document.getElementById('svg-fill');
+  const dot    = document.getElementById('svg-dot');
+  circle.setAttribute('r', r);
+  fill.setAttribute('r', r);
+
+  if(hasF){
+    circle.setAttribute('stroke-dasharray','');
+    circle.setAttribute('stroke', color);
+    circle.setAttribute('stroke-width','1');
+    fill.setAttribute('opacity','1');
+    fill.setAttribute('fill', color+'22');
+  } else {
+    circle.setAttribute('stroke-dasharray','3,3');
+    circle.setAttribute('stroke', color+'88');
+    circle.setAttribute('stroke-width','1.5');
+    fill.setAttribute('opacity','0');
+  }
+  dot.setAttribute('fill', color);
+
+  // 標籤
+  document.getElementById('svg-lphi').textContent = `φ=${phi.toFixed(2)}`;
+  document.getElementById('svg-la').textContent   = `A=${(a*100).toFixed(1)}%`;
+  document.getElementById('svg-lf').textContent   = hasF ? `F=${(f*100).toFixed(1)}%` : '';
+  document.getElementById('svg-lphi').setAttribute('fill', color);
+  document.getElementById('svg-la').setAttribute('fill', color);
+
+  // 危險區呼吸效果（用CSS animation）
+  const danger = document.getElementById('svg-danger');
+  const vline  = document.getElementById('svg-vline');
+  const hline  = document.getElementById('svg-hline');
+  const vlabel = document.getElementById('svg-vlabel');
+  const hlabel = document.getElementById('svg-hlabel');
+  const collapse = document.getElementById('svg-collapse');
+
+  if(inDanger){
+    danger.setAttribute('fill','rgba(255,60,60,0.07)');
+    danger.style.animation='breathe 2s ease-in-out infinite';
+    vline.setAttribute('stroke','rgba(255,80,80,0.55)');
+    hline.setAttribute('stroke','rgba(255,80,80,0.55)');
+    vlabel.setAttribute('fill','rgba(255,80,80,0.6)');
+    hlabel.setAttribute('fill','rgba(255,80,80,0.6)');
+    collapse.setAttribute('fill','rgba(255,80,80,0.5)');
+  } else {
+    danger.setAttribute('fill','rgba(255,60,60,0.03)');
+    danger.style.animation='';
+    vline.setAttribute('stroke','rgba(70,150,90,0.35)');
+    hline.setAttribute('stroke','rgba(70,150,90,0.35)');
+    vlabel.setAttribute('fill','rgba(70,150,90,0.5)');
+    hlabel.setAttribute('fill','rgba(70,150,90,0.5)');
+    collapse.setAttribute('fill','rgba(255,80,80,0.2)');
+  }
+}
+
+// 呼吸動畫keyframes
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+  @keyframes breathe {
+    0%,100%{fill:rgba(255,60,60,0.04)}
+    50%{fill:rgba(255,60,60,0.10)}
+  }
+`;
+document.head.appendChild(styleEl);
+
+// ── 工具函式 ──
+function getSContext(s,phi){
+  const hi=s>=15,lo=s<6,hp=phi>=0.70,lp=phi<0.50;
+  if(hi&&hp) return '資源充足且結構對稱。系統面對外部衝擊時具備較強的緩衝能力。';
+  if(hi&&lp) return '資源充足但結構失衡。S 高可短期掩蓋內耗，無法從根本解決結構問題。';
+  if(hi)     return '資源尚可，結構存在一定不對稱。建議持續關注分工平衡。';
+  if(lo&&hp) return '資源有限但結構對稱。雙方共同承擔壓力，韌性相對較高。';
+  if(lo&&lp) return '資源有限且結構失衡。雙重風險狀態，系統承壓能力較弱。';
+  if(lo)     return '資源偏低，建議評估整體財務規劃對關係穩定性的影響。';
+  return '資源規模中等。結構健康度（φ）是當前主要參考指標。';
+}
+function getFStatus(f){
+  if(f<0.10) return {text:'家境相近',   color:'var(--green)'};
+  if(f<0.30) return {text:'差距可接受', color:'var(--accent)'};
+  if(f<0.60) return {text:'差距明顯',   color:'var(--yellow)'};
+  return           {text:'差距顯著',   color:'var(--red)'};
+}
+function getCross(pu,ad,hasF,fd){
+  if(!hasF){
+    if(pu&&ad)  return {tag:'φ↑ A↓ — 雙軸穩定型',           desc:'貢獻對稱且年齡背景相近，系統具備較強的外部壓力緩衝能力。',danger:false};
+    if(pu)      return {tag:'φ↑ A↑ — 貢獻對稱，背景存差',   desc:'當下分工均衡，年齡差距是潛在變數，風險在重大決策節點才浮現。',danger:false};
+    if(ad)      return {tag:'φ↓ A↓ — 背景相近，貢獻待調整', desc:'年齡背景一致是有利條件，主要壓力來自貢獻不對稱，調整相對容易。',danger:false};
+    return             {tag:'φ↓ A↑ — 雙軸壓力型',           desc:'兩軸均顯示結構壓力，年齡差距使貢獻不對稱更難透過溝通單獨解決。',danger:true};
+  }
+  if( pu&& ad&& fd) return {tag:'φ↑ A↓ F↓ — 三軸穩定型',            desc:'三個診斷軸均指向穩定狀態，系統抗壓能力最強。',danger:false};
+  if( pu&& ad&&!fd) return {tag:'φ↑ A↓ F↑ — 貢獻穩定，家境存差',    desc:'當下運作穩定，家境差距在重大財務決策時較易浮現。',danger:false};
+  if( pu&&!ad&& fd) return {tag:'φ↑ A↑ F↓ — 貢獻對稱，年齡存差',    desc:'家境背景一致降低部分風險，但年齡差距仍是潛在變數。',danger:false};
+  if( pu&&!ad&&!fd) return {tag:'φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差',desc:'當下分工均衡，但年齡與家境差距同時存在，重大決策節點壓力較集中。',danger:false};
+  if(!pu&& ad&& fd) return {tag:'φ↓ A↓ F↓ — 背景一致，貢獻待調整',  desc:'年齡與家境均相近，主要問題來自貢獻不對稱，調整成本相對較低。',danger:false};
+  if(!pu&& ad&&!fd) return {tag:'φ↓ A↓ F↑ — 貢獻失衡，家境存差',    desc:'家境差距使公平感基準不一致，可能加深對貢獻不對稱的感知落差。',danger:true};
+  if(!pu&&!ad&& fd) return {tag:'φ↓ A↑ F↓ — 年齡存差，貢獻失衡',    desc:'家境相近是相對有利條件，但年齡差距與貢獻不對稱同時存在。',danger:true};
+  return                   {tag:'φ↓ A↑ F↑ — 三軸壓力型',            desc:'三軸均顯示結構壓力，貢獻失衡、年齡差距、家境落差三者並存，風險最集中。',danger:true};
+}
+
+// ── 主計算 ──
+function calculate(){
+  const is  = parseFloat(document.getElementById('income_self').value);
+  const io  = parseFloat(document.getElementById('income_other').value);
+  const hs  = parseFloat(document.getElementById('hours_self').value);
+  const ho  = parseFloat(document.getElementById('hours_other').value);
+  const as_ = parseFloat(document.getElementById('age_self').value);
+  const ao  = parseFloat(document.getElementById('age_other').value);
+  const gsr = document.getElementById('grade_self').value.trim();
+  const gor = document.getElementById('grade_other').value.trim();
+
+  if([is,io,hs,ho,as_,ao].some(v=>isNaN(v)||v<0)){alert('請填入所有必填欄位的有效數值。');return;}
+  if(hs>168||ho>168){alert('每週勞動時數不得超過 168 小時。');return;}
+  if(as_<16||ao<16){alert('年齡需為 16 歲以上。');return;}
+  if(is+io===0||hs+ho===0){alert('收入合計與時數合計不得皆為 0。');return;}
+
+  const gs=parseFloat(gsr),go=parseFloat(gor);
+  const hasF=!isNaN(gs)&&!isNaN(go)&&gs>=1&&gs<=10&&go>=1&&go<=10;
+  if((gsr!==''||gor!=='')&&!hasF){alert('家境等級需為 1–10 的整數，或兩欄皆留空。');return;}
+
+  // φ
+  const phi_m=1-Math.abs(is-io)/(is+io);
+  const phi_t=1-Math.abs(hs-ho)/(hs+ho);
+  const phi_raw=(phi_m+phi_t)/2;
+  const inc_gap=Math.abs(is-io)/(is+io);
+  const hrs_gap=Math.abs(hs-ho)/(hs+ho);
+  const inc_hi=is>=io, hrs_hi=hs>=ho;
+  let dirType,dirAdj,adjVal=0;
+  if(inc_gap===0||hrs_gap===0){dirType='無顯著方向';dirAdj='修正值 0';}
+  else if(inc_hi===hrs_hi){adjVal=-(inc_gap*hrs_gap*0.4);dirType='單邊過載';dirAdj='扣分 × 0.4';}
+  else{adjVal=+(inc_gap*hrs_gap*0.1);dirType='互補分工';dirAdj='加分 × 0.1';}
+  const phi=Math.max(0,Math.min(1,phi_raw+adjVal));
+  const w=1-phi, s=is+io;
+
+  let phiStatus,phiColor,report;
+  if(phi>=0.80){phiStatus='結構良好';phiColor='#60d080';
+    report=`<p>雙方貢獻高度對稱，結構內耗 W = ${w.toFixed(3)} 偏低。系統面對外部壓力時承擔能力均衡。</p><p>建議持續維持現有分工結構，並在重大生活變動前重新評估。</p>`;}
+  else if(phi>=0.65){phiStatus='輕度不對稱';phiColor='#c8f060';
+    report=`<p>結構存在一定程度的不對稱，內耗值 W = ${w.toFixed(3)}，尚未進入高風險區間。</p><p>建議雙方確認現有分工是否為共識安排，並評估是否需要調整。</p>`;}
+  else if(phi>=0.50){phiStatus='中度不對稱';phiColor='#f0c060';
+    report=`<p>結構呈現中度不對稱，內耗值 W = ${w.toFixed(3)}，有效韌性受限。長期維持此結構，壓力易在具體事件中顯現。</p><p>建議檢視不對稱的主要來源，評估是否有結構調整的可能性。</p>`;}
+  else{phiStatus='高度不對稱';phiColor='#ff5c5c';
+    report=`<p>結構處於高度不對稱狀態，內耗值 W = ${w.toFixed(3)}，屬高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</p><p>建議認真檢視現有分工結構，評估雙方是否對此結構有共識。</p>`;}
+
+  // A
+  const gap=Math.abs(as_-ao),mean=(as_+ao)/2;
+  const a_raw=(gap*gap)/(mean*mean),a=Math.min(1,a_raw);
+  let aStatus,aColor;
+  if(a<0.10){aStatus='背景相近';aColor='var(--green)';}
+  else if(a<0.25){aStatus='差距可接受';aColor='var(--accent)';}
+  else if(a<0.50){aStatus='差距明顯';aColor='var(--yellow)';}
+  else{aStatus='差距顯著';aColor='var(--red)';}
+
+  // F
+  let f=0,fStatus='',fColor='',f_down=true;
+  if(hasF){const f_gap = Math.abs(gs*gs-go*go)/100;
+    const f_base = ((gs+go)/2)/10;
+    f=Math.min(1, f_gap*0.7 + f_base*0.3);const fs=getFStatus(f);fStatus=fs.text;fColor=fs.color;f_down=f<0.30;}
+
+  // 交叉
+  const pu=phi>=0.65,ad=a<0.25;
+  const cross=getCross(pu,ad,hasF,f_down);
+
+  // 類型
+  let typeLabel,typeColor;
+  if(is===io&&hs===ho){typeLabel='完全對稱型';typeColor='var(--green)';}
+  else if(inc_hi===hrs_hi&&inc_gap>0.1){typeLabel='單邊過載型';typeColor='var(--red)';}
+  else if(inc_hi!==hrs_hi){typeLabel='互補分工型';typeColor='var(--yellow)';}
+  else{typeLabel='輕度不對稱型';typeColor='var(--text-muted)';}
+
+  // ── Render UI ──
+  const phiEl=document.getElementById('phi_display');
+  phiEl.textContent=phi.toFixed(2);phiEl.style.color=phiColor;
+  document.getElementById('phi_status').textContent=phiStatus;
+  document.getElementById('phi_status').style.color=phiColor;
+  document.getElementById('w_label').textContent=`W = ${w.toFixed(3)}（內耗值）`;
+  document.getElementById('phi_money').textContent=phi_m.toFixed(3);
+  document.getElementById('phi_time').textContent=phi_t.toFixed(3);
+  const dirEl=document.getElementById('dir_type');
+  dirEl.textContent=dirType;
+  dirEl.style.color=adjVal<0?'var(--red)':adjVal>0?'var(--yellow)':'var(--text-muted)';
+  document.getElementById('dir_adj').textContent=dirAdj;
+
+  const aEl=document.getElementById('a_display');
+  aEl.textContent=(a*100).toFixed(1)+'%';aEl.style.color=aColor;
+  document.getElementById('a_status').textContent=aStatus;
+  document.getElementById('a_status').style.color=aColor;
+  document.getElementById('age_info').textContent=`年齡差 ${gap} 歲 · 均值 ${mean.toFixed(1)} 歲`;
+
+  const fCard=document.getElementById('f_card_row');
+  const fBreak=document.getElementById('breakdown_f');
+  if(hasF){
+    fCard.style.display='block';fBreak.style.display='block';
+    document.getElementById('f_display').textContent=(f*100).toFixed(1)+'%';
+    document.getElementById('f_status').textContent=fStatus;
+    document.getElementById('f_status').style.color=fColor;
+    document.getElementById('f_info').textContent=`自己 ${gs} 級 · 對方 ${go} 級`;
+    document.getElementById('d_grade_self').textContent=gs+' 級';
+    document.getElementById('d_grade_other').textContent=go+' 級';
+    document.getElementById('d_grade_self_sq').textContent=(gs*gs).toFixed(0);
+    document.getElementById('d_grade_other_sq').textContent=(go*go).toFixed(0);
+    document.getElementById('d_f_diff').textContent=Math.abs(gs*gs-go*go).toFixed(0);
+    document.getElementById('d_f_gap').textContent=(Math.abs(gs*gs-go*go)/100*100).toFixed(2)+'%';
+    document.getElementById('d_f_base').textContent=(((gs+go)/2)/10*100).toFixed(2)+'%';
+    document.getElementById('d_f_final').textContent=(f*100).toFixed(2)+'%';
+  } else {fCard.style.display='none';fBreak.style.display='none';}
+
+  document.getElementById('cross_tag').textContent=cross.tag;
+  document.getElementById('cross_tag').style.color=cross.danger?'var(--red)':'var(--accent)';
+  document.getElementById('cross_desc').textContent=cross.desc;
+  document.getElementById('cross_box').classList.toggle('danger',cross.danger);
+
+  document.getElementById('s_value').textContent=s.toFixed(1)+' 萬元／月';
+  document.getElementById('s_context').textContent=getSContext(s,phi);
+
+  const tEl=document.getElementById('type_tag');
+  tEl.textContent=typeLabel;tEl.style.color=typeColor;tEl.style.borderColor=typeColor;
+  document.getElementById('report_text').innerHTML=report;
+
+  document.getElementById('d_income_self').textContent=is.toFixed(1)+' 萬元';
+  document.getElementById('d_income_other').textContent=io.toFixed(1)+' 萬元';
+  document.getElementById('d_hours_self').textContent=hs.toFixed(0)+' 小時／週';
+  document.getElementById('d_hours_other').textContent=ho.toFixed(0)+' 小時／週';
+  document.getElementById('d_phi_money').textContent=phi_m.toFixed(4);
+  document.getElementById('d_phi_time').textContent=phi_t.toFixed(4);
+  document.getElementById('d_phi_raw').textContent=phi_raw.toFixed(4);
+  document.getElementById('d_dir_type').textContent=dirType;
+  document.getElementById('d_dir_adj').textContent=adjVal===0?'0':adjVal.toFixed(4);
+  document.getElementById('d_phi_final').textContent=phi.toFixed(4);
+  document.getElementById('d_w').textContent=w.toFixed(4);
+  document.getElementById('d_age_self').textContent=as_+' 歲';
+  document.getElementById('d_age_other').textContent=ao+' 歲';
+  document.getElementById('d_gap').textContent=gap+' 歲';
+  document.getElementById('d_mean').textContent=mean.toFixed(1)+' 歲';
+  document.getElementById('d_gap2').textContent=(gap*gap).toFixed(0);
+  document.getElementById('d_mean2').textContent=(mean*mean).toFixed(2);
+  document.getElementById('d_a_raw').textContent=(a_raw*100).toFixed(2)+'%';
+  document.getElementById('d_a_final').textContent=(a*100).toFixed(2)+'%'+(a_raw>1?' (已cap)':'');
+
+  // ── 顯示result + 更新SVG矩陣 ──
+  document.getElementById('result').classList.add('visible');
+  // SVG不依賴DOM尺寸，直接更新
+  updateMatrix(phi, a, hasF?f:0, hasF, phiColor, !pu&&!ad);
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>
