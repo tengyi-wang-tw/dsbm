@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSBM Custom Mode — 參數工作室</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+  :root {
+    --bg:#0a0a0a;--surface:#111;--surface2:#161616;--surface3:#1a1a1a;
+    --border:#1e1e1e;--border2:#2a2a2a;
+    --accent:#c8f060;--text:#e8e8e8;--text-dim:#909090;--text-muted:#505050;
+    --red:#ff5c5c;--yellow:#f0c060;--green:#60d080;--blue:#60b8f0;--orange:#f0a060;
+    --studio:#ff9d5c;--studio-dim:rgba(255,157,92,0.08);--studio-border:rgba(255,157,92,0.2);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding:0 0 80px;}
+
+  /* ── TOP BAR ── */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,10,10,0.96);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 24px;height:46px;
+  }
+  .topbar-brand{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;}
+  .topbar-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--studio);border:1px solid var(--studio-border);padding:3px 8px;letter-spacing:.1em;}
+
+  .container{max-width:800px;margin:0 auto;padding:36px 20px 0;}
+
+  /* ── PAGE HEADER ── */
+  .page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+  .page-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--studio);letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .page-tag::after{content:'';flex:1;height:1px;background:var(--studio-border);}
+  .page-h1{font-size:22px;font-weight:400;line-height:1.35;letter-spacing:-.01em;margin-bottom:10px;}
+  .page-desc{font-size:12px;color:var(--text-muted);line-height:1.8;max-width:540px;}
+
+  /* ── SECTION CHROME ── */
+  .sec{margin-bottom:2px;}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:var(--surface);border:1px solid var(--border);border-bottom:none;}
+  .sec-head-left{display:flex;align-items:center;gap:10px;}
+  .sec-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;}
+  .sec-title{font-size:13px;font-weight:400;}
+  .sec-title.studio{color:var(--studio);}
+  .sec-body{background:var(--surface);border:1px solid var(--border);padding:24px;}
+  .sec-body.studio-bg{background:var(--studio-dim);border-color:var(--studio-border);}
+
+  /* ── STUDIO: SLIDERS ── */
+  .studio-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .studio-cell{background:var(--surface2);padding:20px 22px;}
+  .studio-cell.studio-tint{background:rgba(255,157,92,0.05);}
+  .param-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+  .param-name{font-size:13px;color:var(--text);margin-bottom:14px;line-height:1.4;}
+  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .slider-wrap{flex:1;position:relative;}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;
+    width:100%;height:3px;background:var(--border2);outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;
+    background:var(--accent);border-radius:0;cursor:pointer;
+    transition:background .15s;
+  }
+  input[type=range].studio-range::-webkit-slider-thumb{background:var(--studio);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--accent);border:none;border-radius:0;cursor:pointer;}
+  input[type=range].studio-range::-moz-range-thumb{background:var(--studio);}
+  .slider-val{font-family:'DM Mono',monospace;font-size:16px;min-width:44px;text-align:right;}
+  .slider-val.studio-color{color:var(--studio);}
+  .delta-row{display:flex;align-items:center;gap:6px;margin-top:6px;}
+  .delta-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.08em;}
+  .delta-val{font-family:'DM Mono',monospace;font-size:9px;}
+  .delta-val.zero{color:var(--text-muted);}
+  .delta-val.pos{color:var(--green);}
+  .delta-val.neg{color:var(--red);}
+  .tick-default{position:absolute;top:10px;width:1px;height:8px;background:var(--text-muted);pointer-events:none;}
+
+  /* weight lock bar */
+  .weight-lock{background:var(--surface);border:1px solid var(--border);border-top:none;padding:14px 22px;display:flex;align-items:center;gap:16px;margin-bottom:1px;}
+  .weight-lock-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
+  .weight-bar-track{flex:1;height:4px;background:var(--border2);position:relative;}
+  .weight-bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent);transition:width .3s;}
+  .weight-bar-rest{position:absolute;right:0;top:0;height:100%;background:var(--studio);transition:width .3s;}
+  .weight-labels{display:flex;justify-content:space-between;margin-top:4px;}
+  .weight-label-text{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);}
+
+  /* ── RESET BTN ── */
+  .reset-btn{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);background:none;border:1px solid var(--border2);padding:5px 12px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s;}
+  .reset-btn:hover{border-color:var(--text-muted);color:var(--text);}
+
+  /* ── TOOLTIP ── */
+  .tip{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid var(--text-muted);border-radius:50%;font-size:8px;color:var(--text-muted);cursor:help;position:relative;margin-left:6px;flex-shrink:0;}
+  .tip-popup{
+    display:none;position:absolute;left:20px;top:-4px;
+    width:200px;background:var(--surface2);border:1px solid var(--border2);
+    padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);
+    line-height:1.6;z-index:10;pointer-events:none;
+  }
+  .tip:hover .tip-popup{display:block;}
+
+  /* ── INPUT SECTION ── */
+  .input-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end;margin-bottom:10px;}
+  .input-group{display:flex;flex-direction:column;gap:5px;}
+  .input-label{font-size:11px;color:var(--text-dim);}
+  .input-sublabel{font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .optional-badge{font-family:'DM Mono',monospace;font-size:8px;color:var(--orange);border:1px solid rgba(240,160,96,0.4);padding:1px 5px;margin-left:4px;vertical-align:middle;}
+  input[type=number]{
+    background:var(--surface2);border:1px solid var(--border2);color:var(--text);
+    font-family:'DM Mono',monospace;font-size:15px;padding:9px 11px;width:100%;outline:none;
+    transition:border-color .2s;-moz-appearance:textfield;
+  }
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+  input[type=number]:focus{border-color:var(--accent);}
+  input[type=number].optional{border-style:dashed;border-color:var(--border2);}
+  input[type=number].optional:focus{border-style:solid;border-color:var(--orange);}
+
+  .f-ref{background:#0d0d0d;border:1px solid var(--border);border-left:2px solid var(--orange);margin-bottom:12px;}
+  .f-ref-toggle{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;cursor:pointer;user-select:none;}
+  .f-ref-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:.12em;text-transform:uppercase;}
+  .f-ref-arrow{font-size:10px;color:var(--text-muted);transition:transform .2s;}
+  .f-ref-arrow.open{transform:rotate(180deg);}
+  .f-ref-body{display:none;padding:0 13px 12px;}
+  .f-ref-body.open{display:block;}
+  .f-ref-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);}
+  .f-ref-cell{background:var(--surface);padding:7px 10px;}
+  .f-ref-grade{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);}
+  .f-ref-amt{font-size:10px;color:var(--text-muted);margin-top:2px;}
+  .f-ref-note{font-size:9px;color:var(--text-muted);margin-top:9px;padding-top:8px;border-top:1px solid var(--border);line-height:1.5;}
+
+  .calc-btn{
+    background:var(--accent);color:#0a0a0a;border:none;
+    font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.1em;
+    padding:13px 28px;cursor:pointer;width:100%;margin-top:8px;
+    transition:background .2s,transform .1s;
+  }
+  .calc-btn:hover{background:#d4f570;}
+  .calc-btn:active{transform:scale(.99);}
+
+  /* ── DUAL RESULT ── */
+  .result-section{display:none;margin-top:2px;}
+  .result-section.visible{display:block;}
+
+  .dual-head{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .dual-col-head{padding:12px 16px;}
+  .dual-col-head.canonical{background:var(--surface2);}
+  .dual-col-head.custom{background:rgba(255,157,92,0.06);border-bottom:2px solid var(--studio);}
+  .dual-col-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+  .dual-col-tag.c{color:var(--text-muted);}
+  .dual-col-tag.s{color:var(--studio);}
+  .dual-col-desc{font-size:11px;color:var(--text-muted);}
+
+  .dual-phi{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .phi-col{padding:20px 22px;}
+  .phi-col.canonical{background:var(--surface);}
+  .phi-col.custom{background:rgba(255,157,92,0.04);}
+  .phi-num{font-family:'DM Mono',monospace;font-size:44px;font-weight:500;line-height:1;margin-bottom:6px;}
+  .phi-axis-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .phi-status-text{font-size:12px;font-weight:400;margin-bottom:4px;}
+  .phi-w{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);}
+
+  .dual-axes{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .axis-pair{padding:16px 18px;}
+  .axis-pair.canonical{background:var(--surface2);}
+  .axis-pair.custom{background:rgba(255,157,92,0.04);}
+  .ap-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+  .ap-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid #1a1a1a;font-size:11px;}
+  .ap-row:last-child{border-bottom:none;}
+  .ap-key{color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .ap-val{font-family:'DM Mono',monospace;}
+
+  /* delta indicator between cols */
+  .delta-indicator{background:var(--surface);border:1px solid var(--border);border-top:none;padding:12px 20px;display:flex;align-items:center;gap:12px;margin-bottom:1px;}
+  .di-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;}
+  .di-chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .di-chip{font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border:1px solid;}
+
+  /* cross diagnosis */
+  .cross-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .cross-cell{padding:16px 20px;}
+  .cross-cell.canonical{background:var(--surface2);}
+  .cross-cell.custom{background:rgba(255,157,92,0.04);}
+  .cross-tag-diag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.07em;margin-bottom:6px;}
+  .cross-desc-diag{font-size:11px;color:var(--text-muted);line-height:1.7;}
+
+  /* s box */
+  .s-strip{background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--blue);padding:13px 16px;margin-bottom:1px;}
+  .s-strip-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .s-strip-val{font-family:'DM Mono',monospace;font-size:20px;color:var(--blue);margin-bottom:4px;}
+  .s-strip-ctx{font-size:11px;color:var(--text-muted);line-height:1.6;}
+
+  /* breakdown */
+  .breakdown-dual{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+  .breakdown-col{background:var(--surface2);padding:16px 18px;}
+  .breakdown-col.custom-bd{background:rgba(255,157,92,0.04);}
+  .bd-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+  .bd-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #181818;font-size:10px;}
+  .bd-key{color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .bd-val{color:var(--text);font-family:'DM Mono',monospace;}
+
+  /* ── FEEDBACK ── */
+  .fb-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .fb-cell{background:var(--surface2);padding:16px 20px;}
+  .fb-q{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+  .fb-options{display:flex;flex-direction:column;gap:4px;}
+  .fb-opt{display:flex;align-items:center;gap:8px;cursor:pointer;}
+  .fb-opt input[type=radio],
+  .fb-opt input[type=checkbox]{
+    accent-color:var(--accent);width:13px;height:13px;cursor:pointer;
+    background:var(--surface);border:1px solid var(--border2);
+  }
+  .fb-opt-label{font-size:12px;color:var(--text-dim);}
+  .fb-text{
+    background:var(--surface2);border:1px solid var(--border2);color:var(--text);
+    font-family:'DM Sans',sans-serif;font-size:12px;font-weight:300;
+    padding:10px 12px;width:100%;resize:vertical;min-height:80px;outline:none;
+    transition:border-color .2s;line-height:1.6;
+  }
+  .fb-text:focus{border-color:var(--accent);}
+  .copy-btn{
+    background:none;border:1px solid var(--border2);
+    font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);
+    letter-spacing:.1em;text-transform:uppercase;padding:11px 20px;
+    cursor:pointer;width:100%;transition:border-color .15s,color .15s;margin-top:1px;
+  }
+  .copy-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .copy-btn.copied{border-color:var(--green);color:var(--green);}
+
+  /* ── NOTE ── */
+  .note{margin-top:28px;padding:14px;border-left:2px solid var(--border2);font-size:11px;color:var(--text-muted);line-height:1.65;}
+  .version{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-align:right;margin-top:28px;letter-spacing:.1em;}
+
+  /* ── MOBILE ── */
+  @media(max-width:560px){
+    .studio-grid{grid-template-columns:1fr;}
+    .dual-head,.dual-phi,.dual-axes,.cross-row,.breakdown-dual,.fb-grid{grid-template-columns:1fr;}
+    .input-grid{grid-template-columns:1fr 1fr;}
+    .container{padding:24px 14px 0;}
+    .page-h1{font-size:18px;}
+    .phi-num{font-size:36px;}
+    .f-ref-grid{grid-template-columns:repeat(2,1fr);}
+    .tip-popup{left:auto;right:20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-brand">DSBM</span>
+  <span class="topbar-badge">CUSTOM MODE</span>
+</div>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="page-tag">參數工作室</div>
+    <h1 class="page-h1">自定義模式<br><span style="color:var(--text-dim);font-size:16px;font-weight:300;">調整模型參數，對照官方診斷</span></h1>
+    <p class="page-desc">在這裡調整 DSBM 的核心係數，系統會同時顯示官方模型與你的模型的診斷結果。並排對照讓你看見自己的價值觀與模型預設值的差距。</p>
+  </div>
+
+  <!-- ── SECTION 01: 參數工作室 ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-num">01</span>
+        <span class="sec-title studio">參數工作室</span>
+      </div>
+      <button class="reset-btn" onclick="resetParams()">↺ 重置預設</button>
+    </div>
+    <div class="sec-body" style="padding:0;">
+
+      <!-- φ 權重區 -->
+      <div class="studio-grid">
+        <div class="studio-cell">
+          <div class="param-label">φ 第一維度
+            <span class="tip">i<span class="tip-popup">φ_money 與 φ_time 的權重加總鎖定為 100%。調整此滑桿，另一個會自動跟著變。</span></span>
+          </div>
+          <div class="param-name">φ_money 收入對稱<br><span style="font-size:11px;color:var(--text-muted);">佔 φ 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="w_money" min="10" max="90" value="50" step="5" oninput="onMoneyWeight(this.value)">
+              <div class="tick-default" id="tick_money" style="left:50%;"></div>
+            </div>
+            <span class="slider-val" id="wm_val">50%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 50%</span>
+            <span class="delta-val zero" id="wm_delta">± 0%</span>
+          </div>
+        </div>
+        <div class="studio-cell studio-tint">
+          <div class="param-label" style="color:var(--studio);">φ 第二維度
+            <span class="tip" style="border-color:var(--studio);color:var(--studio);">i<span class="tip-popup">與 φ_money 聯動，兩者加總永遠為 100%。</span></span>
+          </div>
+          <div class="param-name">φ_time 時間對稱<br><span style="font-size:11px;color:var(--text-muted);">佔 φ 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="w_time" min="10" max="90" value="50" step="5" oninput="onTimeWeight(this.value)" class="studio-range">
+              <div class="tick-default" id="tick_time" style="left:50%;"></div>
+            </div>
+            <span class="slider-val studio-color" id="wt_val">50%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 50%</span>
+            <span class="delta-val zero" id="wt_delta">± 0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 權重視覺條 -->
+      <div class="weight-lock">
+        <span class="weight-lock-label">權重分配</span>
+        <div style="flex:1;">
+          <div class="weight-bar-track">
+            <div class="weight-bar-fill" id="wb_money" style="width:50%;"></div>
+            <div class="weight-bar-rest" id="wb_time" style="width:50%;left:auto;right:0;"></div>
+          </div>
+          <div class="weight-labels">
+            <span class="weight-label-text" id="wb_ml">φ_money 50%</span>
+            <span class="weight-label-text" id="wb_tl" style="color:var(--studio);">φ_time 50%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 互補係數 & 過載懲罰 -->
+      <div class="studio-grid" style="margin-top:1px;">
+        <div class="studio-cell">
+          <div class="param-label">方向性修正 — 加分
+            <span class="tip">i<span class="tip-popup">互補分工時（收入高者時數少），給予 φ 加分。預設 0.1。數值越高代表你認為互補分工的紅利越大。</span></span>
+          </div>
+          <div class="param-name">互補係數<br><span style="font-size:11px;color:var(--text-muted);">complementary bonus × ?</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="comp_coef" min="0" max="0.5" value="0.1" step="0.01" oninput="updateSlider('comp_coef','cc_val',2,'',0.1,'cc_delta')">
+              <div class="tick-default" id="tick_comp" style="left:20%;"></div>
+            </div>
+            <span class="slider-val" id="cc_val">0.10</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 0.10</span>
+            <span class="delta-val zero" id="cc_delta">± 0.00</span>
+          </div>
+        </div>
+        <div class="studio-cell studio-tint">
+          <div class="param-label" style="color:var(--red);">方向性修正 — 扣分
+            <span class="tip" style="border-color:var(--red);color:var(--red);">i<span class="tip-popup">單邊過載時（收入高者時數也多），對 φ 懲罰。預設 0.4。數值越高代表你認為單邊過載的破壞力越強。</span></span>
+          </div>
+          <div class="param-name">過載懲罰<br><span style="font-size:11px;color:var(--text-muted);">overload penalty × ?</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="overload_coef" min="0.05" max="0.9" value="0.4" step="0.01" oninput="updateSlider('overload_coef','oc_val',2,'',0.4,'oc_delta')" class="studio-range" style="--webkit-slider-thumb-bg:var(--red);">
+              <div class="tick-default" id="tick_overload" style="left:42%;"></div>
+            </div>
+            <span class="slider-val" id="oc_val" style="color:var(--red);">0.40</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 0.40</span>
+            <span class="delta-val zero" id="oc_delta">± 0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- F_gap / F_base 權重區 -->
+      <div style="height:1px;background:var(--border);margin:0;"></div>
+      <div class="studio-grid" style="margin-top:1px;">
+        <div class="studio-cell">
+          <div class="param-label" style="color:var(--orange);">F 軸 — 差距維度
+            <span class="tip" style="border-color:var(--orange);color:var(--orange);">i<span class="tip-popup">F_gap 捕捉雙方家境差距的價值觀摩擦。預設 70%。調高代表你認為差距問題比資源匱乏更傷關係。</span></span>
+          </div>
+          <div class="param-name">F_gap 差距摩擦<br><span style="font-size:11px;color:var(--text-muted);">佔 F 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="f_gap_w" min="10" max="90" value="70" step="5" oninput="onFGapWeight(this.value)" class="studio-range" style="">
+              <div class="tick-default" style="left:75%;background:var(--orange);"></div>
+            </div>
+            <span class="slider-val" id="fg_val" style="color:var(--orange);">70%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 70%</span>
+            <span class="delta-val zero" id="fg_delta">± 0%</span>
+          </div>
+        </div>
+        <div class="studio-cell studio-tint">
+          <div class="param-label" style="color:var(--blue);">F 軸 — 匱乏維度
+            <span class="tip" style="border-color:var(--blue);color:var(--blue);">i<span class="tip-popup">F_base 捕捉雙方絕對資源不足的生存壓力。預設 30%。調高代表你認為「一起窮」的壓力比差距更大。兩者加總鎖定 100%。</span></span>
+          </div>
+          <div class="param-name">F_base 資源匱乏<br><span style="font-size:11px;color:var(--text-muted);">佔 F 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="f_base_w" min="10" max="90" value="30" step="5" oninput="onFBaseWeight(this.value)">
+              <div class="tick-default" style="left:25%;"></div>
+            </div>
+            <span class="slider-val" id="fb_val" style="color:var(--blue);">30%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 30%</span>
+            <span class="delta-val zero" id="fb_delta">± 0%</span>
+          </div>
+        </div>
+      </div>
+      <!-- F 權重視覺條 -->
+      <div class="weight-lock">
+        <span class="weight-lock-label">F 權重分配</span>
+        <div style="flex:1;">
+          <div class="weight-bar-track">
+            <div class="weight-bar-fill" id="wf_gap" style="width:70%;background:var(--orange);"></div>
+            <div class="weight-bar-rest" id="wf_base" style="width:30%;background:var(--blue);left:auto;right:0;"></div>
+          </div>
+          <div class="weight-labels">
+            <span class="weight-label-text" id="wf_gl" style="color:var(--orange);">F_gap 70%</span>
+            <span class="weight-label-text" id="wf_bl" style="color:var(--blue);">F_base 30%</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 22px 14px;background:var(--surface);border-top:1px solid var(--border);">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.08em;">
+          F_gap = |自己等級²−對方等級²| / 100 &nbsp;·&nbsp; F_base = (自己等級+對方等級) / 20 &nbsp;·&nbsp; F = min(1, F_gap×w_gap + F_base×w_base)
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SECTION 02: 資料輸入 ── -->
+  <div class="sec" style="margin-top:2px;">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-num">02</span>
+        <span class="sec-title">資料輸入</span>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="input-grid" style="margin-bottom:14px;">
+        <div class="input-group"><span class="input-label">項目</span></div>
+        <div class="input-group"><span class="input-label">自己</span></div>
+        <div class="input-group"><span class="input-label">對方</span></div>
+      </div>
+      <div class="input-grid" style="margin-bottom:10px;">
+        <div class="input-group"><span class="input-label">月收入</span><span class="input-sublabel">萬元／月</span></div>
+        <input type="number" id="income_self" placeholder="例：8" min="0" step="0.1">
+        <input type="number" id="income_other" placeholder="例：3" min="0" step="0.1">
+      </div>
+      <div class="input-grid" style="margin-bottom:10px;">
+        <div class="input-group"><span class="input-label">每週勞動時數</span><span class="input-sublabel">工作＋家務＋照顧</span></div>
+        <input type="number" id="hours_self" placeholder="例：55" min="0" max="168" step="1">
+        <input type="number" id="hours_other" placeholder="例：30" min="0" max="168" step="1">
+      </div>
+      <div class="input-grid" style="margin-bottom:10px;">
+        <div class="input-group"><span class="input-label">年齡</span><span class="input-sublabel">實際歲數（≥16）</span></div>
+        <input type="number" id="age_self" placeholder="例：32" min="16" step="1">
+        <input type="number" id="age_other" placeholder="例：28" min="16" step="1">
+      </div>
+      <div class="f-ref">
+        <div class="f-ref-toggle" onclick="toggleFRef()">
+          <span class="f-ref-label">家境等級對照表 ▾</span>
+          <span class="f-ref-arrow" id="f_arrow">▾</span>
+        </div>
+        <div class="f-ref-body" id="f_ref_body">
+          <div class="f-ref-grid">
+            <div class="f-ref-cell"><div class="f-ref-grade">1 級</div><div class="f-ref-amt">&gt;3,391萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">2 級</div><div class="f-ref-amt">≈3,391萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">3 級</div><div class="f-ref-amt">≈2,134萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">4 級</div><div class="f-ref-amt">≈1,547萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">5 級</div><div class="f-ref-amt">≈1,171萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">6 級</div><div class="f-ref-amt">≈894萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">7 級</div><div class="f-ref-amt">≈677萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">8 級</div><div class="f-ref-amt">≈490萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">9 級</div><div class="f-ref-amt">≈319萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">10 級</div><div class="f-ref-amt">&lt;143萬</div></div>
+          </div>
+          <div class="f-ref-note">1 級最富，10 級最低。填入最接近自身家庭狀況的整數等級。資料來源：行政院主計總處。</div>
+        </div>
+      </div>
+      <div class="input-grid" style="margin-bottom:6px;">
+        <div class="input-group"><span class="input-label">家境等級<span class="optional-badge">選填</span></span><span class="input-sublabel">1=最富 10=最低</span></div>
+        <input type="number" id="f_self" placeholder="1–10" min="1" max="10" step="1" class="optional">
+        <input type="number" id="f_other" placeholder="1–10" min="1" max="10" step="1" class="optional">
+      </div>
+      <button class="calc-btn" onclick="calculate()">▸ 執行對照診斷</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 03: 對照診斷結果 ── -->
+  <div class="result-section" id="result_section" style="margin-top:2px;">
+
+    <div class="sec-head" style="margin-bottom:1px;">
+      <div class="sec-head-left">
+        <span class="sec-num">03</span>
+        <span class="sec-title">對照診斷結果</span>
+      </div>
+    </div>
+
+    <!-- col headers -->
+    <div class="dual-head">
+      <div class="dual-col-head canonical">
+        <div class="dual-col-tag c">官方模型 — Canonical</div>
+        <div class="dual-col-desc">DSBM v3.0 預設參數</div>
+      </div>
+      <div class="dual-col-head custom">
+        <div class="dual-col-tag s">你的模型 — Custom</div>
+        <div class="dual-col-desc" id="custom_param_desc">—</div>
+      </div>
+    </div>
+
+    <!-- φ display -->
+    <div class="dual-phi">
+      <div class="phi-col canonical">
+        <div class="phi-axis-label">第一軸 — φ</div>
+        <div class="phi-num" id="c_phi">—</div>
+        <div class="phi-status-text" id="c_phi_status">—</div>
+        <div class="phi-w" id="c_w">W = —</div>
+      </div>
+      <div class="phi-col custom">
+        <div class="phi-axis-label" style="color:var(--studio);">第一軸 — φ (custom)</div>
+        <div class="phi-num" id="u_phi">—</div>
+        <div class="phi-status-text" id="u_phi_status">—</div>
+        <div class="phi-w" id="u_w">W = —</div>
+      </div>
+    </div>
+
+    <!-- A & F axes -->
+    <div class="dual-axes">
+      <div class="axis-pair canonical">
+        <div class="ap-label">軸 A · F（A 共用；F 受權重影響）</div>
+        <div class="ap-row"><span class="ap-key">A 年齡背景</span><span class="ap-val" id="c_a">—</span></div>
+        <div class="ap-row"><span class="ap-key">A 狀態</span><span class="ap-val" id="c_a_status">—</span></div>
+        <div class="ap-row" id="c_f_row"><span class="ap-key">F 官方</span><span class="ap-val" id="c_f">—</span></div>
+        <div class="ap-row" id="c_f_status_row"><span class="ap-key">F 官方狀態</span><span class="ap-val" id="c_f_status">—</span></div>
+        <div class="ap-row" id="c_f_custom_row"><span class="ap-key">F custom</span><span class="ap-val" id="c_f_custom">—</span></div>
+        <div class="ap-row" id="c_f_custom_status_row"><span class="ap-key">F custom 狀態</span><span class="ap-val" id="c_f_custom_status">—</span></div>
+      </div>
+      <div class="axis-pair custom">
+        <div class="ap-label" style="color:var(--studio);">φ 分解對照</div>
+        <div class="ap-row"><span class="ap-key">φ_money (官方)</span><span class="ap-val" id="c_pm">—</span></div>
+        <div class="ap-row"><span class="ap-key">φ_money (custom)</span><span class="ap-val" id="u_pm">—</span></div>
+        <div class="ap-row"><span class="ap-key">φ_time (官方)</span><span class="ap-val" id="c_pt">—</span></div>
+        <div class="ap-row"><span class="ap-key">φ_time (custom)</span><span class="ap-val" id="u_pt">—</span></div>
+        <div class="ap-row"><span class="ap-key">方向類型</span><span class="ap-val" id="dir_label">—</span></div>
+        <div class="ap-row"><span class="ap-key">修正值 (官方)</span><span class="ap-val" id="c_adj">—</span></div>
+        <div class="ap-row"><span class="ap-key">修正值 (custom)</span><span class="ap-val" id="u_adj">—</span></div>
+      </div>
+    </div>
+
+    <!-- delta indicator -->
+    <div class="delta-indicator">
+      <span class="di-label">參數偏移</span>
+      <div class="di-chips" id="delta_chips">—</div>
+    </div>
+
+    <!-- cross diagnosis -->
+    <div class="cross-row">
+      <div class="cross-cell canonical">
+        <div class="cross-tag-diag" id="c_cross_tag">—</div>
+        <div class="cross-desc-diag" id="c_cross_desc">—</div>
+      </div>
+      <div class="cross-cell custom">
+        <div class="cross-tag-diag" id="u_cross_tag" style="color:var(--studio);">—</div>
+        <div class="cross-desc-diag" id="u_cross_desc">—</div>
+      </div>
+    </div>
+
+    <!-- S -->
+    <div class="s-strip">
+      <div class="s-strip-title">S — 月收入合計（背景參考）</div>
+      <div class="s-strip-val" id="s_val">—</div>
+      <div class="s-strip-ctx" id="s_ctx">—</div>
+    </div>
+
+    <!-- breakdown -->
+    <div class="breakdown-dual">
+      <div class="breakdown-col">
+        <div class="bd-title">計算明細 — 官方</div>
+        <div class="bd-row"><span class="bd-key">φ_money</span><span class="bd-val" id="bd_c_pm">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ_time</span><span class="bd-val" id="bd_c_pt">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 原始</span><span class="bd-val" id="bd_c_raw">—</span></div>
+        <div class="bd-row"><span class="bd-key">修正值</span><span class="bd-val" id="bd_c_adj">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 最終</span><span class="bd-val" id="bd_c_phi">—</span></div>
+        <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_c_w">—</span></div>
+      </div>
+      <div class="breakdown-col custom-bd">
+        <div class="bd-title" style="color:var(--studio);">計算明細 — Custom</div>
+        <div class="bd-row"><span class="bd-key">φ_money (w=<span id="bd_wm">—</span>)</span><span class="bd-val" id="bd_u_pm">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ_time (w=<span id="bd_wt">—</span>)</span><span class="bd-val" id="bd_u_pt">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 原始</span><span class="bd-val" id="bd_u_raw">—</span></div>
+        <div class="bd-row"><span class="bd-key">修正值</span><span class="bd-val" id="bd_u_adj">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 最終</span><span class="bd-val" id="bd_u_phi">—</span></div>
+        <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_u_w">—</span></div>
+      </div>
+    </div>
+
+    <!-- F breakdown (shown only if F data provided) -->
+    <div class="breakdown-dual" id="f_bd_section" style="margin-top:1px;display:none;">
+      <div class="breakdown-col">
+        <div class="bd-title" style="color:var(--orange);">F 計算明細 — 官方 (gap 70% · base 30%)</div>
+        <div class="bd-row"><span class="bd-key">F_gap</span><span class="bd-val" id="bd_c_fgap">—</span></div>
+        <div class="bd-row"><span class="bd-key">F_base</span><span class="bd-val" id="bd_c_fbase">—</span></div>
+        <div class="bd-row"><span class="bd-key">F 最終</span><span class="bd-val" id="bd_c_f">—</span></div>
+      </div>
+      <div class="breakdown-col custom-bd">
+        <div class="bd-title" style="color:var(--orange);">F 計算明細 — Custom (gap <span id="bd_fg_w">—</span> · base <span id="bd_fb_w">—</span>)</div>
+        <div class="bd-row"><span class="bd-key">F_gap</span><span class="bd-val" id="bd_u_fgap">—</span></div>
+        <div class="bd-row"><span class="bd-key">F_base</span><span class="bd-val" id="bd_u_fbase">—</span></div>
+        <div class="bd-row"><span class="bd-key">F 最終</span><span class="bd-val" id="bd_u_f">—</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SECTION 04: 意見回報 ── -->
+  <div class="sec" style="margin-top:2px;">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-num">04</span>
+        <span class="sec-title">意見回報</span>
+      </div>
+    </div>
+    <div class="sec-body" style="padding:0;">
+      <div class="fb-grid">
+        <div class="fb-cell">
+          <div class="fb-q">診斷結果符合你的感受嗎？</div>
+          <div class="fb-options">
+            <label class="fb-opt"><input type="radio" name="fb_match" value="符合"> <span class="fb-opt-label">符合</span></label>
+            <label class="fb-opt"><input type="radio" name="fb_match" value="部分符合"> <span class="fb-opt-label">部分符合</span></label>
+            <label class="fb-opt"><input type="radio" name="fb_match" value="不符合"> <span class="fb-opt-label">不符合</span></label>
+          </div>
+        </div>
+        <div class="fb-cell">
+          <div class="fb-q">哪個軸你覺得最不準？</div>
+          <div class="fb-options">
+            <label class="fb-opt"><input type="checkbox" name="fb_axis" value="φ（貢獻對稱）"> <span class="fb-opt-label">φ 貢獻對稱</span></label>
+            <label class="fb-opt"><input type="checkbox" name="fb_axis" value="A（年齡背景）"> <span class="fb-opt-label">A 年齡背景</span></label>
+            <label class="fb-opt"><input type="checkbox" name="fb_axis" value="F（家境背景）"> <span class="fb-opt-label">F 家境背景</span></label>
+            <label class="fb-opt"><input type="checkbox" name="fb_axis" value="方向性修正"> <span class="fb-opt-label">方向性修正</span></label>
+            <label class="fb-opt"><input type="checkbox" name="fb_axis" value="都還好"> <span class="fb-opt-label">都還好</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="sec-body" style="border-top:1px solid var(--border);padding:16px 20px;">
+        <div class="fb-q" style="margin-bottom:8px;">補充說明（選填）</div>
+        <textarea class="fb-text" id="fb_text" placeholder="例：我認為時間的權重應該更高，因為在我的關係裡..."></textarea>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:1px;">
+      <button class="copy-btn" id="copy_btn" onclick="copyFeedback()">▸ 複製回報內容</button>
+      <button class="copy-btn" id="mail_btn" onclick="mailFeedback()" style="border-left:none;color:var(--accent);border-color:var(--accent);">▸ 寄出意見回報</button>
+    </div>
+  </div>
+
+  <div class="note">
+    本頁為 DSBM v3.1 自定義模式（Custom Mode）。官方模型參數：φ_money:φ_time = 50:50、互補係數 0.1、過載懲罰 0.4、F_gap:F_base = 70:30。F 軸採 v3.1 公式，修正雙方同為 10 級時 F=0 的問題（現為 30%）。A 軸在兩種模式下完全相同。結果僅供結構性參考。
+  </div>
+  <div class="version">DSBM v3.1 — Custom Mode · 獨立版 Beta</div>
+
+</div>
+
+<script>
+// ── DEFAULT PARAMS ──
+const DEFAULT = { wMoney:0.5, wTime:0.5, compCoef:0.1, overloadCoef:0.4, fGapW:0.7, fBaseW:0.3 };
+
+function getCustomParams() {
+  const wm = parseInt(document.getElementById('w_money').value) / 100;
+  const fg = parseInt(document.getElementById('f_gap_w').value) / 100;
+  return {
+    wMoney: wm,
+    wTime: 1 - wm,
+    compCoef: parseFloat(document.getElementById('comp_coef').value),
+    overloadCoef: parseFloat(document.getElementById('overload_coef').value),
+    fGapW: fg,
+    fBaseW: 1 - fg,
+  };
+}
+
+// ── SLIDER: weight lock ──
+function onMoneyWeight(v) {
+  const wm = parseInt(v);
+  const wt = 100 - wm;
+  document.getElementById('w_time').value = wt;
+  document.getElementById('wm_val').textContent = wm + '%';
+  document.getElementById('wt_val').textContent = wt + '%';
+  document.getElementById('wb_money').style.width = wm + '%';
+  document.getElementById('wb_time').style.width = wt + '%';
+  document.getElementById('wb_ml').textContent = 'φ_money ' + wm + '%';
+  document.getElementById('wb_tl').textContent = 'φ_time ' + wt + '%';
+  setDelta('wm_delta', wm - 50, '%', 0);
+  setDelta('wt_delta', wt - 50, '%', 0);
+}
+function onTimeWeight(v) {
+  const wt = parseInt(v);
+  const wm = 100 - wt;
+  document.getElementById('w_money').value = wm;
+  onMoneyWeight(wm);
+}
+
+// ── SLIDER: generic ──
+function updateSlider(id, displayId, decimals, unit, def, deltaId) {
+  const val = parseFloat(document.getElementById(id).value);
+  document.getElementById(displayId).textContent = val.toFixed(decimals) + unit;
+  const diff = val - def;
+  setDelta(deltaId, diff, '', decimals);
+}
+
+function setDelta(id, diff, unit, decimals) {
+  const el = document.getElementById(id);
+  const abs = Math.abs(diff);
+  if (abs < 0.001) {
+    el.textContent = '± 0' + (unit || (decimals > 0 ? '.' + '0'.repeat(decimals) : '')) + (unit || '');
+    el.className = 'delta-val zero';
+  } else {
+    const sign = diff > 0 ? '+' : '−';
+    el.textContent = sign + ' ' + abs.toFixed(decimals > 0 ? decimals : 0) + (unit || '');
+    el.className = 'delta-val ' + (diff > 0 ? 'pos' : 'neg');
+  }
+}
+
+function resetParams() {
+  document.getElementById('w_money').value = 50;
+  document.getElementById('w_time').value = 50;
+  document.getElementById('comp_coef').value = 0.1;
+  document.getElementById('overload_coef').value = 0.4;
+  document.getElementById('f_gap_w').value = 70;
+  document.getElementById('f_base_w').value = 30;
+  onMoneyWeight(50);
+  onFGapWeight(70);
+  document.getElementById('cc_val').textContent = '0.10';
+  document.getElementById('oc_val').textContent = '0.40';
+  ['cc_delta','oc_delta','fg_delta','fb_delta'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '± 0.00';
+    el.className = 'delta-val zero';
+  });
+}
+
+// ── F weight lock ──
+function onFGapWeight(v) {
+  const fg = parseInt(v);
+  const fb = 100 - fg;
+  document.getElementById('f_base_w').value = fb;
+  document.getElementById('fg_val').textContent = fg + '%';
+  document.getElementById('fb_val').textContent = fb + '%';
+  document.getElementById('wf_gap').style.width = fg + '%';
+  document.getElementById('wf_base').style.width = fb + '%';
+  document.getElementById('wf_gl').textContent = 'F_gap ' + fg + '%';
+  document.getElementById('wf_bl').textContent = 'F_base ' + fb + '%';
+  setDelta('fg_delta', fg - 70, '%', 0);
+  setDelta('fb_delta', fb - 30, '%', 0);
+}
+function onFBaseWeight(v) {
+  const fb = parseInt(v);
+  const fg = 100 - fb;
+  document.getElementById('f_gap_w').value = fg;
+  onFGapWeight(fg);
+}
+
+function toggleFRef() {
+  const body = document.getElementById('f_ref_body');
+  const arrow = document.getElementById('f_arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+// ── CORE CALCULATION ──
+function computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, params) {
+  // φ
+  const pm = (is + io > 0) ? 1 - Math.abs(is - io) / (is + io) : 1;
+  const pt = (hs + ho > 0) ? 1 - Math.abs(hs - ho) / (hs + ho) : 1;
+  const phi_raw = pm * params.wMoney + pt * params.wTime;
+
+  // direction
+  const inc_hi_self = is > io;
+  const hrs_hi_self = hs > ho;
+  const inc_gap = (is + io > 0) ? Math.abs(is - io) / (is + io) : 0;
+  const hrs_gap = (hs + ho > 0) ? Math.abs(hs - ho) / (hs + ho) : 0;
+
+  let dirType, adj;
+  if (inc_gap < 0.01 || hrs_gap < 0.01) {
+    dirType = '無顯著方向'; adj = 0;
+  } else if (inc_hi_self === hrs_hi_self) {
+    dirType = '單邊過載'; adj = -(inc_gap * hrs_gap * params.overloadCoef);
+  } else {
+    dirType = '互補分工'; adj = +(inc_gap * hrs_gap * params.compCoef);
+  }
+  const phi = Math.max(0, Math.min(1, phi_raw + adj));
+  const w = 1 - phi;
+
+  // A
+  let A = 0, A_raw = 0;
+  if (ageSelf !== null && ageOther !== null) {
+    const gap = Math.abs(ageSelf - ageOther);
+    const mean = (ageSelf + ageOther) / 2;
+    A_raw = (gap * gap) / (mean * mean);
+    A = Math.min(1, A_raw);
+  }
+
+  // F (v3.1)
+  let F = null, F_gap = null, F_base = null;
+  if (fSelf !== null && fOther !== null) {
+    F_gap  = Math.abs(fSelf * fSelf - fOther * fOther) / 100;
+    F_base = ((fSelf + fOther) / 2) / 10;
+    F = Math.min(1, F_gap * params.fGapW + F_base * params.fBaseW);
+  }
+
+  return { pm, pt, phi_raw, dirType, adj, phi, w, A, A_raw, F, F_gap, F_base };
+}
+
+function phiStatus(phi) {
+  if (phi >= 0.80) return { text:'結構良好', color:'var(--green)' };
+  if (phi >= 0.65) return { text:'輕度不對稱', color:'var(--accent)' };
+  if (phi >= 0.50) return { text:'中度不對稱', color:'var(--yellow)' };
+  return { text:'高度不對稱', color:'var(--red)' };
+}
+function aStatus(a) {
+  if (a < 0.10) return { text:'背景相近', color:'var(--green)' };
+  if (a < 0.25) return { text:'差距可接受', color:'var(--accent)' };
+  if (a < 0.50) return { text:'差距明顯', color:'var(--yellow)' };
+  return { text:'差距顯著', color:'var(--red)' };
+}
+function fStatus(f) {
+  if (f < 0.10) return { text:'家境相近', color:'var(--green)' };
+  if (f < 0.30) return { text:'差距可接受', color:'var(--accent)' };
+  if (f < 0.60) return { text:'差距明顯', color:'var(--yellow)' };
+  return { text:'差距顯著', color:'var(--red)' };
+}
+
+function crossDiag(phi, A, F) {
+  const phiUp = phi >= 0.65;
+  const aDown = A < 0.25;
+  if (F === null) {
+    const map = {
+      '11':'φ↑ A↓ — 雙軸穩定型|貢獻對稱且年齡背景差距小，系統具備較強的外部壓力緩衝能力。',
+      '10':'φ↑ A↑ — 貢獻對稱，背景存差|當下分工均衡，但年齡差距是潛在變數，在重大決策節點才浮現。',
+      '01':'φ↓ A↓ — 背景相近，貢獻待調整|人生座標一致是有利條件，主要壓力來自貢獻不對稱。',
+      '00':'φ↓ A↑ — 雙軸壓力型|兩個軸均顯示結構壓力，貢獻不對稱更難透過溝通單獨解決。',
+    };
+    const k = (phiUp?'1':'0')+(aDown?'1':'0');
+    const parts = map[k].split('|');
+    return { tag: parts[0], desc: parts[1] };
+  } else {
+    const fDown = F < 0.30;
+    const map = {
+      '111':'φ↑ A↓ F↓ — 三軸穩定型|三個診斷軸均指向穩定，系統抗壓能力最強。',
+      '110':'φ↑ A↓ F↑ — 貢獻穩定，家境存差|當下運作穩定，但家境差距是潛在的價值觀摩擦來源。',
+      '101':'φ↑ A↑ F↓ — 貢獻對稱，年齡存差|家境背景一致降低了部分風險，仍需關注人生階段不同步。',
+      '100':'φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差|當下分工均衡，但年齡與家境差距同時存在。',
+      '011':'φ↓ A↓ F↓ — 背景一致，貢獻待調整|年齡與家境均相近，溝通調整的成本相對較低。',
+      '010':'φ↓ A↓ F↑ — 貢獻失衡，家境存差|家境差距使「公平感」基準不一致，加深對貢獻不對稱的感知落差。',
+      '001':'φ↓ A↑ F↓ — 年齡存差，貢獻失衡|家境相近是相對有利條件，但年齡與貢獻不對稱同時存在。',
+      '000':'φ↓ A↑ F↑ — 三軸壓力型|三個軸均顯示結構壓力，是模型中風險最集中的組合。',
+    };
+    const k = (phiUp?'1':'0')+(aDown?'1':'0')+(fDown?'1':'0');
+    const parts = map[k].split('|');
+    return { tag: parts[0], desc: parts[1] };
+  }
+}
+
+function getSContext(s, phi) {
+  const hi = s >= 15, lo = s < 6, hp = phi >= 0.70, lp = phi < 0.50;
+  if (hi && hp) return '資源充足且結構對稱。系統在面對外部衝擊時具備較強的緩衝能力。';
+  if (hi && lp) return '資源充足但結構失衡。S 高可短期掩蓋內耗，但無法從根本解決結構問題。';
+  if (hi)       return '資源尚可，結構存在一定不對稱。';
+  if (lo && hp) return '資源有限但結構對稱。雙方共同承擔壓力，韌性相對較高。';
+  if (lo && lp) return '資源有限且結構失衡，屬於雙重風險狀態。';
+  if (lo)       return '資源偏低，建議評估整體財務規劃對關係穩定性的影響。';
+  return '資源規模中等，φ 是當前主要參考指標。';
+}
+
+function setText(id, text, color) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  if (color) el.style.color = color;
+}
+
+function calculate() {
+  const is = parseFloat(document.getElementById('income_self').value);
+  const io = parseFloat(document.getElementById('income_other').value);
+  const hs = parseFloat(document.getElementById('hours_self').value);
+  const ho = parseFloat(document.getElementById('hours_other').value);
+  const ageSelf  = parseFloat(document.getElementById('age_self').value);
+  const ageOther = parseFloat(document.getElementById('age_other').value);
+  const fsRaw = document.getElementById('f_self').value;
+  const foRaw = document.getElementById('f_other').value;
+  const fSelf  = fsRaw !== '' ? parseInt(fsRaw) : null;
+  const fOther = foRaw !== '' ? parseInt(foRaw) : null;
+
+  if ([is,io,hs,ho,ageSelf,ageOther].some(v => isNaN(v) || v < 0)) {
+    alert('請填入所有必填欄位（月收入、每週時數、年齡）的有效數值。'); return;
+  }
+  if (ageSelf < 16 || ageOther < 16) { alert('年齡需≥16歲。'); return; }
+  if (hs > 168 || ho > 168) { alert('每週勞動時數不得超過 168 小時。'); return; }
+  if (is + io === 0 && hs + ho === 0) { alert('收入合計與時數合計不得皆為 0。'); return; }
+
+  const canon = computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, DEFAULT);
+  const custom = computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, getCustomParams());
+
+  const cPs = phiStatus(canon.phi);
+  const uPs = phiStatus(custom.phi);
+  const cAs = aStatus(canon.A);
+
+  // φ cols
+  setText('c_phi', canon.phi.toFixed(2), cPs.color);
+  setText('c_phi_status', cPs.text, cPs.color);
+  setText('c_w', 'W = ' + canon.w.toFixed(3));
+  setText('u_phi', custom.phi.toFixed(2), uPs.color);
+  setText('u_phi_status', uPs.text, uPs.color);
+  setText('u_w', 'W = ' + custom.w.toFixed(3));
+
+  // A / F
+  setText('c_a', (canon.A * 100).toFixed(1) + '%');
+  setText('c_a_status', cAs.text, cAs.color);
+  const hasFData = fSelf !== null && fOther !== null;
+  const fRows = ['c_f_row','c_f_status_row','c_f_custom_row','c_f_custom_status_row'];
+  fRows.forEach(id => { const el=document.getElementById(id); if(el) el.style.display = hasFData ? '' : 'none'; });
+  if (hasFData) {
+    const cFs = fStatus(canon.F);
+    const uFs = fStatus(custom.F);
+    setText('c_f', (canon.F * 100).toFixed(1) + '%');
+    setText('c_f_status', cFs.text, cFs.color);
+    setText('c_f_custom', (custom.F * 100).toFixed(1) + '%', uFs.color);
+    setText('c_f_custom_status', uFs.text, uFs.color);
+    // F breakdown
+    const fBdRows = ['f_bd_section'];
+    fBdRows.forEach(id => { const el=document.getElementById(id); if(el) el.style.display=''; });
+    setText('bd_c_fgap',  (canon.F_gap  * 100).toFixed(2) + '%');
+    setText('bd_c_fbase', (canon.F_base * 100).toFixed(2) + '%');
+    setText('bd_c_f',     (canon.F      * 100).toFixed(2) + '%');
+    const cp2 = getCustomParams();
+    setText('bd_fg_w',   (cp2.fGapW  * 100).toFixed(0) + '%');
+    setText('bd_fb_w',   (cp2.fBaseW * 100).toFixed(0) + '%');
+    setText('bd_u_fgap',  (custom.F_gap  * 100).toFixed(2) + '%');
+    setText('bd_u_fbase', (custom.F_base * 100).toFixed(2) + '%');
+    setText('bd_u_f',     (custom.F      * 100).toFixed(2) + '%');
+  } else {
+    const el = document.getElementById('f_bd_section');
+    if (el) el.style.display = 'none';
+  }
+
+  // φ breakdown cols
+  setText('c_pm', canon.pm.toFixed(3));
+  setText('u_pm', custom.pm.toFixed(3)); // same raw pm
+  setText('c_pt', canon.pt.toFixed(3));
+  setText('u_pt', custom.pt.toFixed(3));
+  setText('dir_label', canon.dirType);
+  setText('c_adj', (canon.adj >= 0 ? '+' : '') + canon.adj.toFixed(4));
+  setText('u_adj', (custom.adj >= 0 ? '+' : '') + custom.adj.toFixed(4));
+
+  // breakdown tables
+  setText('bd_c_pm', canon.pm.toFixed(4));
+  setText('bd_c_pt', canon.pt.toFixed(4));
+  setText('bd_c_raw', canon.phi_raw.toFixed(4));
+  setText('bd_c_adj', (canon.adj >= 0 ? '+' : '') + canon.adj.toFixed(4));
+  setText('bd_c_phi', canon.phi.toFixed(4));
+  setText('bd_c_w', canon.w.toFixed(4));
+  const cp = getCustomParams();
+  setText('bd_wm', (cp.wMoney * 100).toFixed(0) + '%');
+  setText('bd_wt', (cp.wTime * 100).toFixed(0) + '%');
+  setText('bd_u_pm', custom.pm.toFixed(4));
+  setText('bd_u_pt', custom.pt.toFixed(4));
+  setText('bd_u_raw', custom.phi_raw.toFixed(4));
+  setText('bd_u_adj', (custom.adj >= 0 ? '+' : '') + custom.adj.toFixed(4));
+  setText('bd_u_phi', custom.phi.toFixed(4));
+  setText('bd_u_w', custom.w.toFixed(4));
+
+  // delta chips
+  const chips = [];
+  const wm = cp.wMoney * 100;
+  if (Math.abs(wm - 50) > 0.5) chips.push({ text: 'φ_money ' + wm.toFixed(0) + '%', color: wm > 50 ? 'var(--accent)' : 'var(--studio)' });
+  if (Math.abs(cp.compCoef - 0.1) > 0.005) chips.push({ text: '互補 ' + (cp.compCoef > 0.1 ? '+' : '') + (cp.compCoef - 0.1).toFixed(2), color: cp.compCoef > 0.1 ? 'var(--green)' : 'var(--yellow)' });
+  if (Math.abs(cp.overloadCoef - 0.4) > 0.005) chips.push({ text: '過載 ' + (cp.overloadCoef > 0.4 ? '+' : '') + (cp.overloadCoef - 0.4).toFixed(2), color: cp.overloadCoef > 0.4 ? 'var(--red)' : 'var(--green)' });
+  if (Math.abs(cp.fGapW - 0.7) > 0.005) chips.push({ text: 'F_gap ' + (cp.fGapW*100).toFixed(0) + '%', color: cp.fGapW > 0.7 ? 'var(--orange)' : 'var(--blue)' });
+  const phiDiff = custom.phi - canon.phi;
+  if (Math.abs(phiDiff) > 0.005) chips.push({ text: 'φ ' + (phiDiff > 0 ? '+' : '') + phiDiff.toFixed(3), color: phiDiff > 0 ? 'var(--green)' : 'var(--red)' });
+  if (hasFData) {
+    const fDiff = custom.F - canon.F;
+    if (Math.abs(fDiff) > 0.005) chips.push({ text: 'F ' + (fDiff > 0 ? '+' : '') + (fDiff*100).toFixed(1) + '%', color: fDiff > 0 ? 'var(--red)' : 'var(--green)' });
+  }
+
+  const chipsEl = document.getElementById('delta_chips');
+  if (chips.length === 0) {
+    chipsEl.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:10px;color:var(--text-muted);">與官方模型相同</span>';
+  } else {
+    chipsEl.innerHTML = chips.map(c =>
+      `<span class="di-chip" style="color:${c.color};border-color:${c.color};">${c.text}</span>`
+    ).join('');
+  }
+
+  // cross diag
+  const cCross = crossDiag(canon.phi, canon.A, hasFData ? canon.F : null);
+  const uCross = crossDiag(custom.phi, custom.A, hasFData ? custom.F : null);
+  setText('c_cross_tag', cCross.tag, cPs.color);
+  setText('c_cross_desc', cCross.desc);
+  setText('u_cross_tag', uCross.tag, uPs.color);
+  setText('u_cross_desc', uCross.desc);
+
+  // S
+  const s = is + io;
+  setText('s_val', s.toFixed(1) + ' 萬元／月');
+  setText('s_ctx', getSContext(s, canon.phi));
+
+  // custom param desc
+  document.getElementById('custom_param_desc').textContent =
+    `φ_money ${(cp.wMoney*100).toFixed(0)}% · 互補 ${cp.compCoef.toFixed(2)} · 過載 ${cp.overloadCoef.toFixed(2)} · F_gap ${(cp.fGapW*100).toFixed(0)}%`;
+
+  const rs = document.getElementById('result_section');
+  rs.classList.add('visible');
+  rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── FEEDBACK ──
+function buildReport() {
+  const match = document.querySelector('input[name="fb_match"]:checked');
+  const axes = Array.from(document.querySelectorAll('input[name="fb_axis"]:checked')).map(el => el.value);
+  const text = document.getElementById('fb_text').value.trim();
+  const cp = getCustomParams();
+  const lines = [
+    '[DSBM Custom Mode — 意見回報]',
+    '',
+    '診斷符合程度：' + (match ? match.value : '未選擇'),
+    '最不準的軸：' + (axes.length ? axes.join('、') : '未選擇'),
+    '',
+    '使用者自定義參數：',
+    '  \u03c6_money \u6b0a\u91cd = ' + (cp.wMoney*100).toFixed(0) + '%',
+    '  \u03c6_time  \u6b0a\u91cd = ' + (cp.wTime*100).toFixed(0) + '%',
+    '  \u4e92\u88dc\u4fc2\u6578     = ' + cp.compCoef.toFixed(2) + '\uff08\u5b98\u65b9 0.10\uff09',
+    '  \u904e\u8f09\u61f2\u7f70     = ' + cp.overloadCoef.toFixed(2) + '\uff08\u5b98\u65b9 0.40\uff09',
+    '  F_gap  \u6b0a\u91cd  = ' + (cp.fGapW*100).toFixed(0) + '%\uff08\u5b98\u65b9 70%\uff09',
+    '  F_base \u6b0a\u91cd  = ' + (cp.fBaseW*100).toFixed(0) + '%\uff08\u5b98\u65b9 30%\uff09',
+    '',
+    '\u88dc\u5145\u8aaa\u660e\uff1a',
+    text || '\uff08\u7121\uff09',
+    '',
+    '\u25b8 DSBM v3.1 Custom Mode',
+  ];
+  return lines.join('\n');
+}
+
+function copyFeedback() {
+  const out = buildReport();
+  const btn = document.getElementById('copy_btn');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(out).then(() => {
+      btn.textContent = '✓ 已複製';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '▸ 複製回報內容'; btn.classList.remove('copied'); }, 2500);
+    });
+  } else {
+    const el = document.createElement('textarea');
+    el.value = out;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    btn.textContent = '✓ 已複製';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '▸ 複製回報內容'; btn.classList.remove('copied'); }, 2500);
+  }
+}
+
+function mailFeedback() {
+  // 防爬蟲：信箱分段組合，不明文出現完整地址
+  const u = ['allen','1990923'].join('');
+  const d = ['gmail','.','com'].join('');
+  const addr = u + '@' + d;
+  const subject = encodeURIComponent('DSBM Custom Mode — 意見回報');
+  const body = encodeURIComponent(buildReport());
+  const btn = document.getElementById('mail_btn');
+  window.location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
+  btn.textContent = '✓ 已開啟郵件';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = '▸ 寄出意見回報'; btn.classList.remove('copied'); }, 3000);
+}
+</script>
+</body>
+</html>
