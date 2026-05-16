@@ -97,6 +97,20 @@
     .f-ref-grid{grid-template-columns:repeat(2,1fr);}
   }
   
+  /* ── TIMELINE ── */
+  .tl-save-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+  .tl-save-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;}
+  .tl-save-row{display:flex;gap:8px;align-items:stretch;}
+  .tl-save-note{flex:1;background:var(--surface);border:1px solid var(--border2);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:9px 11px;outline:none;transition:border-color .2s;}
+  .tl-save-note:focus{border-color:var(--accent);}
+  .tl-save-note::placeholder{color:var(--text-muted);}
+  .tl-save-btn{background:none;border:1px solid var(--accent);color:var(--accent);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;padding:9px 16px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s;}
+  .tl-save-btn:hover{background:var(--accent);color:#0a0a0a;}
+  .tl-save-confirm{display:none;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:8px;padding:8px 12px;border:1px solid #1a2e1a;background:#0a180a;}
+  @media(max-width:520px){
+    .tl-save-row{flex-direction:column;}
+  }
+
   /* ── SPA NAV ── */
   .spa-nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
@@ -552,6 +566,7 @@
     <button class="spa-nav-btn" onclick="showPage('manual')" id="nav-manual">說明</button>
     <button class="spa-nav-btn" onclick="showPage('game')" id="nav-game">模擬</button>
     <button class="spa-nav-btn" onclick="showPage('custom')" id="nav-custom" style="color:var(--studio);">自訂</button>
+    <button class="spa-nav-btn" onclick="showPage('timeline')" id="nav-timeline" style="color:var(--blue);">時間軸<span id="tl-nav-badge" style="font-size:8px;margin-left:3px;color:var(--text-muted);"></span></button>
   </div>
 </nav>
 
@@ -601,6 +616,16 @@
           <div class="home-nav-sub">調整 φ 權重、互補係數、過載懲罰與 F 軸比重，與官方模型並排對照，探索你的診斷價值觀</div>
         </div>
         <span class="home-nav-tag" style="color:var(--studio);border-color:rgba(255,157,92,0.3);">CUSTOM</span>
+        <span class="home-nav-arrow">→</span>
+      </button>
+    </div>
+      <button class="home-nav-item" onclick="showPage('timeline')">
+        <span class="home-nav-num">05</span>
+        <div class="home-nav-info">
+          <div class="home-nav-title">結構時間軸</div>
+          <div class="home-nav-sub">追蹤 φ · A · F 三軸隨時間的變化，觀察關係結構的漂移趨勢</div>
+        </div>
+        <span class="home-nav-tag" style="color:var(--blue);border-color:rgba(96,184,240,0.3);">TIMELINE</span>
         <span class="home-nav-arrow">→</span>
       </button>
     </div>
@@ -845,6 +870,17 @@
       <div class="breakdown-row"><span class="breakdown-key">F_base = 平均等級/10</span><span class="breakdown-val" id="d_f_base">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">F = gap×0.7 + base×0.3</span><span class="breakdown-val" id="d_f_final">—</span></div>
     </div>
+
+    <!-- ── 時間軸儲存區 ── -->
+    <div class="tl-save-section">
+      <div class="tl-save-title">儲存這次記錄</div>
+      <div class="tl-save-row">
+        <input type="text" class="tl-save-note" id="tl_save_note" placeholder="備註（選填）：例如「換工作後」、「搬家前」">
+        <button class="tl-save-btn" onclick="tlSaveRecord()">▸ 儲存至時間軸</button>
+      </div>
+      <div class="tl-save-confirm" id="tl_save_confirm">✓ 已儲存。切換至「時間軸」可查看歷史記錄。</div>
+    </div>
+
   </div>
 
   <div class="note">
@@ -853,6 +889,66 @@
   <div class="version">DSBM v3.1 — F 軸修正版 Beta</div>
 
 </div>
+  </div>
+</div>
+
+<!-- TIMELINE PAGE -->
+<div class="spa-page" id="page-timeline">
+  <div class="tool-container">
+    <div class="container">
+
+  <header>
+    <div class="label-tag">DSBM v3.1 — 結構時間軸</div>
+    <h1>關係結構時間軸</h1>
+    <p class="subtitle">
+      追蹤 φ · A · F 三軸隨時間的變化趨勢。<br>
+      資料儲存於本機瀏覽器（localStorage），清除瀏覽器資料或更換裝置將無法找回記錄。
+    </p>
+  </header>
+
+  <div id="tl-empty-state" style="text-align:center;padding:80px 20px;display:none;">
+    <div style="font-size:28px;opacity:.2;margin-bottom:20px;">◎</div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:2;">
+      尚無歷史記錄。<br>
+      執行診斷後，點選「儲存至時間軸」<br>
+      即可開始追蹤關係結構的變化。
+    </div>
+  </div>
+
+  <div id="tl-content-state" style="display:none;">
+
+    <!-- 折線圖 -->
+    <div class="section">
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>結構指標歷史走勢</span>
+        <div style="display:flex;gap:12px;">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--accent);"><span style="display:inline-block;width:16px;height:2px;background:var(--accent);"></span>φ 對稱</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--yellow);"><span style="display:inline-block;width:16px;height:2px;background:var(--yellow);opacity:.7;"></span>A 年齡</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--orange);"><span style="display:inline-block;width:16px;height:2px;background:var(--orange);opacity:.7;"></span>F 家境</span>
+        </div>
+      </div>
+      <div style="background:#000;border:1px solid var(--border);position:relative;height:220px;">
+        <canvas id="tl-chart" style="display:block;width:100%;height:100%;"></canvas>
+      </div>
+    </div>
+
+    <!-- 記錄列表 -->
+    <div class="section">
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>歷史記錄</span>
+        <button onclick="tlClearAll()" style="background:none;border:1px solid #3a1a1a;color:var(--red);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#2a1010'" onmouseout="this.style.background='none'">清除全部</button>
+      </div>
+      <div id="tl-record-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    時間軸功能於 DSBM v3.1 新增。資料僅儲存於本機瀏覽器，不經過任何伺服器。建議定期截圖備份重要的歷史資料。
+  </div>
+  <div class="version">DSBM v3.1 — 結構時間軸 Beta</div>
+
+    </div>
   </div>
 </div>
 
@@ -1608,6 +1704,10 @@ function showPage(name) {
     const gameEl = document.getElementById('page-game');
     if (gameEl) gameEl.classList.remove('final-mode');
   }
+  // 切換到時間軸時渲染
+  if (name === 'timeline') {
+    setTimeout(() => tlRender(), 50);
+  }
   window.scrollTo(0, 0);
   // 更新URL hash
   history.replaceState(null, '', '#' + name);
@@ -1616,7 +1716,7 @@ function showPage(name) {
 // 根據hash載入對應頁面
 window.addEventListener('load', () => {
   const hash = location.hash.replace('#', '') || 'home';
-  const valid = ['home','tool','manual','game'];
+  const valid = ['home','tool','manual','game','timeline'];
   showPage(valid.includes(hash) ? hash : 'home');
 });
 
@@ -1890,7 +1990,237 @@ function calculate(){
   // SVG不依賴DOM尺寸，直接更新
   updateMatrix(phi, a, hasF?f:0, hasF, phiColor, !pu&&!ad);
   document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+
+  // ── 儲存最新結果供時間軸使用 ──
+  tlLastResult = {
+    phi, a, f: hasF ? f : null, hasF, w,
+    crossTag: cross.tag,
+    income_self: is, income_other: io,
+    hours_self: hs, hours_other: ho,
+    age_self: as_, age_other: ao,
+    grade_self: hasF ? gs : null, grade_other: hasF ? go : null,
+  };
+  document.getElementById('tl_save_confirm').style.display = 'none';
+  document.getElementById('tl_save_note').value = '';
 }
+
+// ── TIMELINE JS ──
+let tlLastResult = null;
+
+function tlLoadRecords() {
+  try { return JSON.parse(localStorage.getItem('dsbm_records') || '[]'); }
+  catch(e) { return []; }
+}
+function tlSaveRecords(arr) {
+  localStorage.setItem('dsbm_records', JSON.stringify(arr));
+}
+function tlUpdateBadge() {
+  const n = tlLoadRecords().length;
+  const el = document.getElementById('tl-nav-badge');
+  if (el) el.textContent = n > 0 ? '(' + n + ')' : '';
+}
+
+function tlSaveRecord() {
+  if (!tlLastResult) { alert('請先執行診斷。'); return; }
+  const note = document.getElementById('tl_save_note').value.trim();
+  const records = tlLoadRecords();
+  records.push({
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    note,
+    phi:         +tlLastResult.phi.toFixed(4),
+    a:           +tlLastResult.a.toFixed(4),
+    f:           tlLastResult.hasF ? +tlLastResult.f.toFixed(4) : null,
+    w:           +tlLastResult.w.toFixed(4),
+    crossTag:    tlLastResult.crossTag,
+    income_self:  tlLastResult.income_self,
+    income_other: tlLastResult.income_other,
+    hours_self:   tlLastResult.hours_self,
+    hours_other:  tlLastResult.hours_other,
+    age_self:     tlLastResult.age_self,
+    age_other:    tlLastResult.age_other,
+    grade_self:   tlLastResult.grade_self,
+    grade_other:  tlLastResult.grade_other,
+  });
+  tlSaveRecords(records);
+  tlUpdateBadge();
+  document.getElementById('tl_save_confirm').style.display = 'block';
+  document.getElementById('tl_save_note').value = '';
+}
+
+function tlDeleteRecord(id) {
+  const records = tlLoadRecords().filter(r => r.id !== id);
+  tlSaveRecords(records);
+  tlUpdateBadge();
+  tlRender();
+}
+
+function tlClearAll() {
+  if (!confirm('確定要清除所有歷史記錄嗎？此操作無法復原。')) return;
+  localStorage.removeItem('dsbm_records');
+  tlUpdateBadge();
+  tlRender();
+}
+
+function tlRender() {
+  const records = tlLoadRecords();
+  const emptyEl   = document.getElementById('tl-empty-state');
+  const contentEl = document.getElementById('tl-content-state');
+  if (!emptyEl || !contentEl) return;
+  if (records.length === 0) {
+    emptyEl.style.display = 'block';
+    contentEl.style.display = 'none';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  contentEl.style.display = 'block';
+  tlRenderChart(records);
+  tlRenderList(records);
+}
+
+function tlRenderList(records) {
+  const list = document.getElementById('tl-record-list');
+  if (!list) return;
+  list.innerHTML = '';
+  [...records].reverse().forEach(r => {
+    const d = new Date(r.timestamp);
+    const ds = d.getFullYear() + '/'
+      + (d.getMonth()+1).toString().padStart(2,'0') + '/'
+      + d.getDate().toString().padStart(2,'0') + ' '
+      + d.getHours().toString().padStart(2,'0') + ':'
+      + d.getMinutes().toString().padStart(2,'0');
+    const phiColor = r.phi>=0.80?'var(--green)':r.phi>=0.65?'var(--accent)':r.phi>=0.50?'var(--yellow)':'var(--red)';
+    const aColor   = r.a<0.10?'var(--green)':r.a<0.25?'var(--accent)':r.a<0.50?'var(--yellow)':'var(--red)';
+    const fColor   = r.f===null?'var(--text-muted)':r.f<0.10?'var(--green)':r.f<0.30?'var(--accent)':r.f<0.60?'var(--yellow)':'var(--red)';
+    const fVal     = r.f !== null ? (r.f*100).toFixed(1)+'%' : '—';
+
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--surface);border:1px solid var(--border);';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--border2);">
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);">${ds}</span>
+          ${r.note ? `<span style="font-size:11px;color:var(--text-dim);font-style:italic;">${r.note}</span>` : ''}
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);margin-top:2px;">${r.crossTag}</span>
+        </div>
+        <button onclick="tlDeleteRecord(${r.id})" style="background:none;border:none;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;padding:2px 6px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);">
+        <div style="background:var(--surface2);padding:10px 14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">φ 對稱係數</div>
+          <div style="font-family:'DM Mono',monospace;font-size:18px;color:${phiColor};">${r.phi.toFixed(2)}</div>
+        </div>
+        <div style="background:var(--surface2);padding:10px 14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">A 年齡內耗</div>
+          <div style="font-family:'DM Mono',monospace;font-size:18px;color:${aColor};">${(r.a*100).toFixed(1)}%</div>
+        </div>
+        <div style="background:var(--surface2);padding:10px 14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">F 家境內耗</div>
+          <div style="font-family:'DM Mono',monospace;font-size:18px;color:${fColor};">${fVal}</div>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function tlRenderChart(records) {
+  const canvas = document.getElementById('tl-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // DPR 高畫質修正
+  const dpr  = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width  = rect.width  * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const sorted = [...records].sort((a,b) => a.timestamp.localeCompare(b.timestamp));
+  const n = sorted.length;
+  if (n === 0) return;
+
+  const pad = { top:16, right:16, bottom:28, left:36 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top  - pad.bottom;
+
+  // 網格線
+  ctx.strokeStyle = '#1c1c1c'; ctx.lineWidth = 1;
+  [0, 0.25, 0.5, 0.65, 0.75, 1].forEach(v => {
+    const y = pad.top + cH * (1 - v);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
+    ctx.fillStyle = '#3a3a3a';
+    ctx.font = '8px DM Mono,monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText((v*100).toFixed(0) + '%', pad.left - 5, y + 3);
+  });
+
+  // φ=0.65 參考線
+  const refY = pad.top + cH * (1 - 0.65);
+  ctx.strokeStyle = 'rgba(70,150,90,0.2)';
+  ctx.setLineDash([4,4]); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.left, refY); ctx.lineTo(pad.left + cW, refY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 崩潰區底色
+  ctx.fillStyle = 'rgba(255,92,92,0.04)';
+  ctx.fillRect(pad.left, pad.top + cH * 0.5, cW, cH * 0.5);
+
+  // X 軸日期標籤
+  ctx.fillStyle = '#3a3a3a'; ctx.font = '8px DM Mono,monospace'; ctx.textAlign = 'center';
+  sorted.forEach((r, i) => {
+    if (n <= 7 || i % Math.ceil(n / 6) === 0 || i === n - 1) {
+      const x = pad.left + (n === 1 ? cW / 2 : i / (n-1) * cW);
+      const d = new Date(r.timestamp);
+      ctx.fillText((d.getMonth()+1) + '/' + d.getDate(), x, H - 6);
+    }
+  });
+
+  // 繪製折線系列
+  function drawSeries(key, color, dashed) {
+    ctx.save();
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    if (dashed) ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    let started = false;
+    sorted.forEach((r, i) => {
+      const v = r[key];
+      if (v === null || v === undefined) return;
+      const x = pad.left + (n === 1 ? cW / 2 : i / (n-1) * cW);
+      const y = pad.top + cH * (1 - v);
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // 頂點圓點
+    sorted.forEach((r, i) => {
+      const v = r[key];
+      if (v === null || v === undefined) return;
+      const x = pad.left + (n === 1 ? cW / 2 : i / (n-1) * cW);
+      const y = pad.top + cH * (1 - v);
+      ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI*2);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.strokeStyle = '#0a0a0a'; ctx.lineWidth = 1.5; ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  drawSeries('phi', '#c8f060', false);
+  drawSeries('a',   '#f0c060', true);
+  if (sorted.some(r => r.f !== null)) drawSeries('f', '#f0a060', true);
+}
+
+// 初始化 badge
+tlUpdateBadge();
+window.addEventListener('resize', () => {
+  if (document.getElementById('page-timeline') &&
+      document.getElementById('page-timeline').classList.contains('active')) {
+    tlRenderChart(tlLoadRecords());
+  }
+});
 
 // ── GAME JS ──
 // ── 全域統計資料 ──
