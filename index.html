@@ -3,34 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSBM v3.1 — 二元對稱瓶頸模型</title>
+<title>DSBM — 二元對稱瓶頸模型</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
   :root {
     --bg:#0a0a0a;--surface:#111;--surface2:#161616;--border:#222;--border2:#2a2a2a;
     --accent:#c8f060;--text:#e8e8e8;--text-dim:#909090;--text-muted:#505050;
     --red:#ff5c5c;--yellow:#f0c060;--green:#60d080;--blue:#60b8f0;--orange:#f0a060;
+    --studio:#ff9d5c;--studio-dim:rgba(255,157,92,0.08);--studio-border:rgba(255,157,92,0.2);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding:40px 20px 80px;}
   .container{max-width:760px;margin:0 auto;}
-  header{border-bottom:1px solid var(--border);padding-bottom:24px;margin-bottom:0;}
+  header{border-bottom:1px solid var(--border);padding-bottom:24px;margin-bottom:36px;}
   .label-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;}
   h1{font-size:20px;font-weight:400;line-height:1.4;margin-bottom:6px;}
   .subtitle{font-size:12px;color:var(--text-muted);line-height:1.7;}
-
-  /* ── TABS ── */
-  .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:32px;}
-  .tab-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:14px 20px;cursor:pointer;color:var(--text-muted);border:none;border-bottom:2px solid transparent;background:none;margin-bottom:-1px;transition:color .2s,border-color .2s;}
-  .tab-btn:hover{color:var(--text-dim);}
-  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
-  .tab-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-left:4px;}
-
-  /* ── PANELS ── */
-  .panel{display:none;}
-  .panel.active{display:block;}
-
-  /* ── ORIGINAL STYLES (unchanged) ── */
   .section{margin-bottom:32px;}
   .section-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--border);}
   .input-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end;margin-bottom:10px;}
@@ -60,12 +49,15 @@
   .btn:active{transform:scale(.99);}
   .result-box{display:none;margin-top:28px;}
   .result-box.visible{display:block;}
+  /* SVG矩陣 */
   .matrix-wrapper{margin-bottom:28px;}
   .matrix-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border);}
   #matrix-svg{width:100%;display:block;border:1px solid var(--border);background:#000;}
   .matrix-caption{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:8px;letter-spacing:.06em;}
-  #svg-bubble-g{transition:transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94);}
-  #svg-circle{transition:r 0.9s cubic-bezier(0.25,0.46,0.45,0.94);}
+  /* SVG泡泡動畫 */
+  #svg-bubble-g{transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);}
+  #svg-circle{transition:r 0.8s cubic-bezier(0.25,0.46,0.45,0.94);}
+  /* 其他UI */
   .axes-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
   .axis-card{background:var(--surface2);padding:20px 22px;}
   .axis-card.orange-top{border-top:2px solid var(--orange);}
@@ -96,54 +88,6 @@
   .breakdown-val{color:var(--text);font-family:'DM Mono',monospace;}
   .note{margin-top:28px;padding:14px;border-left:2px solid var(--border);font-size:11px;color:var(--text-muted);line-height:1.65;}
   .version{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-align:right;margin-top:32px;letter-spacing:.1em;}
-
-  /* ── SAVE SECTION ── */
-  .save-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
-  .save-section-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;}
-  .save-note-wrap{display:flex;gap:8px;align-items:stretch;}
-  .save-note-input{flex:1;background:var(--surface);border:1px solid var(--border2);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:9px 11px;outline:none;transition:border-color .2s;}
-  .save-note-input:focus{border-color:var(--accent);}
-  .save-note-input::placeholder{color:var(--text-muted);}
-  .btn-save{background:none;border:1px solid var(--accent);color:var(--accent);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;padding:9px 18px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s;}
-  .btn-save:hover{background:var(--accent);color:#0a0a0a;}
-  .save-confirm{display:none;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:8px;padding:8px 12px;border:1px solid #1a2e1a;background:#0d1a0d;}
-
-  /* ── TIMELINE PANEL ── */
-  .tl-empty{text-align:center;padding:80px 20px;color:var(--text-muted);}
-  .tl-empty-icon{font-size:28px;margin-bottom:16px;opacity:.3;}
-  .tl-empty-text{font-family:'DM Mono',monospace;font-size:11px;line-height:2;}
-
-  .tl-storage-note{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);line-height:1.7;padding:10px 14px;border:1px solid var(--border2);border-left:2px solid var(--border2);margin-bottom:24px;}
-
-  /* chart */
-  .chart-wrap{background:var(--surface);border:1px solid var(--border);padding:20px;margin-bottom:20px;}
-  .chart-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;}
-  .chart-canvas-wrap{position:relative;width:100%;height:200px;}
-  canvas{display:block;width:100%;height:100%;}
-  .chart-legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;}
-  .legend-item{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);}
-  .legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-
-  /* record list */
-  .tl-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--border);}
-  .tl-header-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;}
-  .btn-clear-all{background:none;border:1px solid #3a1a1a;color:var(--red);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;}
-  .btn-clear-all:hover{background:#2a1010;}
-
-  .record-list{display:flex;flex-direction:column;gap:8px;}
-  .record-card{background:var(--surface);border:1px solid var(--border);}
-  .record-card-top{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--border2);}
-  .record-meta{display:flex;flex-direction:column;gap:3px;}
-  .record-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);}
-  .record-note{font-size:11px;color:var(--text-dim);font-style:italic;}
-  .record-cross{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);margin-top:2px;}
-  .btn-delete{background:none;border:none;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;padding:2px 6px;transition:color .2s;}
-  .btn-delete:hover{color:var(--red);}
-  .record-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
-  .record-metric{background:var(--surface2);padding:10px 14px;}
-  .record-metric-name{font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
-  .record-metric-val{font-family:'DM Mono',monospace;font-size:16px;}
-
   @media(max-width:520px){
     .input-grid{grid-template-columns:1fr 1fr;}
     .axes-row{grid-template-columns:1fr;}
@@ -151,14 +95,526 @@
     h1{font-size:17px;}
     .axis-num{font-size:36px;}
     .f-ref-grid{grid-template-columns:repeat(2,1fr);}
-    .record-metrics{grid-template-columns:1fr 1fr;}
-    .save-note-wrap{flex-direction:column;}
-    .tab-btn{padding:12px 14px;font-size:9px;}
+  }
+  
+  /* ── SPA NAV ── */
+  .spa-nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(8,8,8,0.95);backdrop-filter:blur(8px);
+    border-bottom:1px solid #1a1a1a;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 24px;height:48px;
+  }
+  .spa-nav-brand{
+    font-family:'DM Mono',monospace;font-size:10px;
+    color:#c8f060;letter-spacing:.15em;text-transform:uppercase;
+    text-decoration:none;
+  }
+  .spa-nav-links{display:flex;gap:2px;}
+  .spa-nav-btn{
+    font-family:'DM Mono',monospace;font-size:9px;
+    color:#505050;letter-spacing:.1em;text-transform:uppercase;
+    background:none;border:none;cursor:pointer;
+    padding:6px 12px;transition:color .15s;
+  }
+  .spa-nav-btn:hover{color:#909090;}
+  .spa-nav-btn.active{color:#c8f060;}
+  .spa-page{display:none;padding-top:48px;}
+  .spa-page.active{display:block;}
+  /* 手機版nav */
+  @media(max-width:480px){
+    .spa-nav{padding:0 14px;}
+    .spa-nav-btn{padding:6px 8px;font-size:8px;}
+  }
+
+  
+  /* ── MANUAL SPECIFIC ── */
+  .cover{border-bottom:1px solid var(--border);padding-bottom:48px;margin-bottom:56px;}
+  .cover-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+  .cover-tag::after{content:'';flex:1;height:1px;background:var(--border);}
+  .cover h1{font-size:28px;font-weight:400;line-height:1.35;letter-spacing:-.02em;margin-bottom:16px;}
+  .cover-desc{font-size:13px;color:var(--text-dim);line-height:1.8;max-width:520px;}
+  .cover-meta{display:flex;gap:32px;margin-top:28px;padding-top:28px;border-top:1px solid var(--border);flex-wrap:wrap;}
+  .cover-meta-item{display:flex;flex-direction:column;gap:4px;}
+  .cover-meta-key{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;}
+  .cover-meta-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--text-dim);}
+  .toc{background:var(--surface);border:1px solid var(--border);padding:24px 28px;margin-bottom:56px;}
+  .toc-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+  .toc-list{list-style:none;}
+  .toc-list li{display:flex;align-items:baseline;gap:0;padding:5px 0;border-bottom:1px solid #1a1a1a;}
+  .toc-list li:last-child{border-bottom:none;}
+  .toc-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);width:28px;flex-shrink:0;}
+  .toc-text{font-size:13px;color:var(--text-dim);}
+  .toc-dots{flex:1;border-bottom:1px dotted var(--border2);margin:0 10px;position:relative;top:-3px;}
+  .toc-page{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);}
+  .doc-section{margin-bottom:56px;}
+  .section-header{display:flex;align-items:baseline;gap:14px;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .section-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.1em;flex-shrink:0;}
+  .section-title{font-size:18px;font-weight:400;letter-spacing:-.01em;}
+  .prose{font-size:13px;color:var(--text-dim);line-height:1.85;}
+  .prose p+p{margin-top:14px;}
+  .prose strong{color:var(--text);font-weight:500;}
+  .callout{background:var(--surface2);border-left:3px solid var(--accent);padding:16px 20px;margin:20px 0;font-size:13px;color:var(--text-dim);line-height:1.75;}
+  .callout.red{border-left-color:var(--red);}
+  .callout.blue{border-left-color:var(--blue);}
+  .callout.purple{border-left-color:#b08af0;}
+  .callout.yellow{border-left-color:var(--yellow);}
+  .callout.orange{border-left-color:var(--orange);}
+  .callout-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;color:var(--accent);}
+  .callout.red .callout-label{color:var(--red);}
+  .callout.blue .callout-label{color:#60b8f0;}
+  .callout.purple .callout-label{color:#b08af0;}
+  .callout.yellow .callout-label{color:var(--yellow);}
+  .callout.orange .callout-label{color:var(--orange);}
+  .formula-box{background:#111;border:1px solid var(--border2);padding:20px 24px;margin:20px 0;font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);line-height:2;}
+  .formula-box .comment{color:var(--text-muted);font-size:11px;}
+  .doc-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:12px;}
+  .doc-table th{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border2);font-weight:400;}
+  .doc-table td{padding:10px 14px;border-bottom:1px solid #1e1e1e;color:var(--text-dim);vertical-align:top;}
+  .doc-table td:first-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--text);width:30%;}
+  .doc-table tr:last-child td{border-bottom:none;}
+  .chip{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border:1px solid;letter-spacing:.06em;}
+  .chip.green{color:var(--green);border-color:var(--green);}
+  .chip.accent{color:var(--accent);border-color:var(--accent);}
+  .chip.yellow{color:var(--yellow);border-color:var(--yellow);}
+  .chip.red{color:var(--red);border-color:var(--red);}
+  .chip.purple{color:#b08af0;border-color:#b08af0;}
+  .chip.blue{color:#60b8f0;border-color:#60b8f0;}
+  .chip.orange{color:var(--orange);border-color:var(--orange);}
+  .axis-diagram{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);margin:20px 0;}
+  .axis-card{background:var(--surface);padding:20px;}
+  .axis-card-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+  .axis-card-name{font-size:14px;font-weight:400;margin-bottom:8px;color:var(--text);}
+  .axis-card-desc{font-size:12px;color:var(--text-dim);line-height:1.7;}
+  .axis-card-optional{font-family:'DM Mono',monospace;font-size:9px;color:var(--orange);margin-top:8px;letter-spacing:.08em;}
+  .case-box{border:1px solid var(--border2);margin:24px 0;overflow:hidden;}
+  .case-header{background:var(--surface2);padding:12px 20px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+  .case-body{padding:20px;}
+  .case-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1a1a1a;font-size:12px;}
+  .case-row:last-child{border-bottom:none;}
+  .case-key{color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .case-val{color:var(--text);font-family:'DM Mono',monospace;}
+  .case-val.red{color:var(--red);}
+  .case-val.green{color:var(--green);}
+  .case-val.accent{color:var(--accent);}
+  .case-val.yellow{color:var(--yellow);}
+  .quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin:20px 0;}
+  .quad-cell{background:var(--surface2);padding:18px 20px;}
+  .quad-type{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;margin-bottom:8px;}
+  .quad-desc{font-size:12px;color:var(--text-dim);line-height:1.65;}
+  .doc-footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .doc-footer-left{font-size:11px;color:var(--text-muted);}
+  .doc-footer-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.08em;}
+
+  
+  /* ── GAME SPECIFIC ── */
+  .title-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:32px;}
+  .title-main{font-size:13px;font-weight:300;color:var(--text-dim);line-height:2;margin-bottom:48px;font-family:'DM Mono',monospace;}
+  .title-main span{color:var(--text);}
+  .case-list{display:flex;flex-direction:column;gap:1px;background:var(--border);margin-bottom:32px;}
+  .case-item{background:var(--surface);padding:20px 24px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:background .15s;text-align:left;border:none;width:100%;color:var(--text);}
+  .case-item:hover{background:var(--surface2);}
+  .case-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.1em;flex-shrink:0;width:40px;}
+  .case-info{flex:1;}
+  .case-title-g{font-size:14px;font-weight:400;margin-bottom:4px;}
+  .case-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);}
+  .case-axis{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;border:1px solid;}
+  .axis-phi{color:var(--phi,#c8f060);border-color:var(--phi,#c8f060);}
+  .axis-a{color:var(--a-color,#60b8f0);border-color:var(--a-color,#60b8f0);}
+  .axis-f{color:var(--orange);border-color:var(--orange);}
+  .title-note{font-size:11px;color:var(--text-muted);line-height:1.8;border-left:2px solid var(--border2);padding-left:14px;text-align:left;}
+  .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+  .game-case-title{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:.1em;}
+  .game-back{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);background:none;border:none;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;transition:color .15s;}
+  .game-back:hover{color:var(--text);}
+  .metrics-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);margin-bottom:28px;}
+  .metric-box{background:var(--surface);padding:12px 16px;}
+  .metric-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .metric-bar-track{background:var(--border2);height:3px;width:100%;margin-bottom:5px;}
+  .metric-bar-fill{height:100%;transition:width .6s cubic-bezier(.4,0,.2,1);}
+  .metric-value{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim);}
+  .narrative-box{background:var(--surface);border:1px solid var(--border);padding:28px;margin-bottom:20px;min-height:160px;}
+  .narrative-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;}
+  .narrative-text{font-size:14px;color:var(--text-dim);line-height:2;font-weight:300;}
+  .inner-thought{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text-muted);line-height:1.9;font-style:italic;font-family:'DM Sans',sans-serif;font-weight:300;}
+  .choices{display:flex;flex-direction:column;gap:1px;background:var(--border);margin-bottom:20px;}
+  .choice-btn{background:var(--surface);border:none;padding:16px 20px;text-align:left;cursor:pointer;display:flex;align-items:baseline;gap:12px;transition:background .15s;width:100%;color:var(--text);}
+  .choice-btn:hover{background:var(--surface2);}
+  .choice-key{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);flex-shrink:0;width:20px;}
+  .choice-text{font-size:13px;color:var(--text-dim);line-height:1.6;}
+  .choice-effect{font-family:'DM Mono',monospace;font-size:10px;margin-left:auto;flex-shrink:0;padding-left:12px;}
+  .ending-box{background:var(--surface);border:1px solid var(--border);padding:32px;margin-bottom:20px;}
+  .ending-type{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .ending-title{font-size:18px;font-weight:400;margin-bottom:16px;}
+  .ending-text{font-size:13px;color:var(--text-dim);line-height:1.9;}
+  .ending-quote{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);margin-top:20px;padding-top:16px;border-top:1px solid var(--border);line-height:1.8;}
+  .ending-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:20px;}
+  .ending-metric{background:var(--surface2);padding:12px 14px;font-family:'DM Mono',monospace;font-size:10px;}
+  .ending-metric-label{color:var(--text-muted);margin-bottom:4px;}
+  .ending-metric-val{font-size:16px;}
+  .btn-restart{background:none;border:1px solid var(--border2);font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;padding:12px 20px;cursor:pointer;width:100%;transition:border-color .15s,color .15s;}
+  .btn-restart:hover{border-color:var(--text-dim);color:var(--text);}
+  .phase-indicator{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-align:right;margin-bottom:8px;letter-spacing:.08em;}
+  .fade-in{animation:fadeIn .4s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .final-mode{background:#040404 !important;}
+  .final-mode .narrative-box{background:#080808 !important;border-color:#161616 !important;transition:background 1.2s ease;}
+  .final-mode .narrative-text{animation:fadeInSlow 1.2s ease;}
+  .final-mode .choice-btn{background:#080808 !important;animation:fadeInSlow 1.8s ease;}
+  .final-mode .metrics-bar{opacity:0;pointer-events:none;transition:opacity 0.8s ease;}
+  .final-mode .phase-indicator{opacity:0;}
+  @keyframes fadeInSlow{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .btn-report{background:none;border:1px solid var(--accent);font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;padding:12px 20px;cursor:pointer;width:100%;transition:background .15s,color .15s;}
+  .btn-report:hover{background:var(--accent);color:#080808;}
+  .report-type-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .report-main-type{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--text);margin-bottom:16px;line-height:1.2;}
+  .report-desc{font-size:13px;color:var(--text-dim);line-height:1.9;margin-bottom:24px;}
+  .report-bars{margin-bottom:24px;}
+  .report-bar-row{margin-bottom:12px;}
+  .report-bar-label{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:5px;letter-spacing:.08em;}
+  .report-bar-track{background:var(--border2);height:4px;width:100%;}
+  .report-bar-fill{height:100%;transition:width .8s cubic-bezier(.4,0,.2,1);}
+  .report-quote{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);border-left:2px solid var(--accent);padding:12px 16px;margin:20px 0;line-height:1.8;}
+  .report-residual{background:var(--surface);border:1px solid var(--border);padding:16px 20px;margin:20px 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;}
+  .report-residual-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .btn-copy{background:none;border:1px solid var(--border2);font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;padding:11px 18px;cursor:pointer;width:100%;margin-top:8px;transition:border-color .15s,color .15s;}
+  .btn-copy:hover{border-color:var(--text-dim);color:var(--text);}
+
+  /* ── HOME PAGE ── */
+  .home-container{max-width:560px;margin:0 auto;padding:60px 20px 80px;}
+  .home-sys-tag{font-family:'DM Mono',monospace;font-size:9px;color:#383838;letter-spacing:.22em;text-transform:uppercase;margin-bottom:28px;display:flex;align-items:center;gap:10px;}
+  .home-sys-tag::after{content:'';flex:1;height:1px;background:#1e1e1e;}
+  .home-title-en{font-family:'DM Mono',monospace;font-size:11px;color:#707070;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+  .home-title-zh{font-size:24px;font-weight:400;line-height:1.3;margin-bottom:20px;}
+  .home-desc{font-size:12px;color:#707070;line-height:1.9;border-left:2px solid #2a2a2a;padding-left:14px;margin-bottom:48px;}
+  .home-nav{display:flex;flex-direction:column;gap:1px;background:#1e1e1e;margin-bottom:32px;}
+  .home-nav-item{background:#0f0f0f;padding:22px 24px;display:flex;align-items:center;gap:18px;cursor:pointer;transition:background .15s;position:relative;overflow:hidden;border:none;width:100%;color:#e0e0e0;text-align:left;}
+  .home-nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:#c8f060;transform:scaleY(0);transition:transform .2s cubic-bezier(.4,0,.2,1);}
+  .home-nav-item:hover{background:#111;}
+  .home-nav-item:hover::before{transform:scaleY(1);}
+  .home-nav-num{font-family:'DM Mono',monospace;font-size:10px;color:#383838;flex-shrink:0;width:28px;letter-spacing:.08em;}
+  .home-nav-info{flex:1;}
+  .home-nav-title{font-size:14px;font-weight:400;margin-bottom:5px;}
+  .home-nav-sub{font-size:11px;color:#707070;line-height:1.6;}
+  .home-nav-tag{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border:1px solid;letter-spacing:.06em;flex-shrink:0;margin-left:auto;margin-right:12px;}
+  .tag-tool{color:#60b8f0;border-color:#60b8f033;}
+  .tag-doc{color:#b08af0;border-color:#b08af033;}
+  .tag-game{color:#c8f060;border-color:#c8f06033;}
+  .home-nav-arrow{font-family:'DM Mono',monospace;font-size:12px;color:#383838;flex-shrink:0;transition:color .15s,transform .15s;}
+  .home-nav-item:hover .home-nav-arrow{color:#c8f060;transform:translateX(3px);}
+  .home-footer{display:flex;justify-content:space-between;align-items:center;padding-top:20px;border-top:1px solid #1e1e1e;}
+  .home-footer-note{font-size:10px;color:#383838;line-height:1.7;}
+  .home-footer-ver{font-family:'DM Mono',monospace;font-size:9px;color:#383838;letter-spacing:.1em;text-align:right;}
+  /* ── TOOL PAGE ── */
+  .tool-container{max-width:760px;margin:0 auto;padding:20px 20px 80px;}
+  /* ── MANUAL PAGE ── */
+  .manual-container{max-width:720px;margin:0 auto;padding:20px 20px 100px;}
+  /* ── GAME PAGE ── */
+  .game-container{max-width:680px;margin:0 auto;padding:20px 20px 80px;display:flex;align-items:flex-start;justify-content:center;}
+  .game-inner{width:100%;}
+
+  /* ── CUSTOM MODE ── */
+  /* ── TOP BAR ── */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,10,10,0.96);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 24px;height:46px;
+  }
+  .topbar-brand{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;}
+  .topbar-badge{font-family:'DM Mono',monospace;font-size:9px;color:var(--studio);border:1px solid var(--studio-border);padding:3px 8px;letter-spacing:.1em;}
+
+  .container{max-width:800px;margin:0 auto;padding:36px 20px 0;}
+
+  /* ── PAGE HEADER ── */
+  .page-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+  .page-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--studio);letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .page-tag::after{content:'';flex:1;height:1px;background:var(--studio-border);}
+  .page-h1{font-size:22px;font-weight:400;line-height:1.35;letter-spacing:-.01em;margin-bottom:10px;}
+  .page-desc{font-size:12px;color:var(--text-muted);line-height:1.8;max-width:540px;}
+
+  /* ── SECTION CHROME ── */
+  .sec{margin-bottom:2px;}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:var(--surface);border:1px solid var(--border);border-bottom:none;}
+  .sec-head-left{display:flex;align-items:center;gap:10px;}
+  .sec-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;}
+  .sec-title{font-size:13px;font-weight:400;}
+  .sec-title.studio{color:var(--studio);}
+  .sec-body{background:var(--surface);border:1px solid var(--border);padding:24px;}
+  .sec-body.studio-bg{background:var(--studio-dim);border-color:var(--studio-border);}
+
+  /* ── STUDIO: SLIDERS ── */
+  .studio-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .studio-cell{background:var(--surface2);padding:20px 22px;}
+  .studio-cell.studio-tint{background:rgba(255,157,92,0.05);}
+  .param-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+  .param-name{font-size:13px;color:var(--text);margin-bottom:14px;line-height:1.4;}
+  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .slider-wrap{flex:1;position:relative;}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;
+    width:100%;height:3px;background:var(--border2);outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;
+    background:var(--accent);border-radius:0;cursor:pointer;
+    transition:background .15s;
+  }
+  input[type=range].studio-range::-webkit-slider-thumb{background:var(--studio);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--accent);border:none;border-radius:0;cursor:pointer;}
+  input[type=range].studio-range::-moz-range-thumb{background:var(--studio);}
+  .slider-val{font-family:'DM Mono',monospace;font-size:16px;min-width:44px;text-align:right;}
+  .slider-val.studio-color{color:var(--studio);}
+  .delta-row{display:flex;align-items:center;gap:6px;margin-top:6px;}
+  .delta-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.08em;}
+  .delta-val{font-family:'DM Mono',monospace;font-size:9px;}
+  .delta-val.zero{color:var(--text-muted);}
+  .delta-val.pos{color:var(--green);}
+  .delta-val.neg{color:var(--red);}
+  .tick-default{position:absolute;top:10px;width:1px;height:8px;background:var(--text-muted);pointer-events:none;}
+
+  /* weight lock bar */
+  .weight-lock{background:var(--surface);border:1px solid var(--border);border-top:none;padding:14px 22px;display:flex;align-items:center;gap:16px;margin-bottom:1px;}
+  .weight-lock-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
+  .weight-bar-track{flex:1;height:4px;background:var(--border2);position:relative;}
+  .weight-bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent);transition:width .3s;}
+  .weight-bar-rest{position:absolute;right:0;top:0;height:100%;background:var(--studio);transition:width .3s;}
+  .weight-labels{display:flex;justify-content:space-between;margin-top:4px;}
+  .weight-label-text{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);}
+
+  /* ── RESET BTN ── */
+  .reset-btn{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);background:none;border:1px solid var(--border2);padding:5px 12px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s;}
+  .reset-btn:hover{border-color:var(--text-muted);color:var(--text);}
+
+  /* ── TOOLTIP ── */
+  .tip{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid var(--text-muted);border-radius:50%;font-size:8px;color:var(--text-muted);cursor:help;position:relative;margin-left:6px;flex-shrink:0;}
+  .tip-popup{
+    display:none;position:absolute;left:20px;top:-4px;
+    width:200px;background:var(--surface2);border:1px solid var(--border2);
+    padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);
+    line-height:1.6;z-index:10;pointer-events:none;
+  }
+  .tip:hover .tip-popup{display:block;}
+
+  /* ── INPUT SECTION ── */
+  .input-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end;margin-bottom:10px;}
+  .input-group{display:flex;flex-direction:column;gap:5px;}
+  .input-label{font-size:11px;color:var(--text-dim);}
+  .input-sublabel{font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .optional-badge{font-family:'DM Mono',monospace;font-size:8px;color:var(--orange);border:1px solid rgba(240,160,96,0.4);padding:1px 5px;margin-left:4px;vertical-align:middle;}
+  input[type=number]{
+    background:var(--surface2);border:1px solid var(--border2);color:var(--text);
+    font-family:'DM Mono',monospace;font-size:15px;padding:9px 11px;width:100%;outline:none;
+    transition:border-color .2s;-moz-appearance:textfield;
+  }
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+  input[type=number]:focus{border-color:var(--accent);}
+  input[type=number].optional{border-style:dashed;border-color:var(--border2);}
+  input[type=number].optional:focus{border-style:solid;border-color:var(--orange);}
+
+  .f-ref{background:#0d0d0d;border:1px solid var(--border);border-left:2px solid var(--orange);margin-bottom:12px;}
+  .f-ref-toggle{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;cursor:pointer;user-select:none;}
+  .f-ref-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:.12em;text-transform:uppercase;}
+  .f-ref-arrow{font-size:10px;color:var(--text-muted);transition:transform .2s;}
+  .f-ref-arrow.open{transform:rotate(180deg);}
+  .f-ref-body{display:none;padding:0 13px 12px;}
+  .f-ref-body.open{display:block;}
+  .f-ref-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);}
+  .f-ref-cell{background:var(--surface);padding:7px 10px;}
+  .f-ref-grade{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);}
+  .f-ref-amt{font-size:10px;color:var(--text-muted);margin-top:2px;}
+  .f-ref-note{font-size:9px;color:var(--text-muted);margin-top:9px;padding-top:8px;border-top:1px solid var(--border);line-height:1.5;}
+
+  .calc-btn{
+    background:var(--accent);color:#0a0a0a;border:none;
+    font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.1em;
+    padding:13px 28px;cursor:pointer;width:100%;margin-top:8px;
+    transition:background .2s,transform .1s;
+  }
+  .calc-btn:hover{background:#d4f570;}
+  .calc-btn:active{transform:scale(.99);}
+
+  /* ── DUAL RESULT ── */
+  .result-section{display:none;margin-top:2px;}
+  .result-section.visible{display:block;}
+
+  .dual-head{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .dual-col-head{padding:12px 16px;}
+  .dual-col-head.canonical{background:var(--surface2);}
+  .dual-col-head.custom{background:rgba(255,157,92,0.06);border-bottom:2px solid var(--studio);}
+  .dual-col-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+  .dual-col-tag.c{color:var(--text-muted);}
+  .dual-col-tag.s{color:var(--studio);}
+  .dual-col-desc{font-size:11px;color:var(--text-muted);}
+
+  .dual-phi{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .phi-col{padding:20px 22px;}
+  .phi-col.canonical{background:var(--surface);}
+  .phi-col.custom{background:rgba(255,157,92,0.04);}
+  .phi-num{font-family:'DM Mono',monospace;font-size:44px;font-weight:500;line-height:1;margin-bottom:6px;}
+  .phi-axis-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .phi-status-text{font-size:12px;font-weight:400;margin-bottom:4px;}
+  .phi-w{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);}
+
+  .dual-axes{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .axis-pair{padding:16px 18px;}
+  .axis-pair.canonical{background:var(--surface2);}
+  .axis-pair.custom{background:rgba(255,157,92,0.04);}
+  .ap-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+  .ap-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid #1a1a1a;font-size:11px;}
+  .ap-row:last-child{border-bottom:none;}
+  .ap-key{color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .ap-val{font-family:'DM Mono',monospace;}
+
+  /* delta indicator between cols */
+  .delta-indicator{background:var(--surface);border:1px solid var(--border);border-top:none;padding:12px 20px;display:flex;align-items:center;gap:12px;margin-bottom:1px;}
+  .di-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;}
+  .di-chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .di-chip{font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border:1px solid;}
+
+  /* cross diagnosis */
+  .cross-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .cross-cell{padding:16px 20px;}
+  .cross-cell.canonical{background:var(--surface2);}
+  .cross-cell.custom{background:rgba(255,157,92,0.04);}
+  .cross-tag-diag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.07em;margin-bottom:6px;}
+  .cross-desc-diag{font-size:11px;color:var(--text-muted);line-height:1.7;}
+
+  /* s box */
+  .s-strip{background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--blue);padding:13px 16px;margin-bottom:1px;}
+  .s-strip-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .s-strip-val{font-family:'DM Mono',monospace;font-size:20px;color:var(--blue);margin-bottom:4px;}
+  .s-strip-ctx{font-size:11px;color:var(--text-muted);line-height:1.6;}
+
+  /* breakdown */
+  .breakdown-dual{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+  .breakdown-col{background:var(--surface2);padding:16px 18px;}
+  .breakdown-col.custom-bd{background:rgba(255,157,92,0.04);}
+  .bd-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+  .bd-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #181818;font-size:10px;}
+  .bd-key{color:var(--text-muted);font-family:'DM Mono',monospace;}
+  .bd-val{color:var(--text);font-family:'DM Mono',monospace;}
+
+  /* ── FEEDBACK ── */
+  .fb-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
+  .fb-cell{background:var(--surface2);padding:16px 20px;}
+  .fb-q{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+  .fb-options{display:flex;flex-direction:column;gap:4px;}
+  .fb-opt{display:flex;align-items:center;gap:8px;cursor:pointer;}
+  .fb-opt input[type=radio],
+  .fb-opt input[type=checkbox]{
+    accent-color:var(--accent);width:13px;height:13px;cursor:pointer;
+    background:var(--surface);border:1px solid var(--border2);
+  }
+  .fb-opt-label{font-size:12px;color:var(--text-dim);}
+  .fb-text{
+    background:var(--surface2);border:1px solid var(--border2);color:var(--text);
+    font-family:'DM Sans',sans-serif;font-size:12px;font-weight:300;
+    padding:10px 12px;width:100%;resize:vertical;min-height:80px;outline:none;
+    transition:border-color .2s;line-height:1.6;
+  }
+  .fb-text:focus{border-color:var(--accent);}
+  .copy-btn{
+    background:none;border:1px solid var(--border2);
+    font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);
+    letter-spacing:.1em;text-transform:uppercase;padding:11px 20px;
+    cursor:pointer;width:100%;transition:border-color .15s,color .15s;margin-top:1px;
+  }
+  .copy-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .copy-btn.copied{border-color:var(--green);color:var(--green);}
+
+  /* ── NOTE ── */
+  .note{margin-top:28px;padding:14px;border-left:2px solid var(--border2);font-size:11px;color:var(--text-muted);line-height:1.65;}
+  .version{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-align:right;margin-top:28px;letter-spacing:.1em;}
+
+  /* ── MOBILE ── */
+  @media(max-width:560px){
+    .studio-grid{grid-template-columns:1fr;}
+    .dual-head,.dual-phi,.dual-axes,.cross-row,.breakdown-dual,.fb-grid{grid-template-columns:1fr;}
+    .input-grid{grid-template-columns:1fr 1fr;}
+    .container{padding:24px 14px 0;}
+    .page-h1{font-size:18px;}
+    .phi-num{font-size:36px;}
+    .f-ref-grid{grid-template-columns:repeat(2,1fr);}
+    .tip-popup{left:auto;right:20px;}
   }
 </style>
 </head>
 <body>
-<div class="container">
+
+<!-- NAV BAR -->
+<nav class="spa-nav">
+  <span class="spa-nav-brand">DSBM</span>
+  <div class="spa-nav-links">
+    <button class="spa-nav-btn active" onclick="showPage('home')" id="nav-home">首頁</button>
+    <button class="spa-nav-btn" onclick="showPage('tool')" id="nav-tool">診斷</button>
+    <button class="spa-nav-btn" onclick="showPage('manual')" id="nav-manual">說明</button>
+    <button class="spa-nav-btn" onclick="showPage('game')" id="nav-game">模擬</button>
+    <button class="spa-nav-btn" onclick="showPage('custom')" id="nav-custom" style="color:var(--studio);">自訂</button>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="spa-page active" id="page-home">
+  <div class="home-container">
+    <div class="home-sys-tag">System Portal</div>
+    <div class="home-title-en">Dyadic Symmetry-Bottleneck Model</div>
+    <h1 class="home-title-zh">二元對稱瓶頸模型</h1>
+    <p class="home-desc">
+      一個用於評估二元關係結構健康程度的診斷系統。<br>
+      它不測量情感滿意度，也不對關係做出價值判斷——<br>
+      它只測量<strong style="color:#e0e0e0;font-weight:400;">結構</strong>。
+    </p>
+    <div class="home-nav">
+      <button class="home-nav-item" onclick="showPage('tool')">
+        <span class="home-nav-num">01</span>
+        <div class="home-nav-info">
+          <div class="home-nav-title">關係結構診斷工具</div>
+          <div class="home-nav-sub">輸入收入、勞動時數、年齡、家境等級，生成 φ · A · F 三軸結構診斷與座標矩陣</div>
+        </div>
+        <span class="home-nav-tag tag-tool">TOOL</span>
+        <span class="home-nav-arrow">→</span>
+      </button>
+      <button class="home-nav-item" onclick="showPage('manual')">
+        <span class="home-nav-num">02</span>
+        <div class="home-nav-info">
+          <div class="home-nav-title">使用說明書</div>
+          <div class="home-nav-sub">模型設計邏輯、公式推導、診斷區間說明與版本更新紀錄</div>
+        </div>
+        <span class="home-nav-tag tag-doc">DOC</span>
+        <span class="home-nav-arrow">→</span>
+      </button>
+      <button class="home-nav-item" onclick="showPage('game')">
+        <span class="home-nav-num">03</span>
+        <div class="home-nav-info">
+          <div class="home-nav-title">結構敘事模擬</div>
+          <div class="home-nav-sub">三個案例，三條軸線。你的選擇將被記錄，並在最後生成行為結構分析報告</div>
+        </div>
+        <span class="home-nav-tag tag-game">GAME</span>
+        <span class="home-nav-arrow">→</span>
+      </button>
+      <button class="home-nav-item" onclick="showPage('custom')">
+        <span class="home-nav-num">04</span>
+        <div class="home-nav-info">
+          <div class="home-nav-title">參數工作室 — 自訂模式</div>
+          <div class="home-nav-sub">調整 φ 權重、互補係數、過載懲罰與 F 軸比重，與官方模型並排對照，探索你的診斷價值觀</div>
+        </div>
+        <span class="home-nav-tag" style="color:var(--studio);border-color:rgba(255,157,92,0.3);">CUSTOM</span>
+        <span class="home-nav-arrow">→</span>
+      </button>
+    </div>
+    <div class="home-footer">
+      <div class="home-footer-note">本系統基於 DSBM v3.1<br>結果僅供結構性參考，不代表任何關係判決</div>
+      <div class="home-footer-ver">DSBM v3.1<br>Beta</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOL PAGE -->
+<div class="spa-page" id="page-tool">
+  <div class="tool-container">
+    <div class="container">
 
   <header>
     <div class="label-tag">DSBM v3.1 — Dyadic Symmetry-Bottleneck Model</div>
@@ -169,326 +625,1094 @@
     </p>
   </header>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('diagnose',this)">診斷</button>
-    <button class="tab-btn" onclick="switchTab('timeline',this)">時間軸<span class="tab-badge" id="tab-badge"></span></button>
+  <div class="section">
+    <div class="section-title">01 資料輸入</div>
+    <div class="input-grid" style="margin-bottom:14px;">
+      <div class="input-group"><span class="input-label" style="color:var(--text-muted);">項目</span></div>
+      <div class="input-group"><span class="input-label">自己</span></div>
+      <div class="input-group"><span class="input-label">對方</span></div>
+    </div>
+    <div class="input-grid">
+      <div class="input-group"><span class="input-label">月收入</span><span class="input-sublabel">萬元／月</span></div>
+      <div class="input-group"><input type="number" id="income_self" placeholder="例：8" min="0" step="0.1"></div>
+      <div class="input-group"><input type="number" id="income_other" placeholder="例：3" min="0" step="0.1"></div>
+    </div>
+    <div class="input-grid" style="margin-top:10px;">
+      <div class="input-group"><span class="input-label">每週勞動時數</span><span class="input-sublabel">工作＋家務＋照顧</span></div>
+      <div class="input-group"><input type="number" id="hours_self" placeholder="例：10" min="0" max="168" step="1"></div>
+      <div class="input-group"><input type="number" id="hours_other" placeholder="例：30" min="0" max="168" step="1"></div>
+    </div>
+    <div class="input-grid" style="margin-top:10px;">
+      <div class="input-group"><span class="input-label">年齡</span><span class="input-sublabel">實際歲數（≥16）</span></div>
+      <div class="input-group"><input type="number" id="age_self" placeholder="例：32" min="16" step="1"></div>
+      <div class="input-group"><input type="number" id="age_other" placeholder="例：28" min="16" step="1"></div>
+    </div>
+    <div class="input-grid" style="margin-top:10px;margin-bottom:4px;">
+      <div class="input-group"><span class="input-label">家境等級<span class="optional-badge">選填</span></span><span class="input-sublabel">1=最富　10=最低</span></div>
+      <div class="input-group"><input type="number" id="grade_self" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
+      <div class="input-group"><input type="number" id="grade_other" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
+    </div>
+    <div class="f-ref">
+      <div class="f-ref-toggle" onclick="toggleRef()">
+        <span class="f-ref-label">家境等級對照表（主計處）</span>
+        <span class="f-ref-arrow" id="ref-arrow">▾</span>
+      </div>
+      <div class="f-ref-body" id="ref-body">
+        <div class="f-ref-grid">
+          <div class="f-ref-cell"><div class="f-ref-grade">1 級</div><div class="f-ref-amt">&gt;3,391萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">2 級</div><div class="f-ref-amt">≈3,391萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">3 級</div><div class="f-ref-amt">≈2,134萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">4 級</div><div class="f-ref-amt">≈1,547萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">5 級</div><div class="f-ref-amt">≈1,171萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">6 級</div><div class="f-ref-amt">≈894萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">7 級</div><div class="f-ref-amt">≈677萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">8 級</div><div class="f-ref-amt">≈490萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">9 級</div><div class="f-ref-amt">≈319萬</div></div>
+          <div class="f-ref-cell"><div class="f-ref-grade">10 級</div><div class="f-ref-amt">&lt;143萬</div></div>
+        </div>
+        <div class="f-ref-note">兩欄均填寫時才啟動 F 軸計算。填入最接近自身家庭狀況的整數等級。</div>
+      </div>
+    </div>
+    <button class="btn" onclick="calculate()">▸ 執行診斷</button>
   </div>
 
-  <!-- ═══════════════════════════════════════════ DIAGNOSE PANEL -->
-  <div class="panel active" id="panel-diagnose">
+  <div class="result-box" id="result">
 
-    <div class="section">
-      <div class="section-title">01 資料輸入</div>
-      <div class="input-grid" style="margin-bottom:14px;">
-        <div class="input-group"><span class="input-label" style="color:var(--text-muted);">項目</span></div>
-        <div class="input-group"><span class="input-label">自己</span></div>
-        <div class="input-group"><span class="input-label">對方</span></div>
-      </div>
-      <div class="input-grid">
-        <div class="input-group"><span class="input-label">月收入</span><span class="input-sublabel">萬元／月</span></div>
-        <div class="input-group"><input type="number" id="income_self" placeholder="例：8" min="0" step="0.1"></div>
-        <div class="input-group"><input type="number" id="income_other" placeholder="例：3" min="0" step="0.1"></div>
-      </div>
-      <div class="input-grid" style="margin-top:10px;">
-        <div class="input-group"><span class="input-label">每週勞動時數</span><span class="input-sublabel">工作＋家務＋照顧</span></div>
-        <div class="input-group"><input type="number" id="hours_self" placeholder="例：10" min="0" max="168" step="1"></div>
-        <div class="input-group"><input type="number" id="hours_other" placeholder="例：30" min="0" max="168" step="1"></div>
-      </div>
-      <div class="input-grid" style="margin-top:10px;">
-        <div class="input-group"><span class="input-label">年齡</span><span class="input-sublabel">實際歲數（≥16）</span></div>
-        <div class="input-group"><input type="number" id="age_self" placeholder="例：32" min="16" step="1"></div>
-        <div class="input-group"><input type="number" id="age_other" placeholder="例：28" min="16" step="1"></div>
-      </div>
-      <div class="input-grid" style="margin-top:10px;margin-bottom:4px;">
-        <div class="input-group"><span class="input-label">家境等級<span class="optional-badge">選填</span></span><span class="input-sublabel">1=最富　10=最低</span></div>
-        <div class="input-group"><input type="number" id="grade_self" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
-        <div class="input-group"><input type="number" id="grade_other" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
-      </div>
-      <div class="f-ref">
-        <div class="f-ref-toggle" onclick="toggleRef()">
-          <span class="f-ref-label">家境等級對照表（主計處）</span>
-          <span class="f-ref-arrow" id="ref-arrow">▾</span>
-        </div>
-        <div class="f-ref-body" id="ref-body">
-          <div class="f-ref-grid">
-            <div class="f-ref-cell"><div class="f-ref-grade">1 級</div><div class="f-ref-amt">&gt;3,391萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">2 級</div><div class="f-ref-amt">≈3,391萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">3 級</div><div class="f-ref-amt">≈2,134萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">4 級</div><div class="f-ref-amt">≈1,547萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">5 級</div><div class="f-ref-amt">≈1,171萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">6 級</div><div class="f-ref-amt">≈894萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">7 級</div><div class="f-ref-amt">≈677萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">8 級</div><div class="f-ref-amt">≈490萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">9 級</div><div class="f-ref-amt">≈319萬</div></div>
-            <div class="f-ref-cell"><div class="f-ref-grade">10 級</div><div class="f-ref-amt">&lt;143萬</div></div>
-          </div>
-          <div class="f-ref-note">兩欄均填寫時才啟動 F 軸計算。填入最接近自身家庭狀況的整數等級。</div>
-        </div>
-      </div>
-      <button class="btn" onclick="calculate()">▸ 執行診斷</button>
+    <!-- SVG矩陣：用viewBox，完全不依賴DOM尺寸 -->
+    <div class="matrix-wrapper">
+      <div class="matrix-title">結構座標矩陣 — φ · A · F 三軸定位</div>
+      <!--
+        viewBox座標系：720×360
+        繪圖區：x=60~700, y=30~330  (plotW=640, plotH=300)
+        φ軸：x方向，0=左(60), 1=右(700)
+        A軸：y方向，0=下(330), 1=上(30)  ← Y反轉
+        邊界：φ=0.65 → x=60+0.65*640=476, A=25% → y=330-0.25*300=255
+      -->
+      <svg id="matrix-svg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <rect width="720" height="360" fill="#000"/>
+
+        <!-- 格線 -->
+        <g stroke="#1c1c1c" stroke-width="0.5">
+          <line x1="60" y1="30" x2="60" y2="330"/><line x1="124" y1="30" x2="124" y2="330"/>
+          <line x1="188" y1="30" x2="188" y2="330"/><line x1="252" y1="30" x2="252" y2="330"/>
+          <line x1="316" y1="30" x2="316" y2="330"/><line x1="380" y1="30" x2="380" y2="330"/>
+          <line x1="444" y1="30" x2="444" y2="330"/><line x1="508" y1="30" x2="508" y2="330"/>
+          <line x1="572" y1="30" x2="572" y2="330"/><line x1="636" y1="30" x2="636" y2="330"/>
+          <line x1="700" y1="30" x2="700" y2="330"/>
+          <line x1="60" y1="30"  x2="700" y2="30"/> <line x1="60" y1="60"  x2="700" y2="60"/>
+          <line x1="60" y1="90"  x2="700" y2="90"/> <line x1="60" y1="120" x2="700" y2="120"/>
+          <line x1="60" y1="150" x2="700" y2="150"/><line x1="60" y1="180" x2="700" y2="180"/>
+          <line x1="60" y1="210" x2="700" y2="210"/><line x1="60" y1="240" x2="700" y2="240"/>
+          <line x1="60" y1="270" x2="700" y2="270"/><line x1="60" y1="300" x2="700" y2="300"/>
+          <line x1="60" y1="330" x2="700" y2="330"/>
+        </g>
+
+        <!-- 危險區（φ<0.65, A>25% → x<476, y<207.5） -->
+        <rect id="svg-danger" x="60" y="30" width="416" height="225" fill="rgba(255,60,60,0.03)"/>
+
+        <!-- 邊界線 -->
+        <line id="svg-vline" x1="476" y1="30" x2="476" y2="330" stroke="rgba(70,150,90,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line id="svg-hline" x1="60" y1="255" x2="700" y2="255" stroke="rgba(70,150,90,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- 邊界標籤 -->
+        <text id="svg-vlabel" x="480" y="42" fill="rgba(70,150,90,0.5)" font-family="monospace" font-size="9">φ=0.65</text>
+        <text id="svg-hlabel" x="64" y="251" fill="rgba(70,150,90,0.5)" font-family="monospace" font-size="9">A=25%</text>
+        <text id="svg-collapse" x="64" y="46" fill="rgba(255,80,80,0.2)" font-family="monospace" font-size="9">COLLAPSE ZONE</text>
+
+        <!-- 軸刻度 -->
+        <g fill="#3a3a3a" font-family="monospace" font-size="9">
+          <text x="54"  y="344">0.0</text>
+          <text x="372" y="344">0.5</text>
+          <text x="692" y="344">1.0</text>
+          <text x="680" y="356">φ →</text>
+          <text x="2"  y="333">0%</text>
+          <text x="2"  y="183">50%</text>
+          <text x="2"  y="36">100%</text>
+        </g>
+        <text x="16" y="190" fill="#3a3a3a" font-family="monospace" font-size="9" transform="rotate(-90,16,190)">A ↑</text>
+
+        <!-- 泡泡群組（用transform定位，CSS transition做慣性） -->
+        <g id="svg-bubble-g" transform="translate(380,180)" style="transition:transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94);" opacity="0">
+          <!-- 外圓（虛線=無F，實心=有F） -->
+          <circle id="svg-circle" cx="0" cy="0" r="14"
+            fill="none" stroke="#c8f060" stroke-width="1.5" stroke-dasharray="3,3"
+            style="transition:r 0.9s cubic-bezier(0.25,0.46,0.45,0.94);"/>
+          <!-- 實心填充層（有F才顯示） -->
+          <circle id="svg-fill" cx="0" cy="0" r="14" fill="rgba(200,240,96,0.15)" opacity="0"
+            style="transition:r 0.9s cubic-bezier(0.25,0.46,0.45,0.94);"/>
+          <!-- 中心點 -->
+          <circle id="svg-dot" cx="0" cy="0" r="2.5" fill="#c8f060"/>
+          <!-- 座標標籤 -->
+          <text id="svg-lphi" x="18" y="-4"  fill="#c8f060" font-family="monospace" font-size="9" opacity="0.85"></text>
+          <text id="svg-la"   x="18" y="9"   fill="#c8f060" font-family="monospace" font-size="9" opacity="0.85"></text>
+          <text id="svg-lf"   x="18" y="22"  fill="#f0a060" font-family="monospace" font-size="9" opacity="0.85"></text>
+        </g>
+      </svg>
+      <div class="matrix-caption">Bubble position: φ (x, right=symmetric) · A (y, up=risk) · Bubble size: F gap · Dashed circle = F not provided</div>
+      <div class="matrix-caption" style="margin-top:5px;color:#484848;">泡泡大小代表家境差距（F 軸）——視覺上刻意放大，因為家境對價值觀的影響往往比薪資或年齡更深遠，但屬於個人隱私，故設計為選填。越大越不穩定，如同充氣越足的氣球，越容易在外部壓力下破裂。</div>
     </div>
 
-    <div class="result-box" id="result">
-
-      <!-- SVG矩陣 -->
-      <div class="matrix-wrapper">
-        <div class="matrix-title">結構座標矩陣 — φ · A · F 三軸定位</div>
-        <svg id="matrix-svg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-          <rect width="720" height="360" fill="#000"/>
-          <g stroke="#1c1c1c" stroke-width="0.5">
-            <line x1="60" y1="30" x2="60" y2="330"/><line x1="124" y1="30" x2="124" y2="330"/>
-            <line x1="188" y1="30" x2="188" y2="330"/><line x1="252" y1="30" x2="252" y2="330"/>
-            <line x1="316" y1="30" x2="316" y2="330"/><line x1="380" y1="30" x2="380" y2="330"/>
-            <line x1="444" y1="30" x2="444" y2="330"/><line x1="508" y1="30" x2="508" y2="330"/>
-            <line x1="572" y1="30" x2="572" y2="330"/><line x1="636" y1="30" x2="636" y2="330"/>
-            <line x1="700" y1="30" x2="700" y2="330"/>
-            <line x1="60" y1="30"  x2="700" y2="30"/> <line x1="60" y1="60"  x2="700" y2="60"/>
-            <line x1="60" y1="90"  x2="700" y2="90"/> <line x1="60" y1="120" x2="700" y2="120"/>
-            <line x1="60" y1="150" x2="700" y2="150"/><line x1="60" y1="180" x2="700" y2="180"/>
-            <line x1="60" y1="210" x2="700" y2="210"/><line x1="60" y1="240" x2="700" y2="240"/>
-            <line x1="60" y1="270" x2="700" y2="270"/><line x1="60" y1="300" x2="700" y2="300"/>
-            <line x1="60" y1="330" x2="700" y2="330"/>
-          </g>
-          <rect id="svg-danger" x="60" y="30" width="416" height="225" fill="rgba(255,60,60,0.03)"/>
-          <line id="svg-vline" x1="476" y1="30" x2="476" y2="330" stroke="rgba(70,150,90,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
-          <line id="svg-hline" x1="60" y1="255" x2="700" y2="255" stroke="rgba(70,150,90,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
-          <text id="svg-vlabel" x="480" y="42" fill="rgba(70,150,90,0.5)" font-family="monospace" font-size="9">φ=0.65</text>
-          <text id="svg-hlabel" x="64" y="251" fill="rgba(70,150,90,0.5)" font-family="monospace" font-size="9">A=25%</text>
-          <text id="svg-collapse" x="64" y="46" fill="rgba(255,80,80,0.2)" font-family="monospace" font-size="9">COLLAPSE ZONE</text>
-          <g fill="#3a3a3a" font-family="monospace" font-size="9">
-            <text x="54"  y="344">0.0</text>
-            <text x="372" y="344">0.5</text>
-            <text x="692" y="344">1.0</text>
-            <text x="680" y="356">φ →</text>
-            <text x="2"  y="333">0%</text>
-            <text x="2"  y="183">50%</text>
-            <text x="2"  y="36">100%</text>
-          </g>
-          <text x="16" y="190" fill="#3a3a3a" font-family="monospace" font-size="9" transform="rotate(-90,16,190)">A ↑</text>
-          <g id="svg-bubble-g" transform="translate(380,180)" style="transition:transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94);" opacity="0">
-            <circle id="svg-circle" cx="0" cy="0" r="14" fill="none" stroke="#c8f060" stroke-width="1.5" stroke-dasharray="3,3" style="transition:r 0.9s cubic-bezier(0.25,0.46,0.45,0.94);"/>
-            <circle id="svg-fill" cx="0" cy="0" r="14" fill="rgba(200,240,96,0.15)" opacity="0" style="transition:r 0.9s cubic-bezier(0.25,0.46,0.45,0.94);"/>
-            <circle id="svg-dot" cx="0" cy="0" r="2.5" fill="#c8f060"/>
-            <text id="svg-lphi" x="18" y="-4"  fill="#c8f060" font-family="monospace" font-size="9" opacity="0.85"></text>
-            <text id="svg-la"   x="18" y="9"   fill="#c8f060" font-family="monospace" font-size="9" opacity="0.85"></text>
-            <text id="svg-lf"   x="18" y="22"  fill="#f0a060" font-family="monospace" font-size="9" opacity="0.85"></text>
-          </g>
-        </svg>
-        <div class="matrix-caption">Bubble position: φ (x, right=symmetric) · A (y, up=risk) · Bubble size: F gap · Dashed circle = F not provided</div>
-        <div class="matrix-caption" style="margin-top:5px;color:#484848;">泡泡大小代表家境差距（F 軸）——視覺上刻意放大，因為家境對價值觀的影響往往比薪資或年齡更深遠，但屬於個人隱私，故設計為選填。越大越不穩定，如同充氣越足的氣球，越容易在外部壓力下破裂。</div>
+    <div class="axes-row">
+      <div class="axis-card">
+        <div class="axis-meta-label">第一軸 — 貢獻對稱係數</div>
+        <div class="axis-num" id="phi_display">—</div>
+        <div class="axis-status" id="phi_status">—</div>
+        <div class="axis-sub" id="w_label">W = —</div>
       </div>
-
-      <div class="axes-row">
-        <div class="axis-card">
-          <div class="axis-meta-label">第一軸 — 貢獻對稱係數</div>
-          <div class="axis-num" id="phi_display">—</div>
-          <div class="axis-status" id="phi_status">—</div>
-          <div class="axis-sub" id="w_label">W = —</div>
-        </div>
-        <div class="axis-card">
-          <div class="axis-meta-label">第二軸 — 年齡背景內耗比</div>
-          <div class="axis-num" id="a_display">—</div>
-          <div class="axis-status" id="a_status">—</div>
-          <div class="axis-sub" id="age_info">—</div>
-        </div>
+      <div class="axis-card">
+        <div class="axis-meta-label">第二軸 — 年齡背景內耗比</div>
+        <div class="axis-num" id="a_display">—</div>
+        <div class="axis-status" id="a_status">—</div>
+        <div class="axis-sub" id="age_info">—</div>
       </div>
-      <div id="f_card_row" style="display:none;margin-top:1px;">
-        <div class="axis-card orange-top">
-          <div class="axis-meta-label" style="color:var(--orange);">第三軸 — 家境背景內耗比（選填）</div>
-          <div class="axis-num" id="f_display" style="color:var(--orange);">—</div>
-          <div class="axis-status" id="f_status">—</div>
-          <div class="axis-sub" id="f_info">—</div>
-        </div>
-      </div>
-
-      <div style="height:1px;background:var(--border);margin-top:1px;"></div>
-      <div class="metrics-strip">
-        <div class="metric-cell">
-          <div class="metric-name">φ_money</div>
-          <div class="metric-val" id="phi_money">—</div>
-          <div class="metric-desc">收入對稱</div>
-        </div>
-        <div class="metric-cell">
-          <div class="metric-name">φ_time</div>
-          <div class="metric-val" id="phi_time">—</div>
-          <div class="metric-desc">時間對稱</div>
-        </div>
-        <div class="metric-cell">
-          <div class="metric-name">方向修正</div>
-          <div class="metric-val" id="dir_type" style="font-size:14px;">—</div>
-          <div class="metric-desc" id="dir_adj">—</div>
-        </div>
-      </div>
-
-      <div style="height:1px;background:var(--border);margin-top:1px;"></div>
-      <div class="cross-box" id="cross_box">
-        <div class="cross-tag" id="cross_tag">—</div>
-        <div class="cross-desc" id="cross_desc">—</div>
-      </div>
-
-      <div class="s-box">
-        <div class="s-box-title">S — 月收入合計（背景參考）</div>
-        <div class="s-box-val" id="s_value">—</div>
-        <div class="s-box-context" id="s_context">—</div>
-      </div>
-
-      <div id="type_tag" class="type-tag">—</div>
-      <div class="report-text" id="report_text"></div>
-
-      <div class="breakdown">
-        <div class="breakdown-title">計算明細 — 第一軸 φ</div>
-        <div class="breakdown-row"><span class="breakdown-key">自己收入</span><span class="breakdown-val" id="d_income_self">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">對方收入</span><span class="breakdown-val" id="d_income_other">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">自己時數</span><span class="breakdown-val" id="d_hours_self">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">對方時數</span><span class="breakdown-val" id="d_hours_other">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">φ_money</span><span class="breakdown-val" id="d_phi_money">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">φ_time</span><span class="breakdown-val" id="d_phi_time">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">φ 原始</span><span class="breakdown-val" id="d_phi_raw">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">方向類型</span><span class="breakdown-val" id="d_dir_type">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">修正值</span><span class="breakdown-val" id="d_dir_adj">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">φ 最終</span><span class="breakdown-val" id="d_phi_final">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">W = 1 − φ</span><span class="breakdown-val" id="d_w">—</span></div>
-      </div>
-      <div class="breakdown" style="margin-top:16px;">
-        <div class="breakdown-title">計算明細 — 第二軸 A</div>
-        <div class="breakdown-row"><span class="breakdown-key">自己年齡</span><span class="breakdown-val" id="d_age_self">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">對方年齡</span><span class="breakdown-val" id="d_age_other">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">gap</span><span class="breakdown-val" id="d_gap">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">mean</span><span class="breakdown-val" id="d_mean">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">gap²</span><span class="breakdown-val" id="d_gap2">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">mean²</span><span class="breakdown-val" id="d_mean2">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">gap²/mean²</span><span class="breakdown-val" id="d_a_raw">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">A（cap後）</span><span class="breakdown-val" id="d_a_final">—</span></div>
-      </div>
-      <div class="breakdown" id="breakdown_f" style="margin-top:16px;display:none;">
-        <div class="breakdown-title" style="color:var(--orange);">計算明細 — 第三軸 F</div>
-        <div class="breakdown-row"><span class="breakdown-key">自己家境等級</span><span class="breakdown-val" id="d_grade_self">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">對方家境等級</span><span class="breakdown-val" id="d_grade_other">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">自己等級²</span><span class="breakdown-val" id="d_grade_self_sq">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">對方等級²</span><span class="breakdown-val" id="d_grade_other_sq">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">|自己²−對方²|</span><span class="breakdown-val" id="d_f_diff">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">F_gap = 差值/100</span><span class="breakdown-val" id="d_f_gap">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">F_base = 平均等級/10</span><span class="breakdown-val" id="d_f_base">—</span></div>
-        <div class="breakdown-row"><span class="breakdown-key">F = gap×0.7 + base×0.3</span><span class="breakdown-val" id="d_f_final">—</span></div>
-      </div>
-
-      <!-- SAVE SECTION -->
-      <div class="save-section">
-        <div class="save-section-title">儲存這次記錄</div>
-        <div class="save-note-wrap">
-          <input type="text" class="save-note-input" id="save_note" placeholder="備註（選填）：例如「換工作後」、「搬家前」">
-          <button class="btn-save" onclick="saveRecord()">▸ 儲存至時間軸</button>
-        </div>
-        <div class="save-confirm" id="save_confirm">✓ 已儲存。切換至「時間軸」頁籤可查看歷史記錄。</div>
-      </div>
-
-    </div><!-- /result-box -->
-
-    <div class="note">
-      本工具基於二元對稱瓶頸模型（DSBM v3.1）。φ 含方向性修正，區分單邊過載與互補分工。A 使用 gap²/mean² 捕捉年齡差距的相對衝擊。F 為選填項，參考主計處家庭財富十等級（1 級最富，10 級最低）。S 不影響診斷。結果僅供結構性參考。
     </div>
-    <div class="version">DSBM v3.1 — F 軸修正版 + 時間軸 Beta</div>
-
-  </div><!-- /panel-diagnose -->
-
-
-  <!-- ═══════════════════════════════════════════ TIMELINE PANEL -->
-  <div class="panel" id="panel-timeline">
-
-    <div class="tl-storage-note">
-      資料儲存於本機瀏覽器（localStorage）。清除瀏覽器資料或更換裝置將無法找回記錄。建議定期截圖備份重要的歷史資料。
-    </div>
-
-    <div id="tl-empty" class="tl-empty">
-      <div class="tl-empty-icon">◎</div>
-      <div class="tl-empty-text">
-        尚無歷史記錄。<br>
-        執行診斷後，點選「儲存至時間軸」<br>
-        即可開始追蹤關係結構的變化。
+    <div id="f_card_row" style="display:none;margin-top:1px;">
+      <div class="axis-card orange-top">
+        <div class="axis-meta-label" style="color:var(--orange);">第三軸 — 家境背景內耗比（選填）</div>
+        <div class="axis-num" id="f_display" style="color:var(--orange);">—</div>
+        <div class="axis-status" id="f_status">—</div>
+        <div class="axis-sub" id="f_info">—</div>
       </div>
     </div>
 
-    <div id="tl-content" style="display:none;">
-      <!-- CHART -->
-      <div class="chart-wrap">
-        <div class="chart-title">結構指標歷史走勢</div>
-        <div class="chart-canvas-wrap">
-          <canvas id="tl-chart"></canvas>
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>φ 貢獻對稱係數</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>A 年齡背景內耗比</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>F 家境背景內耗比</div>
-        </div>
+    <div style="height:1px;background:var(--border);margin-top:1px;"></div>
+    <div class="metrics-strip">
+      <div class="metric-cell">
+        <div class="metric-name">φ_money</div>
+        <div class="metric-val" id="phi_money">—</div>
+        <div class="metric-desc">收入對稱</div>
       </div>
-
-      <!-- LIST -->
-      <div class="tl-header">
-        <span class="tl-header-title">歷史記錄</span>
-        <button class="btn-clear-all" onclick="clearAll()">清除全部</button>
+      <div class="metric-cell">
+        <div class="metric-name">φ_time</div>
+        <div class="metric-val" id="phi_time">—</div>
+        <div class="metric-desc">時間對稱</div>
       </div>
-      <div class="record-list" id="record-list"></div>
+      <div class="metric-cell">
+        <div class="metric-name">方向修正</div>
+        <div class="metric-val" id="dir_type" style="font-size:14px;">—</div>
+        <div class="metric-desc" id="dir_adj">—</div>
+      </div>
     </div>
 
-  </div><!-- /panel-timeline -->
+    <div style="height:1px;background:var(--border);margin-top:1px;"></div>
+    <div class="cross-box" id="cross_box">
+      <div class="cross-tag" id="cross_tag">—</div>
+      <div class="cross-desc" id="cross_desc">—</div>
+    </div>
 
-</div><!-- /container -->
+    <div class="s-box">
+      <div class="s-box-title">S — 月收入合計（背景參考）</div>
+      <div class="s-box-val" id="s_value">—</div>
+      <div class="s-box-context" id="s_context">—</div>
+    </div>
+
+    <div id="type_tag" class="type-tag">—</div>
+    <div class="report-text" id="report_text"></div>
+
+    <div class="breakdown">
+      <div class="breakdown-title">計算明細 — 第一軸 φ</div>
+      <div class="breakdown-row"><span class="breakdown-key">自己收入</span><span class="breakdown-val" id="d_income_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方收入</span><span class="breakdown-val" id="d_income_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">自己時數</span><span class="breakdown-val" id="d_hours_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方時數</span><span class="breakdown-val" id="d_hours_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ_money</span><span class="breakdown-val" id="d_phi_money">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ_time</span><span class="breakdown-val" id="d_phi_time">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ 原始</span><span class="breakdown-val" id="d_phi_raw">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">方向類型</span><span class="breakdown-val" id="d_dir_type">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">修正值</span><span class="breakdown-val" id="d_dir_adj">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">φ 最終</span><span class="breakdown-val" id="d_phi_final">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">W = 1 − φ</span><span class="breakdown-val" id="d_w">—</span></div>
+    </div>
+    <div class="breakdown" style="margin-top:16px;">
+      <div class="breakdown-title">計算明細 — 第二軸 A</div>
+      <div class="breakdown-row"><span class="breakdown-key">自己年齡</span><span class="breakdown-val" id="d_age_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方年齡</span><span class="breakdown-val" id="d_age_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">gap</span><span class="breakdown-val" id="d_gap">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">mean</span><span class="breakdown-val" id="d_mean">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">gap²</span><span class="breakdown-val" id="d_gap2">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">mean²</span><span class="breakdown-val" id="d_mean2">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">gap²/mean²</span><span class="breakdown-val" id="d_a_raw">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">A（cap後）</span><span class="breakdown-val" id="d_a_final">—</span></div>
+    </div>
+    <div class="breakdown" id="breakdown_f" style="margin-top:16px;display:none;">
+      <div class="breakdown-title" style="color:var(--orange);">計算明細 — 第三軸 F</div>
+      <div class="breakdown-row"><span class="breakdown-key">自己家境等級</span><span class="breakdown-val" id="d_grade_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方家境等級</span><span class="breakdown-val" id="d_grade_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">自己等級²</span><span class="breakdown-val" id="d_grade_self_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">對方等級²</span><span class="breakdown-val" id="d_grade_other_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">|自己²−對方²|</span><span class="breakdown-val" id="d_f_diff">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_gap = 差值/100</span><span class="breakdown-val" id="d_f_gap">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_base = 平均等級/10</span><span class="breakdown-val" id="d_f_base">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F = gap×0.7 + base×0.3</span><span class="breakdown-val" id="d_f_final">—</span></div>
+    </div>
+  </div>
+
+  <div class="note">
+    本工具基於二元對稱瓶頸模型（DSBM v3.0）。φ 含方向性修正，區分單邊過載與互補分工。A 使用 gap²/mean² 捕捉年齡差距的相對衝擊。F 為選填項，參考主計處家庭財富十等級（1 級最富，10 級最低）。S 不影響診斷。結果僅供結構性參考。
+  </div>
+  <div class="version">DSBM v3.1 — F 軸修正版 Beta</div>
+
+</div>
+  </div>
+</div>
+
+<!-- MANUAL PAGE -->
+<div class="spa-page" id="page-manual">
+  <div class="manual-container">
+    
+<div class="container">
+
+  <!-- PREFACE -->
+  <div style="margin-bottom:48px;padding-bottom:40px;border-bottom:1px solid var(--border);">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;">為什麼需要這個模型</div>
+    <p style="font-size:15px;color:var(--text);line-height:2;margin-bottom:16px;font-weight:300;">
+      有些關係沒有明顯的裂痕。沒有背叛，沒有爭吵，甚至相處起來還算愉快。但某個時間點之後，雙方開始漸行漸遠，卻說不清楚原因。
+    </p>
+    <p style="font-size:15px;color:var(--text-dim);line-height:2;margin-bottom:16px;font-weight:300;">
+      這個「說不清楚」，本身就是問題所在。
+    </p>
+    <p style="font-size:15px;color:var(--text-dim);line-height:2;margin-bottom:16px;font-weight:300;">
+      當一件事情沒有名字，你就無法討論它。無法討論，就無法選擇面對或接受。它只會以另一種形式持續出現——疲憊、距離感、或者一種模糊的委屈。
+    </p>
+    <p style="font-size:15px;color:var(--text);line-height:2;font-weight:300;">
+      DSBM 試圖做的事情很簡單：給那道牆一個形狀。不是判斷它對不對，不是預測關係的結果，只是讓它從隱形變成可見。看見了，才能決定怎麼做。
+    </p>
+  </div>
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-tag">使用說明書 — User Manual</div>
+    <h1>二元對稱瓶頸模型<br>DSBM v3.1</h1>
+    <p class="cover-desc">
+      本說明書說明 DSBM v3.1 的設計邏輯、輸入規範、計算公式與輸出詮釋方式。v3.1 在 v3.0 三軸架構基礎上修正 F 軸公式，引入雙項合併計算（F_gap + F_base），修正雙底層家境得到 F=0 的設計盲點。F 軸為選填項，不填時模型回歸雙軸運算。
+    </p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-key">版本</span>
+        <span class="cover-meta-val">v3.1 — F 軸修正版</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-key">模型類型</span>
+        <span class="cover-meta-val">結構診斷工具</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-key">主要指標</span>
+        <span class="cover-meta-val">φ（貢獻對稱）、A（年齡背景）、F（家境背景）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">目錄</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><span class="toc-text">模型概覽</span><span class="toc-dots"></span><span class="toc-page">§1</span></li>
+      <li><span class="toc-num">02</span><span class="toc-text">輸入規範</span><span class="toc-dots"></span><span class="toc-page">§2</span></li>
+      <li><span class="toc-num">03</span><span class="toc-text">第一軸 φ — 貢獻對稱係數</span><span class="toc-dots"></span><span class="toc-page">§3</span></li>
+      <li><span class="toc-num">04</span><span class="toc-text">方向性修正（v2.1 沿用）</span><span class="toc-dots"></span><span class="toc-page">§4</span></li>
+      <li><span class="toc-num">05</span><span class="toc-text">第二軸 A — 年齡背景內耗比</span><span class="toc-dots"></span><span class="toc-page">§5</span></li>
+      <li><span class="toc-num">06</span><span class="toc-text">第三軸 F — 家境背景內耗比（v3.0 新增，選填）</span><span class="toc-dots"></span><span class="toc-page">§6</span></li>
+      <li><span class="toc-num">07</span><span class="toc-text">S — 背景脈絡參考值</span><span class="toc-dots"></span><span class="toc-page">§7</span></li>
+      <li><span class="toc-num">08</span><span class="toc-text">交叉診斷——多軸組合報告</span><span class="toc-dots"></span><span class="toc-page">§8</span></li>
+      <li><span class="toc-num">09</span><span class="toc-text">計算範例</span><span class="toc-dots"></span><span class="toc-page">§9</span></li>
+      <li><span class="toc-num">10</span><span class="toc-text">模型假設與局限性</span><span class="toc-dots"></span><span class="toc-page">§10</span></li>
+      <li><span class="toc-num">11</span><span class="toc-text">版本更新紀錄</span><span class="toc-dots"></span><span class="toc-page">§11</span></li>
+    </ul>
+  </div>
+
+  <!-- §1 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">模型概覽</span>
+    </div>
+    <div class="prose">
+      <p>DSBM（Dyadic Symmetry-Bottleneck Model，二元對稱瓶頸模型）是一個用於評估二元關係結構健康程度的診斷工具。它不測量情感滿意度、主觀幸福感，也不對關係做出價值判斷——它只測量<strong>結構</strong>。</p>
+      <p>v3.0 為重大架構更新版本。在原有 φ 軸與 A 軸的基礎上，新增第三軸 F（家境背景內耗比），模型自由度從二維演進為三維，能同時描述貢獻分工、年齡背景與原生家庭資源三個層次的結構問題。</p>
+    </div>
+
+    <div class="axis-diagram">
+      <div class="axis-card">
+        <div class="axis-card-label">第一軸</div>
+        <div class="axis-card-name">φ — 貢獻對稱係數</div>
+        <div class="axis-card-desc">衡量雙方在收入與勞動時數上的貢獻是否對稱，含方向性修正。數值範圍 0–1，越高越對稱。</div>
+      </div>
+      <div class="axis-card">
+        <div class="axis-card-label">第二軸</div>
+        <div class="axis-card-name">A — 年齡背景內耗比</div>
+        <div class="axis-card-desc">衡量雙方年齡差距相對於平均年齡的比例，反映人生座標錯位的結構風險。數值範圍 0–100%。</div>
+      </div>
+      <div class="axis-card">
+        <div class="axis-card-label">第三軸 — 選填</div>
+        <div class="axis-card-name">F — 家境背景內耗比</div>
+        <div class="axis-card-desc">衡量雙方原生家庭資產等級差距所產生的內耗比。數值範圍 0–100%。不填則不顯示。</div>
+        <div class="axis-card-optional">OPTIONAL — 深度診斷選配項</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">設計原則</div>
+      三個軸完全獨立計算，不相互影響。φ 反映當下的貢獻分工；A 反映年齡起點差距；F 反映原生家庭資源差距。F 軸為選填項——不填時系統回歸雙軸診斷，填寫後解鎖三軸完整報告。
+    </div>
+  </div>
+
+  <!-- §2 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">輸入規範</span>
+    </div>
+    <div class="prose">
+      <p>必填欄位共六個數值，分為「自己」與「對方」兩組。家境等級為選填欄位，每人各一個數值。</p>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>欄位</th><th>單位</th><th>範圍</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>月收入</td>
+          <td>萬元 / 月</td>
+          <td>≥ 0</td>
+          <td>稅前或稅後皆可，但雙方必須使用相同基準。包含固定薪資，可酌情納入穩定的兼職或獎金收入。</td>
+        </tr>
+        <tr>
+          <td>每週勞動時數</td>
+          <td>小時 / 週</td>
+          <td>0 – 168</td>
+          <td>包含正式工作、家務、照顧責任（子女、長輩）。建議以近三個月的平均值為準，而非單週特例。</td>
+        </tr>
+        <tr>
+          <td>年齡</td>
+          <td>歲</td>
+          <td>≥ 16</td>
+          <td>填入實際年齡（整數）。工具接受 16 歲以上的輸入值。</td>
+        </tr>
+        <tr>
+          <td>家境等級 <span class="chip orange">選填</span></td>
+          <td>級（1–10）</td>
+          <td>1 – 10</td>
+          <td>參考主計處家庭財富分佈資料，1 級為最高資產組（家庭淨資產 &gt; 3,391 萬），10 級為最低資產組（&lt; 143 萬）。填入最接近自身家庭狀況的等級。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout orange">
+      <div class="callout-label">家境等級參考對照表</div>
+      1 級 &gt; 3,391 萬／2 級 ≈ 3,391 萬／3 級 ≈ 2,134 萬／4 級 ≈ 1,547 萬／5 級 ≈ 1,171 萬<br>
+      6 級 ≈ 894 萬／7 級 ≈ 677 萬／8 級 ≈ 490 萬／9 級 ≈ 319 萬／10 級 &lt; 143 萬<br><br>
+      資料來源：行政院主計總處家庭收支調查。等級為近似分組，填入最接近的整數即可。
+    </div>
+
+    <div class="callout red">
+      <div class="callout-label">注意</div>
+      雙方月收入合計（S）與每週勞動時數合計不得同時為 0，否則無法計算。全職照顧者（收入為 0）是合法的輸入值，只要對方有收入即可正常計算。家境等級若任一方未填，F 軸不進行計算。
+    </div>
+  </div>
+
+  <!-- §3 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">第一軸 φ — 貢獻對稱係數</span>
+    </div>
+    <div class="prose">
+      <p>φ 衡量雙方在兩個貢獻維度上的對稱程度：收入（φ_money）與勞動時數（φ_time）。兩者平均後得到基礎 φ 值，再經方向性修正得到最終 φ。</p>
+    </div>
+
+    <div class="formula-box">
+      φ_money = 1 − |自己收入 − 對方收入| / (自己收入 + 對方收入)<br>
+      φ_time &nbsp;= 1 − |自己時數 − 對方時數| / (自己時數 + 對方時數)<br>
+      <br>
+      φ_原始 = (φ_money + φ_time) / 2<br>
+      <span class="comment">── 方向性修正後得到 φ 最終值（見 §4）</span>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>φ 範圍</th><th>狀態</th><th>診斷意義</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0.80 – 1.00</td>
+          <td><span class="chip green">結構良好</span></td>
+          <td>雙方貢獻高度對稱，結構內耗 W 低，具備較強的外部壓力緩衝能力。</td>
+        </tr>
+        <tr>
+          <td>0.65 – 0.79</td>
+          <td><span class="chip accent">輕度不對稱</span></td>
+          <td>差距趨於明顯，尚未進入高風險區間。建議雙方確認現有分工是否為共識安排。</td>
+        </tr>
+        <tr>
+          <td>0.50 – 0.64</td>
+          <td><span class="chip yellow">中度不對稱</span></td>
+          <td>結構損耗偏高，有效韌性受限。長期維持此結構，壓力易在具體事件中顯現。</td>
+        </tr>
+        <tr>
+          <td>0.00 – 0.49</td>
+          <td><span class="chip red">高度不對稱</span></td>
+          <td>高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="prose">
+      <p><strong>W — 結構內耗值</strong>定義為 W = 1 − φ，代表系統在維持運作過程中消耗於結構不對稱的比例。W 越高，有效韌性越低。</p>
+    </div>
+  </div>
+
+  <!-- §4 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">方向性修正（v2.1 沿用）</span>
+    </div>
+    <div class="prose">
+      <p>v2.0 的 φ 存在一個結構盲點：它無法區分<strong>互補分工</strong>與<strong>單邊過載</strong>。以下兩種情況在 v2.0 會得到相同的 φ 值，但現實意義截然不同：</p>
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">情境對比</div>
+      <strong>互補分工</strong>：甲方收入高、勞動時數少；乙方收入低、勞動時數多。雙方在不同維度各自貢獻，存在交換邏輯。<br><br>
+      <strong>單邊過載</strong>：甲方收入高、勞動時數也多；乙方收入低、勞動時數也少。一方在兩個維度均佔優，另一方在兩個維度均偏少。
+    </div>
+
+    <div class="formula-box">
+      income_gap = |自己收入 − 對方收入| / (自己收入 + 對方收入)<br>
+      hours_gap &nbsp;= |自己時數 − 對方時數| / (自己時數 + 對方時數)<br>
+      <br>
+      <span class="comment">── 若方向相同（單邊過載）：</span><br>
+      修正值 = −(income_gap × hours_gap × 0.4)<br>
+      <br>
+      <span class="comment">── 若方向相反（互補分工）：</span><br>
+      修正值 = +(income_gap × hours_gap × 0.1)<br>
+      <br>
+      φ 最終 = max(0, min(1, φ_原始 + 修正值))
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>方向類型</th><th>修正方向</th><th>修正係數</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>單邊過載</td>
+          <td><span class="chip red">扣分</span></td>
+          <td>× 0.4</td>
+          <td>收入高者時數也高，另一方雙重弱勢。</td>
+        </tr>
+        <tr>
+          <td>互補分工</td>
+          <td><span class="chip green">加分</span></td>
+          <td>× 0.1</td>
+          <td>收入高者時數少，形成跨維度交換。</td>
+        </tr>
+        <tr>
+          <td>無顯著方向</td>
+          <td>—</td>
+          <td>× 0</td>
+          <td>任一維度差距為零，不進行修正。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- §5 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">第二軸 A — 年齡背景內耗比</span>
+    </div>
+    <div class="prose">
+      <p>A 衡量雙方年齡差距相對於平均年齡的比例。它不直接測量「誰年紀大」，而是測量「差距有多顯著」——使用平均年齡作為分母，讓同樣的絕對差距在不同年齡層有不同的權重。</p>
+    </div>
+
+    <div class="formula-box">
+      gap &nbsp;= |自己年齡 − 對方年齡|<br>
+      mean = (自己年齡 + 對方年齡) / 2<br>
+      <br>
+      A_原始 = gap² / mean²<br>
+      A &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= min(1, A_原始) &nbsp;&nbsp;<span class="comment">── 上限 cap 至 100%</span>
+    </div>
+
+    <div class="callout purple">
+      <div class="callout-label">觸發 Cap 的條件</div>
+      當 gap = mean 時，A_原始 = 100%。這等同於「大的是小的三倍」（例如 20 歲配 60 歲）。在成人關係中，真正觸發 cap 的情況極少，但確實存在。當 A 被 cap 時，報告會標注原始計算值以供參考。
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>A 範圍</th><th>狀態</th><th>診斷意義</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0 – 9%</td>
+          <td><span class="chip green">背景相近</span></td>
+          <td>年齡差距極小，人生座標高度一致，背景因素不構成結構風險。</td>
+        </tr>
+        <tr>
+          <td>10 – 24%</td>
+          <td><span class="chip accent">差距可接受</span></td>
+          <td>存在一定差距，但在多數情境下不構成主要壓力來源。</td>
+        </tr>
+        <tr>
+          <td>25 – 49%</td>
+          <td><span class="chip yellow">差距明顯</span></td>
+          <td>人生階段、風險容忍度與長期預期可能存在顯著不一致，建議主動溝通。</td>
+        </tr>
+        <tr>
+          <td>50 – 100%</td>
+          <td><span class="chip red">差距顯著</span></td>
+          <td>背景差距是獨立的結構風險來源，在重大決策節點（生育、退休規劃）上影響尤為明顯。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- §6 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">第三軸 F — 家境背景內耗比 <span style="font-size:13px;color:var(--orange);font-family:'DM Mono',monospace;">v3.0 新增 · 選填</span></span>
+    </div>
+    <div class="prose">
+      <p>F 衡量雙方原生家庭資產等級差距所產生的結構內耗。家境差距影響的不只是可動用的財務資源，更包含金錢觀、消費基準、風險容忍度與重大決策時的支援網絡——這些差異在日常運作中往往隱而不顯，但在關鍵節點（如購屋、育兒、家庭危機）時會集中顯現。</p>
+      <p>F 軸為<strong>選填項</strong>。家境屬於個人隱私，模型不強制要求填入。若任一方未填寫，F 軸不進行計算，診斷報告回歸雙軸輸出。</p>
+    </div>
+
+    <div class="formula-box">
+      <span class="comment">── 等級定義：1 級最富（淨資產 &gt; 3,391 萬），10 級最低（&lt; 143 萬）</span><br>
+      <br>
+      F_gap &nbsp;= |自己等級² − 對方等級²| / 100<br>
+      F_base = ((自己等級 + 對方等級) / 2) / 10<br>
+      F &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= min(1, F_gap × 0.7 + F_base × 0.3)<br>
+      <br>
+      <span class="comment">── F_gap 捕捉家境差距所產生的價值觀摩擦</span><br>
+      <span class="comment">── F_base 捕捉雙方絕對資源不足的生存壓力</span><br>
+      <span class="comment">── 最大值：1 級配 10 級 → 約 86%</span><br>
+      <span class="comment">── 雙方同為 10 級 → F_gap=0，F_base=1.0，F=30%（資源匱乏仍構成壓力）</span>
+    </div>
+
+    <div class="prose">
+      <p>v3.0 的 F 軸由兩個子項組成：<strong>F_gap</strong> 捕捉雙方家境差距所產生的價值觀摩擦，<strong>F_base</strong> 捕捉雙方絕對資源水準不足所產生的生存壓力。兩者以 7:3 的權重合併，反映差距問題通常比資源匱乏更直接影響關係結構，但資源匱乏的影響不應被忽略。</p>
+      <p>這個設計修正了舊版公式的一個盲點：當雙方家境同樣偏低時，舊版會得到 F = 0（無風險），但現實中兩個都很窮的組合面臨的是生存壓力直接壓縮關係空間的問題，風險並非為零。</p>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>F 範圍</th><th>狀態</th><th>診斷意義</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0 – 9%</td>
+          <td><span class="chip green">家境相近</span></td>
+          <td>雙方原生家庭資源結構高度一致，金錢觀與消費基準接近，家境因素不構成結構風險。</td>
+        </tr>
+        <tr>
+          <td>10 – 29%</td>
+          <td><span class="chip accent">差距可接受</span></td>
+          <td>存在一定差距，但在多數日常決策中不構成主要摩擦來源。建議雙方對金錢觀保持開放溝通。</td>
+        </tr>
+        <tr>
+          <td>30 – 59%</td>
+          <td><span class="chip yellow">差距明顯</span></td>
+          <td>雙方對「正常」生活成本的認知基準可能存在顯著落差，在重大財務決策（購屋、育兒規劃）時容易產生結構性摩擦。</td>
+        </tr>
+        <tr>
+          <td>60 – 100%</td>
+          <td><span class="chip red">差距顯著</span></td>
+          <td>家境差距是獨立的高風險來源。一方的日常消費基準可能是另一方的非常態支出，價值觀落差難以透過短期溝通彌合。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout orange">
+      <div class="callout-label">計算範例</div>
+      1 級配 3 級：F_gap=8%，F_base=20%，F = <strong>8.6%</strong>（家境相近）<br>
+      3 級配 7 級：F_gap=40%，F_base=50%，F = <strong>43%</strong>（差距明顯）<br>
+      1 級配 10 級：F_gap=99%，F_base=55%，F = <strong>86%</strong>（差距顯著）<br>
+      8 級配 10 級：F_gap=36%，F_base=90%，F = <strong>52%</strong>（差距明顯）<br>
+      10 級配 10 級：F_gap=0%，F_base=100%，F = <strong>30%</strong>（差距可接受，但資源匱乏構成壓力）<br><br>
+      注意：雙方家境同樣偏低時，雖然差距為零，但絕對資源不足仍會對關係結構造成壓力，F 值不為零。
+    </div>
+
+    <div class="callout orange">
+      <div class="callout-label">視覺化呈現 — 結構座標矩陣</div>
+      在結構座標矩陣中，F 軸以<strong>泡泡大小</strong>呈現——差距越大，泡泡越大。如同充氣越足的氣球，越容易在外部壓力下破裂；差距越小，泡泡越小，結構越穩定。<br><br>
+      F 未填時，泡泡顯示為固定大小的虛線圓圈，不影響 φ 與 A 的座標位置。
+    </div>
+  </div>
+
+  <!-- §7 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">S — 背景脈絡參考值</span>
+    </div>
+    <div class="formula-box">
+      S = 自己月收入 + 對方月收入
+    </div>
+    <div class="prose">
+      <p>S <strong>不影響</strong> φ、A 或 F 的計算，僅作為背景脈絡呈現。它的用途是修飾診斷文字的語氣——「資源充足但結構失衡」與「資源有限且結構失衡」描述的是不同的現實處境，即使 φ 值相同。</p>
+      <p>S 的診斷門檻設定為：S ≥ 15 萬元 / 月視為資源充足；S &lt; 6 萬元 / 月視為資源偏低。這些門檻是相對性的參考值，不代表絕對標準。</p>
+    </div>
+  </div>
+
+  <!-- §8 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">交叉診斷——多軸組合報告</span>
+    </div>
+    <div class="prose">
+      <p>各軸獨立輸出後，系統根據軸的組合生成交叉診斷報告。邊界設定：φ ≥ 0.65 為對稱（φ↑）；A &lt; 25% 為年齡背景相近（A↓）；F &lt; 30% 為家境背景相近（F↓）。</p>
+      <p>F 軸選填，報告分為兩種模式：</p>
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">結構座標矩陣</div>
+      診斷工具提供視覺化座標矩陣，以 <strong>φ 為 X 軸</strong>（越右越對稱）、<strong>A 為 Y 軸</strong>（越上風險越高），泡泡位置即為當前結構座標。左上角為<strong>崩潰區</strong>（φ 低且 A 高），泡泡滑入時邊界轉為警示色。<strong>泡泡大小</strong>代表 F 軸家境差距——未填時顯示虛線圓圈。
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">雙軸模式（F 未填）</div>
+      系統回歸 v2.1 四象限診斷，φ 與 A 交叉輸出。
+    </div>
+
+    <div class="quad-grid">
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--green)">φ↑ A↓ — 雙軸穩定型</div>
+        <div class="quad-desc">貢獻對稱且年齡背景差距小。兩個軸均指向穩定狀態，系統具備較強的外部壓力緩衝能力。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--yellow)">φ↑ A↑ — 貢獻對稱，背景存差</div>
+        <div class="quad-desc">當下分工相對均衡，但年齡差距是潛在變數。風險通常在重大決策節點才浮現。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--accent)">φ↓ A↓ — 背景相近，貢獻待調整</div>
+        <div class="quad-desc">人生座標一致是有利條件，主要壓力來自貢獻不對稱。背景相近意味著調整相對容易。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--red)">φ↓ A↑ — 雙軸壓力型</div>
+        <div class="quad-desc">兩個軸均顯示結構壓力。年齡差距會持續影響雙方對「公平」的定義，使貢獻不對稱更難透過溝通單獨解決。</div>
+      </div>
+    </div>
+
+    <div class="callout orange">
+      <div class="callout-label">三軸模式（F 已填）</div>
+      F 軸加入後，診斷在雙軸基礎上附加家境維度說明。F↓ 表示家境相近（F &lt; 30%），F↑ 表示家境差距明顯（F ≥ 30%）。
+    </div>
+
+    <div class="quad-grid">
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--green)">φ↑ A↓ F↓ — 三軸穩定型</div>
+        <div class="quad-desc">三個診斷軸均指向穩定狀態。貢獻對稱、年齡相近、家境背景一致，系統抗壓能力最強。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--accent)">φ↑ A↓ F↑ — 貢獻穩定，家境存差</div>
+        <div class="quad-desc">當下運作穩定，但家境差距是潛在的價值觀摩擦來源。風險在重大財務決策時較易浮現。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--yellow)">φ↑ A↑ F↓ — 貢獻對稱，年齡存差</div>
+        <div class="quad-desc">家境背景一致降低了部分風險，但年齡差距仍是潛在變數，需關注人生階段不同步的影響。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--yellow)">φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差</div>
+        <div class="quad-desc">當下分工均衡，但年齡與家境差距同時存在。重大決策節點的結構壓力可能較為集中。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--accent)">φ↓ A↓ F↓ — 背景一致，貢獻待調整</div>
+        <div class="quad-desc">年齡與家境均相近，主要問題來自貢獻不對稱。共同背景使溝通調整的成本相對較低。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--yellow)">φ↓ A↓ F↑ — 貢獻失衡，家境存差</div>
+        <div class="quad-desc">年齡相近但家境差距使「公平感」的基準不一致，可能加深對貢獻不對稱的感知落差。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--red)">φ↓ A↑ F↓ — 年齡存差，貢獻失衡</div>
+        <div class="quad-desc">家境相近是相對有利條件，但年齡差距與貢獻不對稱同時存在，系統承壓能力受限。</div>
+      </div>
+      <div class="quad-cell">
+        <div class="quad-type" style="color:var(--red)">φ↓ A↑ F↑ — 三軸壓力型</div>
+        <div class="quad-desc">三個軸均顯示結構壓力。貢獻失衡、年齡差距、家境落差三者並存，是模型中風險最集中的組合。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §9 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">計算範例</span>
+    </div>
+    <div class="prose">
+      <p>以下案例在 v2.1 範例基礎上，加入 F 軸計算示範。F 軸採用 v3.1 雙項公式：F = F_gap × 0.7 + F_base × 0.3。</p>
+    </div>
+
+    <div class="case-box">
+      <div class="case-header">案例 A — 互補分工 · 含家境資訊</div>
+      <div class="case-body">
+        <div class="case-row"><span class="case-key">自己：收入 / 時數 / 年齡 / 家境</span><span class="case-val">8 萬 / 10 小時 / 32 歲 / 3 級</span></div>
+        <div class="case-row"><span class="case-key">對方：收入 / 時數 / 年齡 / 家境</span><span class="case-val">3 萬 / 30 小時 / 28 歲 / 6 級</span></div>
+        <div class="case-row"><span class="case-key">φ_money</span><span class="case-val">0.545</span></div>
+        <div class="case-row"><span class="case-key">φ_time</span><span class="case-val">0.500</span></div>
+        <div class="case-row"><span class="case-key">φ 原始</span><span class="case-val">0.523</span></div>
+        <div class="case-row"><span class="case-key">方向類型</span><span class="case-val accent">互補分工</span></div>
+        <div class="case-row"><span class="case-key">修正值</span><span class="case-val">+0.023</span></div>
+        <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val yellow">0.546 — 中度不對稱</span></div>
+        <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val">18% — 差距可接受</span></div>
+        <div class="case-row"><span class="case-key">F_gap（3 配 6）</span><span class="case-val">|9 − 36| / 100 = 27%</span></div>
+      <div class="case-row"><span class="case-key">F_base（平均 4.5 級）</span><span class="case-val">4.5 / 10 = 45%</span></div>
+      <div class="case-row"><span class="case-key">F（v3.1 公式）</span><span class="case-val">27%×0.7 + 45%×0.3 = 32% — 差距明顯</span></div>
+        <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val accent">φ↓ A↓ F↓ — 背景一致，貢獻待調整</span></div>
+      </div>
+    </div>
+
+    <div class="case-box">
+      <div class="case-header">案例 B — 單邊過載 · 含家境資訊</div>
+      <div class="case-body">
+        <div class="case-row"><span class="case-key">自己：收入 / 時數 / 年齡 / 家境</span><span class="case-val">8 萬 / 30 小時 / 32 歲 / 3 級</span></div>
+        <div class="case-row"><span class="case-key">對方：收入 / 時數 / 年齡 / 家境</span><span class="case-val">3 萬 / 10 小時 / 28 歲 / 8 級</span></div>
+        <div class="case-row"><span class="case-key">φ_money</span><span class="case-val">0.545</span></div>
+        <div class="case-row"><span class="case-key">φ_time</span><span class="case-val">0.500</span></div>
+        <div class="case-row"><span class="case-key">φ 原始</span><span class="case-val">0.523</span></div>
+        <div class="case-row"><span class="case-key">方向類型</span><span class="case-val red">單邊過載</span></div>
+        <div class="case-row"><span class="case-key">修正值</span><span class="case-val">−0.091</span></div>
+        <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val red">0.432 — 高度不對稱</span></div>
+        <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val">18% — 差距可接受</span></div>
+        <div class="case-row"><span class="case-key">F_gap（3 配 8）</span><span class="case-val">|9 − 64| / 100 = 55%</span></div>
+      <div class="case-row"><span class="case-key">F_base（平均 5.5 級）</span><span class="case-val">5.5 / 10 = 55%</span></div>
+      <div class="case-row"><span class="case-key">F（v3.1 公式）</span><span class="case-val red">55%×0.7 + 55%×0.3 = 55% — 差距明顯</span></div>
+        <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val red">φ↓ A↓ F↑ — 貢獻失衡，家境存差</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §10 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">模型假設與局限性</span>
+    </div>
+    <div class="prose">
+      <p>DSBM 是一個結構診斷工具，而非完整的關係評估系統。使用者應理解以下假設與局限：</p>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>假設</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>等權假設</td>
+          <td>φ_money 和 φ_time 各佔 50%，預設收入對稱與時間對稱同等重要。現實中兩者的相對重要性因人而異。</td>
+        </tr>
+        <tr>
+          <td>線性折抵</td>
+          <td>互補分工的補償係數（0.1）遠小於單邊過載的懲罰係數（0.4），因為兩者的現實影響程度不對稱。</td>
+        </tr>
+        <tr>
+          <td>年齡門檻</td>
+          <td>A 的診斷門檻（10% / 25% / 50%）基於模型設計者的判斷，無外部學術來源支撐。</td>
+        </tr>
+        <tr>
+          <td>家境等級代理</td>
+          <td>F 軸使用主計處資產等級作為家境背景的代理指標。等級本身無法完整捕捉金錢觀、家庭動態或非財務性資源的差異。</td>
+        </tr>
+        <tr>
+          <td>未納入維度</td>
+          <td>情緒勞動、決策權不對稱、地域因素、教育背景等均未納入模型，但在現實關係中可能同等重要。</td>
+        </tr>
+        <tr>
+          <td>方向性中立</td>
+          <td>模型不區分性別、角色或社會文化脈絡——同樣的數值組合，無論誰是哪一方，得到的結果相同。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout red">
+      <div class="callout-label">重要提醒</div>
+      φ 低不代表關係不健康，A 高或 F 高不代表關係必然有問題。模型輸出的是結構描述，不是關係判決。使用者應結合自身情境詮釋診斷結果。
+    </div>
+  </div>
+
+  <!-- §11 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">版本更新紀錄</span>
+    </div>
+
+    <table class="doc-table">
+      <thead>
+        <tr><th>版本</th><th>更新內容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>v1.0</td>
+          <td>初版發布。φ 為主要指標，W = 1 − φ 為結構內耗值。S 作為背景脈絡參考，不影響診斷。</td>
+        </tr>
+        <tr>
+          <td>v1.1</td>
+          <td>修正說明文字，明確標注 S 不影響 φ 診斷。新增分類型態標籤（完全對稱型 / 單邊過載型 / 互補分工型 / 輕度不對稱型）。</td>
+        </tr>
+        <tr>
+          <td>v2.0</td>
+          <td>重大架構更新。新增第二軸 A（年齡背景內耗比），公式為 gap² / mean²，上限 cap 至 100%。輸入擴展為六欄（收入、時數、年齡各兩筆）。新增四象限交叉診斷報告。</td>
+        </tr>
+        <tr>
+          <td>v2.1</td>
+          <td>新增方向性修正機制。區分互補分工（加分 × 0.1）與單邊過載（懲罰 × 0.4），修正 v2.0 中同樣輸入值因方向不同而診斷相同的結構盲點。計算明細欄位新增「φ 原始」、「方向類型」、「修正值」三列。</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent)">v3.0</td>
+          <td>重大架構更新。新增第三軸 F（家境背景內耗比），公式為 |自己等級² − 對方等級²| / 100，參考主計處家庭財富十等級分佈資料。F 軸為選填項，不填時系統回歸雙軸診斷。交叉診斷從四象限擴展為八象限三軸組合報告。輸入規範新增家境等級欄位說明。</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent)">v3.1</td>
+          <td>F 軸公式修正。原公式僅捕捉家境差距（F_gap），忽略雙方絕對資源不足的生存壓力。v3.1 引入雙項合併公式：F = min(1, F_gap × 0.7 + F_base × 0.3)，其中 F_base = 平均等級 / 10，修正雙底層家境得到 F=0 的設計盲點。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="doc-footer">
+    <span class="doc-footer-left">本說明書適用於 DSBM v3.1。模型仍處於 Beta 階段，歡迎回饋。</span>
+    <span class="doc-footer-right">DSBM v3.1 Manual — Beta</span>
+  </div>
+
+</div>
+
+  </div>
+</div>
+
+<!-- GAME PAGE -->
+<div class="spa-page" id="page-game">
+  <div class="game-container">
+    <div class="game-inner">
+      <!-- 標題畫面 -->
+<div id="screen-title">
+  <div class="title-tag">DSBM — Dyadic Symmetry-Bottleneck Model</div>
+
+  <div class="title-main">
+    <span>這不是愛情故事。</span><br>
+    這是關於結構的故事。<br><br>
+    三段關係。三種軸線。<br>
+    沒有對錯，只有<span>你的選擇</span>。
+  </div>
+
+  <div class="case-list">
+    <button class="case-item" onclick="startCase('A')">
+      <span class="case-num">CASE A</span>
+      <div class="case-info">
+        <div class="case-title">萬國之巔的寂寞</div>
+        <div class="case-sub">當資源不再稀缺，時間反而成為唯一的瓶頸</div>
+      </div>
+      <span class="case-axis axis-phi">φ 軸</span>
+    </button>
+    <button class="case-item" onclick="startCase('B')">
+      <span class="case-num">CASE B</span>
+      <div class="case-info">
+        <div class="case-title">時空的異位旅者</div>
+        <div class="case-sub">你們活在同一個世界，卻不在同一個時代</div>
+      </div>
+      <span class="case-axis axis-a">A 軸</span>
+    </button>
+    <button class="case-item" onclick="startCase('C')">
+      <span class="case-num">CASE C</span>
+      <div class="case-info">
+        <div class="case-title">深宮的引力陷阱</div>
+        <div class="case-sub">這不是兩個人的問題，而是兩個世界的問題</div>
+      </div>
+      <span class="case-axis axis-f">F 軸</span>
+    </button>
+  </div>
+
+  <div id="report-btn-area" style="display:none;margin-bottom:20px;">
+    <button class="btn-report" onclick="showGlobalReport()">▸ 查看行為結構分析報告</button>
+  </div>
+  <div class="title-note">
+    本作品情境設計參考真實社會結構案例，所有角色均為虛構，不代表任何真實人物。<br>
+    本工具基於二元對稱瓶頸模型（DSBM v3.1），結果僅供結構性參考。
+  </div>
+</div>
+
+<!-- 報告畫面 -->
+<div id="screen-report" style="display:none;max-width:680px;width:100%;">
+  <div class="game-header">
+    <div class="game-case-title" style="color:var(--accent);">DSBM — 行為結構分析報告</div>
+    <button class="game-back" onclick="closeReport()">← 返回</button>
+  </div>
+  <div id="report-content"></div>
+</div>
+
+<!-- 遊戲畫面 -->
+<div id="screen-game">
+  <div class="game-header">
+    <div class="game-case-title" id="game-case-label">—</div>
+    <button class="game-back" onclick="goTitle()">← 返回</button>
+  </div>
+
+  <div class="metrics-bar">
+    <div class="metric-box">
+      <div class="metric-label" style="color:var(--phi);">φ 貢獻對稱</div>
+      <div class="metric-bar-track">
+        <div class="metric-bar-fill" id="bar-phi" style="background:var(--phi);width:70%"></div>
+      </div>
+      <div class="metric-value" id="val-phi">0.70</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-label" style="color:var(--a);">A 年齡內耗</div>
+      <div class="metric-bar-track">
+        <div class="metric-bar-fill" id="bar-a" style="background:var(--a);width:20%"></div>
+      </div>
+      <div class="metric-value" id="val-a">20%</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-label" style="color:var(--f);">W 內耗值</div>
+      <div class="metric-bar-track">
+        <div class="metric-bar-fill" id="bar-w" style="background:var(--red);width:30%"></div>
+      </div>
+      <div class="metric-value" id="val-w">0.30</div>
+    </div>
+  </div>
+
+  <div class="phase-indicator" id="phase-indicator">— / —</div>
+
+  <div class="narrative-box fade-in" id="narrative-box">
+    <div class="narrative-tag" id="narrative-tag">情境</div>
+    <div class="narrative-text" id="narrative-text">載入中…</div>
+  </div>
+
+  <div class="choices" id="choices-box"></div>
+  <div id="ending-area"></div>
+</div>
+    </div>
+  </div>
+</div>
 
 <script>
-// ═══════════════════════════════════════════════════════ ORIGINAL LOGIC
+// ── SPA 頁面切換 ──
+function showPage(name) {
+  document.querySelectorAll('.spa-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.spa-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  // 切換到tool時重繪矩陣
+  if (name === 'tool' && typeof drawMatrix === 'function') {
+    setTimeout(() => { if (typeof BS !== 'undefined' && BS.phi !== null) drawMatrix(); }, 50);
+  }
+  // 切換到game時重設final-mode
+  if (name !== 'game') {
+    const gameEl = document.getElementById('page-game');
+    if (gameEl) gameEl.classList.remove('final-mode');
+  }
+  window.scrollTo(0, 0);
+  // 更新URL hash
+  history.replaceState(null, '', '#' + name);
+}
 
-// 呼吸動畫
-const styleEl = document.createElement('style');
-styleEl.textContent = `@keyframes breathe{0%,100%{fill:rgba(255,60,60,0.04)}50%{fill:rgba(255,60,60,0.10)}}`;
-document.head.appendChild(styleEl);
+// 根據hash載入對應頁面
+window.addEventListener('load', () => {
+  const hash = location.hash.replace('#', '') || 'home';
+  const valid = ['home','tool','manual','game'];
+  showPage(valid.includes(hash) ? hash : 'home');
+});
 
+window.addEventListener('hashchange', () => {
+  const hash = location.hash.replace('#', '') || 'home';
+  showPage(hash);
+});
+
+// ── TOOL JS ──
+// ── 對照表 ──
 function toggleRef(){
   document.getElementById('ref-body').classList.toggle('open');
   document.getElementById('ref-arrow').classList.toggle('open');
 }
 
-function updateMatrix(phi,a,f,hasF,color,inDanger){
-  const plotX=60,plotW=640,plotY0=330,plotH=300;
-  const tx=plotX+phi*plotW, ty=plotY0-a*plotH;
-  const r=hasF?Math.max(10,Math.min(65,10+f*56)):12;
-  const g=document.getElementById('svg-bubble-g');
-  g.setAttribute('transform',`translate(${tx.toFixed(1)},${ty.toFixed(1)})`);
+// ── SVG矩陣更新（不依賴任何DOM尺寸）──
+// viewBox座標系：繪圖區 x=60~700(plotW=640), y=20~270(plotH=250)
+// φ → x = 60 + phi*640
+// A → y = 270 - a*250  （Y反轉：A大=上=y小）
+function updateMatrix(phi, a, f, hasF, color, inDanger){
+  const plotX = 60, plotW = 640, plotY0 = 330, plotH = 300;
+  const tx = plotX + phi * plotW;
+  const ty = plotY0 - a * plotH;
+  const r  = hasF ? Math.max(10, Math.min(65, 10 + f*56)) : 12;
+
+  // 移動泡泡群組
+  const g = document.getElementById('svg-bubble-g');
+  g.setAttribute('transform', `translate(${tx.toFixed(1)},${ty.toFixed(1)})`);
   g.setAttribute('opacity','1');
-  const circle=document.getElementById('svg-circle');
-  const fill=document.getElementById('svg-fill');
-  const dot=document.getElementById('svg-dot');
-  circle.setAttribute('r',r); fill.setAttribute('r',r);
+
+  // 圓圈樣式
+  const circle = document.getElementById('svg-circle');
+  const fill   = document.getElementById('svg-fill');
+  const dot    = document.getElementById('svg-dot');
+  circle.setAttribute('r', r);
+  fill.setAttribute('r', r);
+
   if(hasF){
-    circle.setAttribute('stroke-dasharray','');circle.setAttribute('stroke',color);circle.setAttribute('stroke-width','1');
-    fill.setAttribute('opacity','1');fill.setAttribute('fill',color+'22');
+    circle.setAttribute('stroke-dasharray','');
+    circle.setAttribute('stroke', color);
+    circle.setAttribute('stroke-width','1');
+    fill.setAttribute('opacity','1');
+    fill.setAttribute('fill', color+'22');
   } else {
-    circle.setAttribute('stroke-dasharray','3,3');circle.setAttribute('stroke',color+'88');circle.setAttribute('stroke-width','1.5');
+    circle.setAttribute('stroke-dasharray','3,3');
+    circle.setAttribute('stroke', color+'88');
+    circle.setAttribute('stroke-width','1.5');
     fill.setAttribute('opacity','0');
   }
-  dot.setAttribute('fill',color);
-  document.getElementById('svg-lphi').textContent=`φ=${phi.toFixed(2)}`;
-  document.getElementById('svg-la').textContent=`A=${(a*100).toFixed(1)}%`;
-  document.getElementById('svg-lf').textContent=hasF?`F=${(f*100).toFixed(1)}%`:'';
-  document.getElementById('svg-lphi').setAttribute('fill',color);
-  document.getElementById('svg-la').setAttribute('fill',color);
-  const danger=document.getElementById('svg-danger');
-  const vline=document.getElementById('svg-vline'),hline=document.getElementById('svg-hline');
-  const vlabel=document.getElementById('svg-vlabel'),hlabel=document.getElementById('svg-hlabel');
-  const collapse=document.getElementById('svg-collapse');
+  dot.setAttribute('fill', color);
+
+  // 標籤
+  document.getElementById('svg-lphi').textContent = `φ=${phi.toFixed(2)}`;
+  document.getElementById('svg-la').textContent   = `A=${(a*100).toFixed(1)}%`;
+  document.getElementById('svg-lf').textContent   = hasF ? `F=${(f*100).toFixed(1)}%` : '';
+  document.getElementById('svg-lphi').setAttribute('fill', color);
+  document.getElementById('svg-la').setAttribute('fill', color);
+
+  // 危險區呼吸效果（用CSS animation）
+  const danger = document.getElementById('svg-danger');
+  const vline  = document.getElementById('svg-vline');
+  const hline  = document.getElementById('svg-hline');
+  const vlabel = document.getElementById('svg-vlabel');
+  const hlabel = document.getElementById('svg-hlabel');
+  const collapse = document.getElementById('svg-collapse');
+
   if(inDanger){
-    danger.setAttribute('fill','rgba(255,60,60,0.07)');danger.style.animation='breathe 2s ease-in-out infinite';
-    vline.setAttribute('stroke','rgba(255,80,80,0.55)');hline.setAttribute('stroke','rgba(255,80,80,0.55)');
-    vlabel.setAttribute('fill','rgba(255,80,80,0.6)');hlabel.setAttribute('fill','rgba(255,80,80,0.6)');
+    danger.setAttribute('fill','rgba(255,60,60,0.07)');
+    danger.style.animation='breathe 2s ease-in-out infinite';
+    vline.setAttribute('stroke','rgba(255,80,80,0.55)');
+    hline.setAttribute('stroke','rgba(255,80,80,0.55)');
+    vlabel.setAttribute('fill','rgba(255,80,80,0.6)');
+    hlabel.setAttribute('fill','rgba(255,80,80,0.6)');
     collapse.setAttribute('fill','rgba(255,80,80,0.5)');
   } else {
-    danger.setAttribute('fill','rgba(255,60,60,0.03)');danger.style.animation='';
-    vline.setAttribute('stroke','rgba(70,150,90,0.35)');hline.setAttribute('stroke','rgba(70,150,90,0.35)');
-    vlabel.setAttribute('fill','rgba(70,150,90,0.5)');hlabel.setAttribute('fill','rgba(70,150,90,0.5)');
+    danger.setAttribute('fill','rgba(255,60,60,0.03)');
+    danger.style.animation='';
+    vline.setAttribute('stroke','rgba(70,150,90,0.35)');
+    hline.setAttribute('stroke','rgba(70,150,90,0.35)');
+    vlabel.setAttribute('fill','rgba(70,150,90,0.5)');
+    hlabel.setAttribute('fill','rgba(70,150,90,0.5)');
     collapse.setAttribute('fill','rgba(255,80,80,0.2)');
   }
 }
 
+// 呼吸動畫keyframes
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+  @keyframes breathe {
+    0%,100%{fill:rgba(255,60,60,0.04)}
+    50%{fill:rgba(255,60,60,0.10)}
+  }
+`;
+document.head.appendChild(styleEl);
+
+// ── 工具函式 ──
 function getSContext(s,phi){
   const hi=s>=15,lo=s<6,hp=phi>=0.70,lp=phi<0.50;
   if(hi&&hp) return '資源充足且結構對稱。系統面對外部衝擊時具備較強的緩衝能力。';
@@ -522,9 +1746,7 @@ function getCross(pu,ad,hasF,fd){
   return                   {tag:'φ↓ A↑ F↑ — 三軸壓力型',            desc:'三軸均顯示結構壓力，貢獻失衡、年齡差距、家境落差三者並存，風險最集中。',danger:true};
 }
 
-// 儲存最新結果供存檔用
-let _lastResult = null;
-
+// ── 主計算 ──
 function calculate(){
   const is  = parseFloat(document.getElementById('income_self').value);
   const io  = parseFloat(document.getElementById('income_other').value);
@@ -544,6 +1766,7 @@ function calculate(){
   const hasF=!isNaN(gs)&&!isNaN(go)&&gs>=1&&gs<=10&&go>=1&&go<=10;
   if((gsr!==''||gor!=='')&&!hasF){alert('家境等級需為 1–10 的整數，或兩欄皆留空。');return;}
 
+  // φ
   const phi_m=1-Math.abs(is-io)/(is+io);
   const phi_t=1-Math.abs(hs-ho)/(hs+ho);
   const phi_raw=(phi_m+phi_t)/2;
@@ -567,6 +1790,7 @@ function calculate(){
   else{phiStatus='高度不對稱';phiColor='#ff5c5c';
     report=`<p>結構處於高度不對稱狀態，內耗值 W = ${w.toFixed(3)}，屬高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</p><p>建議認真檢視現有分工結構，評估雙方是否對此結構有共識。</p>`;}
 
+  // A
   const gap=Math.abs(as_-ao),mean=(as_+ao)/2;
   const a_raw=(gap*gap)/(mean*mean),a=Math.min(1,a_raw);
   let aStatus,aColor;
@@ -575,34 +1799,24 @@ function calculate(){
   else if(a<0.50){aStatus='差距明顯';aColor='var(--yellow)';}
   else{aStatus='差距顯著';aColor='var(--red)';}
 
+  // F
   let f=0,fStatus='',fColor='',f_down=true;
-  if(hasF){
-    const f_gap=Math.abs(gs*gs-go*go)/100;
-    const f_base=((gs+go)/2)/10;
-    f=Math.min(1,f_gap*0.7+f_base*0.3);
-    const fs=getFStatus(f);fStatus=fs.text;fColor=fs.color;f_down=f<0.30;
-  }
+  if(hasF){const f_gap = Math.abs(gs*gs-go*go)/100;
+    const f_base = ((gs+go)/2)/10;
+    f=Math.min(1, f_gap*0.7 + f_base*0.3);const fs=getFStatus(f);fStatus=fs.text;fColor=fs.color;f_down=f<0.30;}
 
+  // 交叉
   const pu=phi>=0.65,ad=a<0.25;
   const cross=getCross(pu,ad,hasF,f_down);
 
+  // 類型
   let typeLabel,typeColor;
   if(is===io&&hs===ho){typeLabel='完全對稱型';typeColor='var(--green)';}
   else if(inc_hi===hrs_hi&&inc_gap>0.1){typeLabel='單邊過載型';typeColor='var(--red)';}
   else if(inc_hi!==hrs_hi){typeLabel='互補分工型';typeColor='var(--yellow)';}
   else{typeLabel='輕度不對稱型';typeColor='var(--text-muted)';}
 
-  // 儲存供存檔
-  _lastResult = {
-    phi, a, f: hasF?f:null, hasF, w, s,
-    crossTag: cross.tag,
-    income_self:is, income_other:io,
-    hours_self:hs, hours_other:ho,
-    age_self:as_, age_other:ao,
-    grade_self:hasF?gs:null, grade_other:hasF?go:null
-  };
-
-  // Render
+  // ── Render UI ──
   const phiEl=document.getElementById('phi_display');
   phiEl.textContent=phi.toFixed(2);phiEl.style.color=phiColor;
   document.getElementById('phi_status').textContent=phiStatus;
@@ -671,207 +1885,1599 @@ function calculate(){
   document.getElementById('d_a_raw').textContent=(a_raw*100).toFixed(2)+'%';
   document.getElementById('d_a_final').textContent=(a*100).toFixed(2)+'%'+(a_raw>1?' (已cap)':'');
 
-  document.getElementById('save_confirm').style.display='none';
+  // ── 顯示result + 更新SVG矩陣 ──
   document.getElementById('result').classList.add('visible');
-  updateMatrix(phi,a,hasF?f:0,hasF,phiColor,!pu&&!ad);
+  // SVG不依賴DOM尺寸，直接更新
+  updateMatrix(phi, a, hasF?f:0, hasF, phiColor, !pu&&!ad);
   document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ═══════════════════════════════════════════════════════ TIMELINE LOGIC
+// ── GAME JS ──
+// ── 全域統計資料 ──
+const GLOBAL = {
+  tags: { avoid: 0, face: 0, sacrifice: 0, honest: 0 },
+  history: [],
+  completedCases: {},
+  finalPhi: {}
+};
 
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(name==='timeline') renderTimeline();
-}
+// ── 遊戲狀態 ──
+let state = {
+  caseId: null,
+  phase: 0,
+  phi: 0.70,
+  a: 0.20,
+  w: 0.30,
+  flags: {}
+};
 
-function loadRecords(){
-  try{ return JSON.parse(localStorage.getItem('dsbm_records')||'[]'); }
-  catch(e){ return []; }
-}
-function saveRecords(arr){
-  localStorage.setItem('dsbm_records',JSON.stringify(arr));
-}
-function updateBadge(){
-  const n=loadRecords().length;
-  document.getElementById('tab-badge').textContent=n>0?'('+n+')':'';
-}
+// ── 案例資料 ──
+const CASES = {
 
-function saveRecord(){
-  if(!_lastResult){alert('請先執行診斷。');return;}
-  const note=document.getElementById('save_note').value.trim();
-  const records=loadRecords();
-  records.push({
-    id: Date.now(),
-    timestamp: new Date().toISOString(),
-    note,
-    phi:   +_lastResult.phi.toFixed(4),
-    a:     +_lastResult.a.toFixed(4),
-    f:     _lastResult.hasF ? +_lastResult.f.toFixed(4) : null,
-    w:     +_lastResult.w.toFixed(4),
-    crossTag: _lastResult.crossTag,
-    income_self:   _lastResult.income_self,
-    income_other:  _lastResult.income_other,
-    hours_self:    _lastResult.hours_self,
-    hours_other:   _lastResult.hours_other,
-    age_self:      _lastResult.age_self,
-    age_other:     _lastResult.age_other,
-    grade_self:    _lastResult.grade_self,
-    grade_other:   _lastResult.grade_other,
-  });
-  saveRecords(records);
-  updateBadge();
-  document.getElementById('save_confirm').style.display='block';
-  document.getElementById('save_note').value='';
-}
+  A: {
+    label: 'CASE A — 萬國之巔的寂寞',
+    initPhi: 0.72, initA: 0.18,
+    phases: [
+      {
+        tag: '開場',
+        text: '你們曾經一起從什麼都沒有開始。<br><br>那時候，你們的時間一樣多，收入一樣少。<br>一起加班，一起吃便當，一起說「等我們有錢了」。<br><br>現在，你們真的有錢了。<br><br>只是時間不再一樣了。<br><br><em>到最後，連彼此也不一樣了。</em>',
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 01 — 升遷機會',
+        inner: '你看著對方說出「你決定就好」。<br>你不確定那是信任，還是沉默。',
+        text: '公司提出新的職位。薪資翻倍，但你需要常態出差，每個月在家的時間不超過十天。<br><br>對方沉默了一會兒，說：<strong>「你決定就好。」</strong><br><br><em>你不確定這句話是支持，還是放棄。</em>',
+        choices: [
+          { text: '接受升遷', effect: '收入↑↑　時間↓↓', delta: { phi: -0.10 }, flag: 'promoted', tags: ['avoid'] },
+          { text: '拒絕升遷', effect: '關係壓力↓　但長期焦慮', delta: { phi: +0.05 }, flag: 'stayed', tags: ['face'] },
+          { text: '「這只是暫時的，等這個階段過了就好了。」', effect: '預支未來感', delta: { phi: -0.05 }, flag: 'temporary', tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 02 — 補償性消費的幻覺',
+        inner: '那個禮物還放在桌上，沒有拆。<br>你買它的時候，以為它可以代替你出現。',
+        text: '結婚周年紀念日，你因為專案上線無法離開公司。<br><br>你訂了一個超出預算的禮物，請快遞送到家裡。<br><br>晚上你打開家門，看到禮物放在桌上，沒有拆。<br><br>對方說：「謝謝。但你不在，我一個人開這個禮物，很奇怪。」<br><br><em>那個沒有拆開的禮物，比任何爭吵都更清楚地說明了你們現在的距離。</em>',
+        choices: [
+          { text: '「下次我一定會在。」', effect: '承諾，但承諾是有期限的', delta: { phi: +0.02 }, tags: ['avoid'] },
+          { text: '「你為什麼不拆？那是我特別挑的。」', effect: '防禦', delta: { phi: -0.08 }, tags: ['avoid'] },
+          { text: '沉默，坐下來，握住對方的手', effect: '沒有解決任何事，但在一起', delta: { phi: +0.01 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '事件 03 — 對方的沉默',
+        inner: '「你吃飯了嗎。」<br><br>四個字。沒有問號。<br><br>你不知道怎麼讀這句話。',
+        text: '你回家的那個晚上，燈是開著的，但對方已經睡了。<br><br>桌上有一張便條紙，只寫著：<strong>「你吃飯了嗎。」</strong><br><br>你站在那裡很久。<br><br><em>你不知道這是關心，還是距離。</em>',
+        choices: [
+          { text: '明天好好解釋', effect: '短期緩和', delta: { phi: +0.03 }, tags: ['face'] },
+          { text: '當作沒看到，先睡', effect: '內耗累積', delta: { phi: -0.08 }, tags: ['avoid'] },
+          { text: '現在叫醒對方', effect: '但至少你還在嘗試', delta: { phi: -0.02 }, tags: ['honest'] }
+        ]
+      },
+      {
+        tag: '一年後',
+        text: '有些事你們沒有說清楚。<br><br>只是都默認了，這就是現在的生活。<br><br><em>默認，有時候比爭吵更難修復。</em>',
+        isTransition: true,
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 04 — 對方的反擊',
+        inner: '不是商量，是告知。<br><br>你愣住，不是因為反對。<br>只是你發現，這個決定是在你不在的時間裡長出來的。',
+        text: '某天晚上，對方說：<br><br><strong>「我決定回去念書。」</strong><br><br>不是商量，是告知。<br><br>你愣住了。不是因為你反對。<br><br>而是因為你意識到——這是對方在你缺席的時間裡，自己做的決定。<br><br>這些年，你在你的世界裡衝刺。對方也在沒有你的世界裡，長成了一個你不太認識的人。<br><br><em>你突然意識到，你買給對方的那些禮物，變成了對方離開你的底氣。</em>',
+        choices: [
+          { text: '「我支持你，但我們要重新調整。」', effect: '試著重新平衡', delta: { phi: +0.04 }, tags: ['face'] },
+          { text: '「現在嗎？我們需要這份薪水。」', effect: '忽視了對方的需求', delta: { phi: -0.06 }, tags: ['avoid'] },
+          { text: '「你是故意的嗎？」', effect: '防禦，關係張力瞬間升高', delta: { phi: -0.12 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 05 — 臨界點',
+        inner: '這句話沒有憤怒。<br>你反而不知道該怎麼回答。',
+        text: '某個週日的下午，對方突然問：<br><br><strong>「我們現在，到底算什麼？」</strong><br><br>這句話沒有憤怒，沒有眼淚。<br>只有一種你說不清楚的疲憊。<br><br><em>φ = {phi}　W = {w}</em>',
+        choices: [
+          { text: '「我們需要談談。」', effect: '嘗試重構', delta: { phi: +0.08 }, tags: ['face', 'honest'] },
+          { text: '「你想要什麼？」', effect: '把決定交出去', delta: { phi: -0.02 }, tags: ['sacrifice'] },
+          { text: '沉默', effect: '一切保持原狀', delta: { phi: -0.12 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 06 — 最後的選擇',
+        text: '你們坐在同一個空間裡。<br><br>都知道，這次對話的結果，會決定接下來的方向。<br><br>沒有人先開口。<br><br>窗外的聲音很遠。<br><br><em>你問自己：當初那個說「等我們有錢了」的人，現在還在嗎。</em>',
+        isFinal: true,
+        choices: [
+          { text: '「我願意放慢一點。為了我們。」', effect: null, delta: { phi: +0.08 } },
+          { text: '「我不知道我們還有沒有辦法回到原來。」', effect: null, delta: { phi: -0.05 } },
+          { text: '「我覺得，我們都累了。」', effect: null, delta: { phi: -0.15 } }
+        ]
+      }
+    ],
+    endings: [
+      {
+        condition: phi => phi < 0.45,
+        type: '結構崩潰',
+        typeColor: 'var(--red)',
+        title: '沒有爭吵，只剩結束',
+        text: '你們沒有大吵。沒有摔門，沒有眼淚，沒有那種電影裡的戲劇性結局。<br><br>只是某一天，你們都同意，這樣繼續下去對誰都不公平。<br><br>最後一次對話很短。你們都說了「謝謝」，然後各自離開。',
+        quote: '「不是不愛，是結構上撐不住了。」',
+        quoteColor: 'var(--red)'
+      },
+      {
+        condition: phi => phi >= 0.45 && phi < 0.65,
+        type: '功能性關係',
+        typeColor: 'var(--yellow)',
+        title: '我們運作良好，只是不再靠近',
+        text: '你們沒有分開。帳單按時繳，家務有人做，朋友面前看起來很好。<br><br>只是那種「你懂我」的感覺，已經消失很久了。<br><br>你們都知道，但都沒有說出口。',
+        quote: '「維持，是一種選擇。只是不知道，這個選擇對誰更殘忍。」',
+        quoteColor: 'var(--yellow)'
+      },
+      {
+        condition: phi => phi >= 0.65,
+        type: '重構平衡',
+        typeColor: 'var(--green)',
+        title: '你們沒有贏過世界，但留下了彼此',
+        text: '你放棄了一部分的成功。對方放棄了一部分的期待。<br><br>這不是完美的結局。你們有時候還是會吵，有時候還是會累。<br><br>但有些夜晚，你們還是會在同一盞燈下，說一些無關緊要的事。',
+        quote: '「平衡不是找到的，是選擇的。」',
+        quoteColor: 'var(--green)'
+      }
+    ]
+  },
 
-function deleteRecord(id){
-  const records=loadRecords().filter(r=>r.id!==id);
-  saveRecords(records);
-  updateBadge();
-  renderTimeline();
-}
+  B: {
+    label: 'CASE B — 時空的異位旅者',
+    initPhi: 0.68, initA: 0.42,
+    phases: [
+      {
+        tag: '開場',
+        text: '你們第一次見面的時候，你注意到的不是年齡。<br><br>而是那種說話的感覺——<br>對世界還帶著好奇，卻又像早已看透很多事。<br><br>你以為這就是默契。<br><br><em>你沒有意識到，你們從一開始，就活在不同的時間裡。</em>',
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 01 — 人生節點衝突',
+        inner: '你正在慶祝一件事。對方在說另一件事。<br>不是不關心。只是你們現在在意的東西，不太一樣了。',
+        text: '你正準備慶祝晉升。對方卻在餐桌上聊起這週第幾次感到腰椎痠痛。<br><br>你感受到的不是厭煩。<br><br>是一種很輕，但揮不掉的念頭——<br>你們正在談不同的人生。',
+        choices: [
+          { text: '強裝熱情，分享喜悅', effect: 'φ 偏移', delta: { phi: -0.04 }, tags: ['avoid'] },
+          { text: '放下話題，關心對方', effect: '短期緩和', delta: { phi: -0.02 }, tags: ['sacrifice'] },
+          { text: '說出你的不安', effect: '關係張力升高', delta: { phi: +0.03 }, tags: ['honest'] }
+        ]
+      },
+      {
+        tag: '事件 02 — 社會的視線',
+        inner: '「請問是陪長輩來用餐嗎？」<br><br>那個數字，第一次不只是你們之間的事。<br>別人也看得見了。',
+        text: '結帳時，服務生問你們：「請問是陪長輩來用餐嗎？」<br><br>空氣凝固了三秒。<br><br>沒有人糾正。<br><br>那個數字，第一次不是你們之間的事。<br><br>回家的路上，誰也沒有再提那句話。',
+        choices: [
+          { text: '笑著帶過，假裝沒事', effect: 'A 內耗增加', delta: { a: +0.03 }, tags: ['avoid'] },
+          { text: '當場糾正服務生', effect: '短暫團結，事後尷尬', delta: { phi: +0.02 }, tags: ['face'] },
+          { text: '回家後主動提起', effect: '需要勇氣', delta: { phi: +0.04 }, tags: ['honest', 'face'] }
+        ]
+      },
+      {
+        tag: '兩年後',
+        text: '你們還在一起。<br><br>很多事沒有解決。只是變得比較習慣了。<br><br><em>習慣，有時候是溫柔，有時候是麻木。你不確定你們是哪一種。</em>',
+        isTransition: true,
+        aChange: -0.05,
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 03 — 你開始想要的東西變了',
+        inner: '你說了很多。<br>說到一半，你才發現對方一直很安靜。<br><br>你們現在擔心的事，好像不太一樣了。',
+        text: '朋友問你最近在忙什麼。你說了很多，說到一半，突然意識到——對方從來沒問過你這個問題。<br><br>不是因為不關心。是因為對方已經不在那個「什麼都想嘗試」的階段了。<br><br>你們開始為不同的事情焦慮。<br><br>而那些事情，彼此無關。',
+        choices: [
+          { text: '告訴對方你現在想要的東西', effect: '差距更清楚', delta: { phi: +0.03 }, tags: ['honest'] },
+          { text: '繼續維持表面的和諧', effect: '內耗累積', delta: { phi: -0.05 }, tags: ['avoid'] },
+          { text: '找朋友說，沒有跟對方說', effect: '關係出現空隙', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 04 — 對方第一次說出那個數字',
+        inner: '「我有時候……會怕跟不上你。」<br><br>你第一次聽見那件事被說出口。<br>原來你們一直都知道，只是沒有人提。',
+        text: '對方某天停下來，輕聲說：<br><br><strong>「我有時候……會怕跟不上你。」</strong><br><br>那不是抱怨。<br><br>是第一次，你聽見限制被說出來。<br><br>不是感覺。<br>是現實。',
+        choices: [
+          { text: '「不會的，你很好。」', effect: '安慰，但迴避了問題', delta: { phi: -0.03 }, tags: ['avoid'] },
+          { text: '「那我們慢一點。」', effect: '你壓縮了自己', delta: { phi: +0.05 }, tags: ['sacrifice'] },
+          { text: '沉默，然後握住對方的手', effect: '沒有答案，但在一起', delta: { phi: +0.01 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '五年後',
+        text: '你們撐過了很多。<br><br>有些問題沒有消失。只是走到了必須面對的地方。<br><br><em>有些差距看起來變小了。但你們都知道，那不是答案。</em>',
+        isTransition: true,
+        aChange: -0.07,
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 05 — 退休與衝刺的交叉點',
+        inner: '對方想慢下來。你還想再衝一段。<br><br>你們沒有爭吵。只是第一次清楚地看見——你們正在走向不同的速度。',
+        text: '對方說，想開始規劃退休後的生活。<br><br>你還在職涯裡最重要的階段，還有很多事想做。<br><br>你第一次清楚地意識到——你們正在走向不同的速度。<br><br>而且這次，沒有辦法假裝看不見。',
+        choices: [
+          { text: '「我支持你，你想怎麼規劃？」', effect: '表面支持，內心焦慮', delta: { phi: -0.03 }, tags: ['sacrifice'] },
+          { text: '「可以再等我幾年嗎？」', effect: '把壓力給對方', delta: { phi: -0.06 }, tags: ['avoid'] },
+          { text: '「我們需要認真談一次。」', effect: '正面面對', delta: { phi: +0.04 }, tags: ['face', 'honest'] }
+        ]
+      },
+      {
+        tag: '事件 06 — 未來的藍圖不在同一張紙上',
+        inner: '你想再拼幾年。對方已經開始想退休後的生活了。<br><br>你忽然發現，你們不是想法不同。<br>只是已經走到不同的人生階段了。',
+        text: '你想再拼幾年，然後再考慮下一步。<br><br>對方說：「我已經想好退休後要過的生活了。」<br><br>不是爭吵。只是某個平靜的夜晚，你們清楚地意識到——對「未來」的想像，已經不在同一張紙上了。<br><br>這個差距一直都在。<br><br>只是你們終於不能再忽略它了。',
+        choices: [
+          { text: '「那我們各自過各自想要的生活？」', effect: '走向分開', delta: { phi: -0.10 }, tags: ['honest'] },
+          { text: '「我可以調整我的計畫。」', effect: '犧牲自己', delta: { phi: -0.08 }, tags: ['sacrifice'] },
+          { text: '「我們能不能找到一個都還好的版本？」', effect: '沒有保證', delta: { phi: +0.03 }, tags: ['face'] }
+        ]
+      },
+      {
+        tag: '事件 07 — 最後的選擇',
+        inner: '你看著對方，想起你們第一次見面的樣子。<br><br>那時候你注意到的不是年齡，是那種說話的感覺。<br>你以為那樣就夠了。',
+        text: '某個普通的早晨，你們都沒有說話。<br><br>不是冷戰。只是那種，說了很多年之後，有些話變得很重，不是隨便就能說出口的。<br><br>你看著對方，想起你們第一次見面的樣子。<br><br>那時候，你沒有想過會走到這裡。<br><br><em>如果再選一次，你還會走到這裡嗎。</em>',
+        choices: [
+          { text: '「我們繼續。不管接下來怎樣。」', effect: '走向共振結局', delta: { phi: +0.05 } },
+          { text: '「我需要誠實地說，我不確定了。」', effect: '走向階段性結局', delta: { phi: -0.05 } },
+          { text: '「我覺得我們都需要放開了。」', effect: '走向錯位瓦解結局', delta: { phi: -0.15 } }
+        ]
+      }
+    ],
+    endings: [
+      {
+        condition: (phi, a) => phi < 0.50,
+        type: '錯位瓦解',
+        typeColor: 'var(--red)',
+        title: '你們沒有錯，只是不在同一段時間',
+        text: '最後一次對話，你們都很冷靜。<br><br>沒有誰是壞人。只是你們對「接下來」的想像，已經不在同一個方向了。<br><br>你離開的時候，回頭看了一眼。對方站在那裡，很像第一次見面的樣子。',
+        quote: '「有些人，是為了某一段時間而出現的，不是一生。」',
+        quoteColor: 'var(--red)'
+      },
+      {
+        condition: (phi, a) => phi >= 0.50 && phi < 0.68,
+        type: '階段性陪伴',
+        typeColor: 'var(--yellow)',
+        title: '你們選擇同行一段，而不是一生',
+        text: '你們沒有分開，但你們也不再假裝這段關係是永恆的。<br><br>每一天，你們都在選擇繼續。不是因為確定，是因為現在，這樣還好。<br><br>這也是一種答案。',
+        quote: '「不承諾永遠，只承諾今天。」',
+        quoteColor: 'var(--yellow)'
+      },
+      {
+        condition: (phi, a) => phi >= 0.68,
+        type: '共振',
+        typeColor: 'var(--green)',
+        title: '你們沒有同步，但學會共振',
+        text: '你們不在同一個時間點，但你們找到了一種方式，在不同的節奏裡，仍然感受到對方。<br><br>這不容易。你們都為此付出了一些東西。<br><br>但有時候，差異本身，就是一種養分。',
+        quote: '「不同步，不代表不在一起。」',
+        quoteColor: 'var(--green)'
+      }
+    ]
+  },
 
-function clearAll(){
-  if(!confirm('確定要清除所有歷史記錄嗎？此操作無法復原。')) return;
-  localStorage.removeItem('dsbm_records');
-  updateBadge();
-  renderTimeline();
-}
-
-function renderTimeline(){
-  const records=loadRecords();
-  const empty=document.getElementById('tl-empty');
-  const content=document.getElementById('tl-content');
-  if(records.length===0){
-    empty.style.display='block'; content.style.display='none'; return;
+  C: {
+    label: 'CASE C — 深宮的引力陷阱',
+    initPhi: 0.65, initA: 0.22,
+    phases: [
+      {
+        tag: '開場',
+        text: '你第一次去對方家的時候，你注意到一些細節。<br><br>不是壞事。<br>只是那些細節，和你成長的環境，完全不同。<br><br>你沒有說什麼，對方也沒有。<br><br>你們都以為，不需要討論這些。<br><br><em>後來才知道——你們低估了重力。</em>',
+        choices: [
+          { text: '繼續', effect: null, delta: {} }
+        ]
+      },
+      {
+        tag: '事件 01 — 進入對方的世界',
+        inner: '你站在那個空間裡，試著讓自己看起來自然。<br>但你知道，真正自然的時候，是不需要這樣努力的。',
+        text: '對方帶你去參加一個聚會。<br><br>大家的對話很流暢。話題從投資、房產，到一些你不太熟悉的生活方式。<br><br>你不是聽不懂。只是很難加入。<br><br>有人禮貌地問你幾句，你回答了。對方微笑，點頭，然後話題自然地流走。<br><br><em>那一刻，你沒有被排斥。但你知道，你也沒有被包含。</em>',
+        choices: [
+          { text: '試著多說一些，讓自己融入', effect: '內耗增加', delta: { phi: +0.03 }, tags: ['sacrifice'] },
+          { text: '安靜待在對方身邊', effect: '不勉強自己', delta: { phi: +0.01 }, tags: ['avoid'] },
+          { text: '提早離開', effect: '距離感增加', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 02 — 那些不需要解釋的規則',
+        inner: '你看著對方在那些規則裡流暢地移動。<br>那些東西沒有被說明，卻一直都在。',
+        text: '用餐的時候，你注意到一些細節。<br><br>誰先動筷、誰幫誰夾菜、什麼時候該說話、什麼時候不該。<br><br>沒有人教你。但每個人都知道。<br><br>你看著對方，自然地在這些規則裡移動。<br><br><em>那一刻你意識到——有些東西，不是學會就算理解。</em>',
+        choices: [
+          { text: '事後問對方那些規則', effect: '距離被命名', delta: { phi: +0.03 }, tags: ['honest'] },
+          { text: '記下來，下次不要出錯', effect: '內耗累積', delta: { phi: -0.02 }, tags: ['sacrifice'] },
+          { text: '假裝沒注意到', effect: '差距維持', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 03 — 價值觀的碰撞',
+        inner: '「在我們家不是這樣做的。」<br><br>你沒有反駁。<br><br>只是突然意識到——你們背後，各自站著一個世界。<br>那些世界有自己的邏輯，也各自覺得理所當然。',
+        text: '你們在討論一件生活決定。<br><br>你提出你的想法。<br><br>對方停了一下，說：<br><br><strong>「這種事情，在我們家不是這樣做的。」</strong><br><br>語氣很平靜。沒有否定你。<br><br><em>只是那句話裡，有一個你進不去的世界。</em>',
+        choices: [
+          { text: '「那你們家是怎麼做的？」', effect: '差距被放大', delta: { phi: +0.04 }, tags: ['honest', 'face'] },
+          { text: '「我們可以找中間的方法。」', effect: '試著折衷', delta: { phi: +0.02 }, tags: ['face'] },
+          { text: '讓步', effect: '內耗增加', delta: { phi: -0.05 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '事件 04 — 你看見對方的另一個樣子',
+        inner: '你一直以為你很了解對方。<br>但現在這個人，有一點點不一樣。<br><br>不是假裝。只是你以前沒看過。',
+        text: '某次你去對方家吃飯。<br><br>你發現對方變得不太一樣。<br><br>說話更小心，回應更快，有些你熟悉的表情不見了。<br><br>那不是不自然。是另一種自然。<br><br><em>你突然意識到——在這個地方，你看到的對方，和你平常認識的那個人，不完全一樣。</em>',
+        choices: [
+          { text: '事後問對方', effect: '對方有點疲憊', delta: { phi: +0.03 }, tags: ['honest'] },
+          { text: '當作沒發現', effect: '距離累積', delta: { phi: -0.02 }, tags: ['avoid'] },
+          { text: '開始調整自己在這個環境的樣子', effect: '內耗增加', delta: { phi: -0.03 }, tags: ['sacrifice'] }
+        ]
+      },
+      {
+        tag: '事件 05 — 對方的家人',
+        inner: '你分不出那些話，是轉述，還是對方的一部分。<br>而你不確定，這兩者是不是其實沒有差別。',
+        text: '某天，對方提起家人的想法。<br><br>沒有直接反對。只是一些「擔心」。<br><br>擔心你們未來的生活方式。擔心價值觀會不會有落差。<br><br>對方說這些話的時候，很平靜。<br><br><em>你分不出來——那是轉述，還是已經內化。</em>',
+        choices: [
+          { text: '「那你的想法是什麼？」', effect: '正面面對', delta: { phi: +0.04 }, tags: ['face', 'honest'] },
+          { text: '「他們不了解我。」', effect: '關係張力升高', delta: { phi: -0.06 }, tags: ['avoid'] },
+          { text: '沉默', effect: '問題懸著', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 06 — 你的家人',
+        inner: '你的家人說的那些話，都很合理。<br>你沒有辦法反駁。<br><br>那一刻你才發現——你不是一個人在做選擇。<br>你背後，也站著一個世界。',
+        text: '你的家人也問了。<br><br>問的方式不一樣，但意思很接近。<br><br>他們說，他們不是反對。只是希望你想清楚。<br><br>他們舉了一些例子。都很合理。<br><br><em>合理到你沒有辦法反駁。</em><br><br>那一刻你意識到——這不是你一個人的選擇。',
+        choices: [
+          { text: '「我會處理好。」', effect: '壓力內化', delta: { phi: +0.02 }, tags: ['sacrifice'] },
+          { text: '開始懷疑', effect: 'φ 偏移', delta: { phi: -0.05 }, tags: ['honest'] },
+          { text: '避免再談這個話題', effect: '問題擱置', delta: { phi: -0.03 }, tags: ['avoid'] }
+        ]
+      },
+      {
+        tag: '事件 07 — 最後的選擇',
+        inner: '你們坐在一起，什麼都沒說。<br><br>那些片段一個一個浮上來——那個空間、那張餐桌、那句話、那個你不熟悉的對方。<br><br>沒有一件事是誰的錯。<br>但它們還是把你們帶到了這裡。',
+        text: '某一天，你們只是坐在一起。<br><br>沒有爭吵。沒有人提起家人。也沒有任何需要做決定的事情。<br><br>一切都很平靜。<br><br>只是那些沒有解決的東西，仍然在那裡。你們都知道。<br><br>不是不知道怎麼解決。是不知道，有沒有辦法解決。<br><br><em>你看著對方，然後你問自己：如果沒有任何人反對，我們真的就沒有問題了嗎。</em>',
+        isFinal: true,
+        choices: [
+          { text: '「我們再試試看。」', effect: null, delta: { phi: +0.08 } },
+          { text: '「也許我們可以這樣維持。」', effect: null, delta: { phi: -0.03 } },
+          { text: '「也許這不是我們能解決的事。」', effect: null, delta: { phi: -0.15 } }
+        ]
+      }
+    ],
+    endings: [
+      {
+        condition: phi => phi < 0.45,
+        type: '被結構吞沒',
+        typeColor: 'var(--red)',
+        title: '你們沒有輸給彼此，而是輸給了起點',
+        text: '沒有人做錯什麼。沒有爭吵，沒有崩潰。<br><br>只是某一天，你們都理解了一件事：有些距離，不是努力可以縮短的。<br><br>你們沒有輸給彼此。你們輸給的是起點。',
+        quote: '「有些牆，不是用來翻越的，是用來讓你知道，你在哪一側。」',
+        quoteColor: 'var(--red)'
+      },
+      {
+        condition: phi => phi >= 0.45 && phi < 0.65,
+        type: '邊緣共存',
+        typeColor: 'var(--yellow)',
+        title: '你們在同一個世界裡，但不在同一層',
+        text: '你們沒有分開。也沒有真正跨越那些差距。<br><br>你們學會在一些地方退讓，在一些地方不談。生活可以繼續。<br><br>只是有些部分，永遠保持著距離。你們在同一個世界裡，但不在同一層。',
+        quote: '「你們不是走錯了路。只是走在不同的座標上。」',
+        quoteColor: 'var(--yellow)'
+      },
+      {
+        condition: phi => phi >= 0.65,
+        type: '對抗引力',
+        typeColor: 'var(--green)',
+        title: '這不是克服重力，是學會與它共存',
+        text: '你們沒有否認那些差距。也沒有假裝它們不存在。<br><br>你們只是選擇，在每一次出現的時候，都重新做一次選擇。<br><br>這很累。也沒有保證。但有些時候，你們會發現——即使在不同的起點，也可以走出一小段共同的路。',
+        quote: '「這不是克服重力，是學會與它共存。」',
+        quoteColor: 'var(--green)'
+      }
+    ]
   }
-  empty.style.display='none'; content.style.display='block';
-  renderChart(records);
-  renderList(records);
+};
+
+// ── 工具函式 ──
+function updateMetrics() {
+  const phi = Math.max(0, Math.min(1, state.phi));
+  const a   = Math.max(0, Math.min(1, state.a));
+  const w   = 1 - phi;
+
+  document.getElementById('bar-phi').style.width = (phi * 100) + '%';
+  document.getElementById('bar-a').style.width   = (a * 100) + '%';
+  document.getElementById('bar-w').style.width   = (w * 100) + '%';
+  document.getElementById('val-phi').textContent = phi.toFixed(2);
+  document.getElementById('val-a').textContent   = (a * 100).toFixed(0) + '%';
+  document.getElementById('val-w').textContent   = w.toFixed(2);
+
+  const phiBar = document.getElementById('bar-phi');
+  phiBar.style.background = phi >= 0.65 ? 'var(--green)' : phi >= 0.50 ? 'var(--yellow)' : 'var(--red)';
 }
 
-function renderList(records){
-  const list=document.getElementById('record-list');
-  list.innerHTML='';
-  [...records].reverse().forEach(r=>{
-    const d=new Date(r.timestamp);
-    const ds=d.getFullYear()+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')
-      +' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
-    const phiColor=r.phi>=0.80?'var(--green)':r.phi>=0.65?'var(--accent)':r.phi>=0.50?'var(--yellow)':'var(--red)';
-    const aColor=r.a<0.10?'var(--green)':r.a<0.25?'var(--accent)':r.a<0.50?'var(--yellow)':'var(--red)';
-    const fColor=r.f===null?'var(--text-muted)':r.f<0.10?'var(--green)':r.f<0.30?'var(--accent)':r.f<0.60?'var(--yellow)':'var(--red)';
-    const fVal=r.f!==null?(r.f*100).toFixed(1)+'%':'—';
+function renderNarrative(phaseData) {
+  const box  = document.getElementById('narrative-box');
+  const tag  = document.getElementById('narrative-tag');
+  const text = document.getElementById('narrative-text');
+  const caseData = CASES[state.caseId];
+  const total = caseData.phases.length;
 
-    const card=document.createElement('div');
-    card.className='record-card';
-    card.innerHTML=`
-      <div class="record-card-top">
-        <div class="record-meta">
-          <span class="record-date">${ds}</span>
-          ${r.note?`<span class="record-note">${r.note}</span>`:''}
-          <span class="record-cross">${r.crossTag}</span>
-        </div>
-        <button class="btn-delete" onclick="deleteRecord(${r.id})">✕</button>
-      </div>
-      <div class="record-metrics">
-        <div class="record-metric">
-          <div class="record-metric-name">φ 對稱係數</div>
-          <div class="record-metric-val" style="color:${phiColor}">${r.phi.toFixed(2)}</div>
-        </div>
-        <div class="record-metric">
-          <div class="record-metric-name">A 年齡內耗</div>
-          <div class="record-metric-val" style="color:${aColor}">${(r.a*100).toFixed(1)}%</div>
-        </div>
-        <div class="record-metric">
-          <div class="record-metric-name">F 家境內耗</div>
-          <div class="record-metric-val" style="color:${fColor}">${fVal}</div>
-        </div>
-      </div>`;
-    list.appendChild(card);
-  });
+  document.getElementById('phase-indicator').textContent =
+    `階段 ${state.phase + 1} / ${total}`;
+
+  tag.textContent = phaseData.tag;
+  let t = phaseData.text
+    .replace('{phi}', state.phi.toFixed(2))
+    .replace('{a}', (state.a * 100).toFixed(0) + '%')
+    .replace('{w}', (1-state.phi).toFixed(2));
+
+  // 心態描寫（選項出現前的內心獨白）
+  if (phaseData.inner) {
+    t += `<div class="inner-thought">${phaseData.inner}</div>`;
+  }
+
+  text.innerHTML = t;
+
+  box.classList.remove('fade-in');
+  void box.offsetWidth;
+  box.classList.add('fade-in');
 }
 
-function renderChart(records){
-  const canvas=document.getElementById('tl-chart');
-  const wrap=canvas.parentElement;
-  canvas.width=wrap.clientWidth||680;
-  canvas.height=200;
-  const ctx=canvas.getContext('2d');
-  const W=canvas.width, H=canvas.height;
-  const pad={top:12,right:16,bottom:28,left:36};
-  const cW=W-pad.left-pad.right, cH=H-pad.top-pad.bottom;
-  ctx.clearRect(0,0,W,H);
+function renderChoices(phaseData) {
+  const box = document.getElementById('choices-box');
+  box.innerHTML = '';
 
-  const sorted=[...records].sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
-  const n=sorted.length;
-  if(n===0) return;
+  phaseData.choices.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
 
-  // grid
-  ctx.strokeStyle='#1e1e1e'; ctx.lineWidth=1;
-  [0,0.25,0.5,0.65,0.75,1].forEach(v=>{
-    const y=pad.top+cH*(1-v);
-    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+cW,y); ctx.stroke();
-    ctx.fillStyle='#3a3a3a'; ctx.font='8px DM Mono,monospace'; ctx.textAlign='right';
-    ctx.fillText((v*100).toFixed(0)+'%',pad.left-4,y+3);
-  });
+    const key  = document.createElement('span');
+    key.className = 'choice-key';
+    key.textContent = String.fromCharCode(65 + i);
 
-  // collapse zone fill
-  const collapseY=pad.top+cH*(1-0.5);
-  ctx.fillStyle='rgba(255,92,92,0.04)';
-  ctx.fillRect(pad.left,collapseY,cW,pad.top+cH-collapseY);
+    const txt  = document.createElement('span');
+    txt.className = 'choice-text';
+    txt.textContent = ch.text;
 
-  // x labels
-  ctx.fillStyle='#3a3a3a'; ctx.font='8px DM Mono,monospace'; ctx.textAlign='center';
-  sorted.forEach((r,i)=>{
-    if(n<=7||i%(Math.ceil(n/6))===0||i===n-1){
-      const x=pad.left+(n===1?cW/2:i/(n-1)*cW);
-      const d=new Date(r.timestamp);
-      ctx.fillText((d.getMonth()+1)+'/'+(d.getDate()),x,H-6);
+    btn.appendChild(key);
+    btn.appendChild(txt);
+
+    if (ch.effect) {
+      const eff = document.createElement('span');
+      eff.className = 'choice-effect';
+      eff.textContent = ch.effect;
+      eff.style.color = 'var(--text-muted)';
+      btn.appendChild(eff);
     }
+
+    btn.onclick = () => makeChoice(ch);
+    box.appendChild(btn);
   });
-
-  // draw series helper
-  function drawSeries(key,color,dashed){
-    ctx.save();
-    ctx.strokeStyle=color; ctx.lineWidth=1.5;
-    if(dashed) ctx.setLineDash([4,4]);
-    ctx.beginPath();
-    let started=false;
-    sorted.forEach((r,i)=>{
-      const v=r[key];
-      if(v===null||v===undefined) return;
-      const x=pad.left+(n===1?cW/2:i/(n-1)*cW);
-      const y=pad.top+cH*(1-v);
-      if(!started){ctx.moveTo(x,y);started=true;}
-      else ctx.lineTo(x,y);
-    });
-    ctx.stroke();
-    ctx.setLineDash([]);
-    sorted.forEach((r,i)=>{
-      const v=r[key];
-      if(v===null||v===undefined) return;
-      const x=pad.left+(n===1?cW/2:i/(n-1)*cW);
-      const y=pad.top+cH*(1-v);
-      ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2);
-      ctx.fillStyle=color; ctx.fill();
-      ctx.strokeStyle='#0a0a0a'; ctx.lineWidth=1; ctx.stroke();
-    });
-    ctx.restore();
-  }
-
-  drawSeries('phi','#c8f060',false);
-  drawSeries('a','#f0c060',true);
-  if(sorted.some(r=>r.f!==null)) drawSeries('f','#f0a060',true);
 }
 
-// init
-updateBadge();
-window.addEventListener('resize',()=>{
-  if(document.getElementById('panel-timeline').classList.contains('active')) renderTimeline();
-});
+function makeChoice(choice) {
+  // 記錄行為標籤
+  recordTags(choice);
+  GLOBAL.history.push({ case: state.caseId, choice: choice.text });
+
+  if (choice.delta) {
+    if (choice.delta.phi) state.phi += choice.delta.phi;
+    if (choice.delta.a)   state.a   += choice.delta.a;
+  }
+  if (choice.flag) state.flags[choice.flag] = true;
+
+  state.phi = Math.max(0.10, Math.min(1, state.phi));
+  state.a   = Math.max(0, Math.min(1, state.a));
+
+  updateMetrics();
+  state.phase++;
+
+  const caseData = CASES[state.caseId];
+  if (state.phase >= caseData.phases.length) {
+    showEnding();
+  } else {
+    renderPhase();
+  }
+}
+
+function renderPhase() {
+  const caseData = CASES[state.caseId];
+  const phaseData = caseData.phases[state.phase];
+
+  // 最終事件：隱藏儀表板，背景變暗
+  if (phaseData.isFinal) {
+    const pgame = document.getElementById('page-game') || document.getElementById('screen-game');
+    if (pgame) pgame.classList.add('final-mode');
+    document.getElementById('narrative-tag').style.color = 'var(--text-muted)';
+    document.getElementById('phase-indicator').textContent = '';
+  } else {
+    document.getElementById('screen-game').classList.remove('final-mode');
+  }
+
+  // 過場處理：自動套用A值變化，顯示特殊樣式
+  if (phaseData.isTransition) {
+    if (phaseData.aChange) {
+      state.a = Math.max(0, Math.min(1, state.a + phaseData.aChange));
+      updateMetrics();
+    }
+    document.getElementById('narrative-tag').style.color = 'var(--a)';
+    document.getElementById('phase-indicator').textContent =
+      '── ' + phaseData.tag + ' ──';
+  } else {
+    document.getElementById('narrative-tag').style.color = 'var(--text-muted)';
+    const eventNum = caseData.phases
+      .slice(0, state.phase + 1)
+      .filter(p => !p.isTransition).length;
+    const eventTotal = caseData.phases.filter(p => !p.isTransition).length;
+    document.getElementById('phase-indicator').textContent =
+      '事件 ' + eventNum + ' / ' + eventTotal;
+  }
+
+  renderNarrative(phaseData);
+  renderChoices(phaseData);
+  document.getElementById('ending-area').innerHTML = '';
+}
+
+function showEnding() {
+  const caseData = CASES[state.caseId];
+  let ending = null;
+
+  for (const e of caseData.endings) {
+    if (e.condition(state.phi, state.a)) {
+      ending = e;
+      break;
+    }
+  }
+  if (!ending) ending = caseData.endings[caseData.endings.length - 1];
+
+  // 清除選項
+  document.getElementById('choices-box').innerHTML = '';
+  document.getElementById('narrative-box').style.display = 'none';
+  document.getElementById('phase-indicator').textContent = '結局';
+
+  // 記錄案例完成
+  GLOBAL.completedCases[state.caseId] = true;
+  GLOBAL.finalPhi[state.caseId] = state.phi;
+
+  // 解鎖報告按鈕
+  document.getElementById('report-btn-area').style.display = 'block';
+
+  const area = document.getElementById('ending-area');
+  area.innerHTML = `
+    <div class="ending-box fade-in">
+      <div class="ending-type" style="color:${ending.typeColor};">${ending.type}</div>
+      <div class="ending-title">${ending.title}</div>
+      <div class="ending-text">${ending.text}</div>
+      <div class="ending-metrics">
+        <div class="ending-metric">
+          <div class="ending-metric-label">φ 最終值</div>
+          <div class="ending-metric-val" style="color:${state.phi >= 0.65 ? 'var(--green)' : state.phi >= 0.50 ? 'var(--yellow)' : 'var(--red)'};">${state.phi.toFixed(2)}</div>
+        </div>
+        <div class="ending-metric">
+          <div class="ending-metric-label">A 年齡內耗</div>
+          <div class="ending-metric-val" style="color:var(--a);">${(state.a * 100).toFixed(0)}%</div>
+        </div>
+        <div class="ending-metric">
+          <div class="ending-metric-label">W 結構內耗</div>
+          <div class="ending-metric-val" style="color:var(--red);">${(1 - state.phi).toFixed(2)}</div>
+        </div>
+      </div>
+      <div class="ending-quote" style="color:${ending.quoteColor};">${ending.quote}</div>
+    </div>
+    <button class="btn-restart" onclick="goTitle()">← 返回選擇其他案例</button>
+  `;
+}
+
+// ── 流程控制 ──
+function startCase(id) {
+  const caseData = CASES[id];
+  state = {
+    caseId: id,
+    phase: 0,
+    phi: caseData.initPhi,
+    a: caseData.initA,
+    w: 1 - caseData.initPhi,
+    flags: {}
+  };
+
+  document.getElementById('game-case-label').textContent = caseData.label;
+  document.getElementById('screen-title').style.display = 'none';
+  document.getElementById('screen-game').style.display = 'block';
+  document.getElementById('narrative-box').style.display = 'block';
+  document.getElementById('ending-area').innerHTML = '';
+  // SPA：清除final-mode
+  const gameEl = document.getElementById('page-game');
+  if (gameEl) gameEl.classList.remove('final-mode');
+
+  updateMetrics();
+  renderPhase();
+  window.scrollTo(0, 0);
+}
+
+// ── 行為記錄 ──
+function recordTags(choice) {
+  if (!choice.tags) return;
+  choice.tags.forEach(tag => {
+    if (GLOBAL.tags[tag] !== undefined) GLOBAL.tags[tag]++;
+  });
+}
+
+// ── 報告生成 ──
+function generateReport() {
+  const { avoid, face, sacrifice, honest } = GLOBAL.tags;
+  const total = avoid + face + sacrifice + honest || 1;
+  const ratio = {
+    avoid:    avoid    / total,
+    face:     face     / total,
+    sacrifice:sacrifice / total,
+    honest:   honest   / total
+  };
+
+  let type, desc, quote, residual;
+
+  if (ratio.avoid >= 0.40) {
+    type = '觀察抽離型';
+    desc = '你傾向在關係中保留空間，以距離換取安全感。你一直在場，但沒有完全走進去。這不是冷漠——是一種長期形成的自我保護機制。';
+    quote = '你一直在關係裡，但沒有完全走進去。';
+    residual = `系統偵測：迴避行為佔比 ${(ratio.avoid*100).toFixed(0)}%。長期迴避會讓關係的情感資本持續消耗，而補充速率趨近於零。`;
+  } else if (ratio.sacrifice >= 0.40) {
+    type = '結構承受型';
+    desc = '你經常調整自己來維持關係的平衡。你是那個讓事情繼續運作的人，但這份重量幾乎都由你一個人在承擔。';
+    quote = '你撐住了關係，但沒有人撐住你。';
+    residual = `系統偵測：自我犧牲行為佔比 ${(ratio.sacrifice*100).toFixed(0)}%。結構承受型在外部壓力事件（升遷、家庭介入、退休節點）中，崩潰風險比其他類型高出 2.3 倍。`;
+  } else if (ratio.face >= 0.40) {
+    type = '主動重構型';
+    desc = '你願意正面面對問題，嘗試重新建立關係的結構。你相信問題是可以被討論的，差距是可以被縮小的。';
+    quote = '你相信關係是可以被重新設計的。';
+    residual = `系統偵測：主動面對行為佔比 ${(ratio.face*100).toFixed(0)}%。重構嘗試有效率取決於對方的配合意願。單方面的重構，長期來看會轉化為結構承受。`;
+  } else if (ratio.honest >= 0.35) {
+    type = '誠實代入型';
+    desc = '你傾向說出真實想法，即使那會讓氣氛變得沉重。你不擅長表演，但你也不願意讓關係活在謊言裡。';
+    quote = '你說出了別人不敢說的話，但說完之後，你不確定那有沒有用。';
+    residual = `系統偵測：誠實表達行為佔比 ${(ratio.honest*100).toFixed(0)}%。誠實在短期內會增加關係張力，但在長期結構中，它是唯一能防止慢性內耗的機制。`;
+  } else {
+    type = '結構漂移型';
+    desc = '你的行為模式在不同情境下會切換，沒有一種固定的應對方式。這可能是靈活，也可能是你還在尋找自己在關係中的位置。';
+    quote = '你沒有固定的模式。你在每一個選擇裡，都試著找到當下最合理的出口。';
+    residual = `系統偵測：行為分佈較均勻，無顯著主導傾向。結構漂移型在穩定期表現良好，但在高壓節點（臨界點事件）時，決策延遲風險較高。`;
+  }
+
+  return { type, desc, quote, residual, ratio };
+}
+
+function showGlobalReport() {
+  const report = generateReport();
+  const completed = Object.keys(GLOBAL.completedCases);
+
+  // SPA版：切換report畫面
+  const titleEl = document.getElementById('screen-title');
+  const gameEl2 = document.getElementById('screen-game');
+  const reportEl = document.getElementById('screen-report');
+  if (titleEl) titleEl.style.display = 'none';
+  if (gameEl2) gameEl2.style.display = 'none';
+  if (reportEl) reportEl.style.display = 'block';
+
+  // 條型圖數據
+  const bars = [
+    { key: 'face',     label: '主動面對', color: 'var(--green)',  val: report.ratio.face },
+    { key: 'honest',   label: '誠實表達', color: 'var(--accent)', val: report.ratio.honest },
+    { key: 'sacrifice',label: '自我犧牲', color: 'var(--yellow)', val: report.ratio.sacrifice },
+    { key: 'avoid',    label: '迴避距離', color: 'var(--red)',    val: report.ratio.avoid },
+  ];
+
+  const barsHTML = bars.map(b => `
+    <div class="report-bar-row">
+      <div class="report-bar-label">
+        <span>${b.label}</span>
+        <span>${(b.val*100).toFixed(0)}%</span>
+      </div>
+      <div class="report-bar-track">
+        <div class="report-bar-fill" style="width:${(b.val*100).toFixed(1)}%;background:${b.color};"></div>
+      </div>
+    </div>
+  `).join('');
+
+  const completedLabel = completed.length === 3
+    ? '三個案例已完成'
+    : `已完成 ${completed.length} / 3 個案例`;
+
+  document.getElementById('report-content').innerHTML = `
+    <div class="narrative-box" style="margin-bottom:1px;">
+      <div class="report-type-tag">行為結構分析 — ${completedLabel}</div>
+      <div class="report-main-type">${report.type}</div>
+      <div class="report-desc">${report.desc}</div>
+      <div class="report-bars">${barsHTML}</div>
+      <div class="report-quote">「${report.quote}」</div>
+    </div>
+    <div class="report-residual">
+      <div class="report-residual-label">結構診斷附記</div>
+      ${report.residual}
+    </div>
+    <button class="btn-copy" onclick="copyReport()">▸ 複製分享內容</button>
+  `;
+
+  // 條型圖動畫
+  setTimeout(() => {
+    document.querySelectorAll('.report-bar-fill').forEach(el => {
+      const w = el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => { el.style.width = w; }, 50);
+    });
+  }, 100);
+}
+
+function copyReport() {
+  const report = generateReport();
+  const text = `【DSBM 行為結構分析】
+
+類型：${report.type}
+
+${report.desc}
+
+「${report.quote}」
+
+${report.residual}
+
+▸ 二元對稱瓶頸模型 v3.0
+https://tengyi-wang-tw.github.io/dsbm/`;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('已複製到剪貼簿');
+    });
+  } else {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    alert('已複製到剪貼簿');
+  }
+}
+
+function closeReport() {
+  const reportEl = document.getElementById('screen-report');
+  if (reportEl) reportEl.style.display = 'none';
+  const titleEl = document.getElementById('screen-title');
+  if (titleEl) titleEl.style.display = 'block';
+}
+
+function goTitle() {
+  // SPA版：回到game title畫面
+  const gameEl = document.getElementById('page-game');
+  if (gameEl) gameEl.classList.remove('final-mode');
+  const reportEl = document.getElementById('screen-report');
+  if (reportEl) reportEl.style.display = 'none';
+  const titleEl = document.getElementById('screen-title');
+  if (titleEl) titleEl.style.display = 'block';
+  const gameScreenEl = document.getElementById('screen-game');
+  if (gameScreenEl) gameScreenEl.style.display = 'none';
+  if (Object.keys(GLOBAL.completedCases).length > 0) {
+    const btnArea = document.getElementById('report-btn-area');
+    if (btnArea) btnArea.style.display = 'block';
+  }
+  window.scrollTo(0, 0);
+}
+
+
+// ── CUSTOM MODE JS ──
+// ── CM_DEFAULT PARAMS ──
+const CM_DEFAULT = { wMoney:0.5, wTime:0.5, compCoef:0.1, overloadCoef:0.4, fGapW:0.7, fBaseW:0.3 };
+
+function cm_getCustomParams() {
+  const wm = parseInt(document.getElementById('w_money').value) / 100;
+  const fg = parseInt(document.getElementById('f_gap_w').value) / 100;
+  return {
+    wMoney: wm,
+    wTime: 1 - wm,
+    compCoef: parseFloat(document.getElementById('comp_coef').value),
+    overloadCoef: parseFloat(document.getElementById('overload_coef').value),
+    fGapW: fg,
+    fBaseW: 1 - fg,
+  };
+}
+
+// ── SLIDER: weight lock ──
+function cm_onMoneyWeight(v) {
+  const wm = parseInt(v);
+  const wt = 100 - wm;
+  document.getElementById('w_time').value = wt;
+  document.getElementById('wm_val').textContent = wm + '%';
+  document.getElementById('wt_val').textContent = wt + '%';
+  document.getElementById('wb_money').style.width = wm + '%';
+  document.getElementById('wb_time').style.width = wt + '%';
+  document.getElementById('wb_ml').textContent = 'φ_money ' + wm + '%';
+  document.getElementById('wb_tl').textContent = 'φ_time ' + wt + '%';
+  cm_setDelta('wm_delta', wm - 50, '%', 0);
+  cm_setDelta('wt_delta', wt - 50, '%', 0);
+}
+function cm_onTimeWeight(v) {
+  const wt = parseInt(v);
+  const wm = 100 - wt;
+  document.getElementById('w_money').value = wm;
+  cm_onMoneyWeight(wm);
+}
+
+// ── SLIDER: generic ──
+function cm_updateSlider(id, displayId, decimals, unit, def, deltaId) {
+  const val = parseFloat(document.getElementById(id).value);
+  document.getElementById(displayId).textContent = val.toFixed(decimals) + unit;
+  const diff = val - def;
+  cm_setDelta(deltaId, diff, '', decimals);
+}
+
+function cm_setDelta(id, diff, unit, decimals) {
+  const el = document.getElementById(id);
+  const abs = Math.abs(diff);
+  if (abs < 0.001) {
+    el.textContent = '± 0' + (unit || (decimals > 0 ? '.' + '0'.repeat(decimals) : '')) + (unit || '');
+    el.className = 'delta-val zero';
+  } else {
+    const sign = diff > 0 ? '+' : '−';
+    el.textContent = sign + ' ' + abs.toFixed(decimals > 0 ? decimals : 0) + (unit || '');
+    el.className = 'delta-val ' + (diff > 0 ? 'pos' : 'neg');
+  }
+}
+
+function cm_resetParams() {
+  document.getElementById('w_money').value = 50;
+  document.getElementById('w_time').value = 50;
+  document.getElementById('comp_coef').value = 0.1;
+  document.getElementById('overload_coef').value = 0.4;
+  document.getElementById('f_gap_w').value = 70;
+  document.getElementById('f_base_w').value = 30;
+  cm_onMoneyWeight(50);
+  cm_onFGapWeight(70);
+  document.getElementById('cc_val').textContent = '0.10';
+  document.getElementById('oc_val').textContent = '0.40';
+  ['cc_delta','oc_delta','fg_delta','fb_delta'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '± 0.00';
+    el.className = 'delta-val zero';
+  });
+}
+
+// ── F weight lock ──
+function cm_onFGapWeight(v) {
+  const fg = parseInt(v);
+  const fb = 100 - fg;
+  document.getElementById('f_base_w').value = fb;
+  document.getElementById('fg_val').textContent = fg + '%';
+  document.getElementById('fb_val').textContent = fb + '%';
+  document.getElementById('wf_gap').style.width = fg + '%';
+  document.getElementById('wf_base').style.width = fb + '%';
+  document.getElementById('wf_gl').textContent = 'F_gap ' + fg + '%';
+  document.getElementById('wf_bl').textContent = 'F_base ' + fb + '%';
+  cm_setDelta('fg_delta', fg - 70, '%', 0);
+  cm_setDelta('fb_delta', fb - 30, '%', 0);
+}
+function cm_onFBaseWeight(v) {
+  const fb = parseInt(v);
+  const fg = 100 - fb;
+  document.getElementById('f_gap_w').value = fg;
+  cm_onFGapWeight(fg);
+}
+
+function cm_toggleFRef() {
+  const body = document.getElementById('cm_f_ref_body');
+  const arrow = document.getElementById('cm_f_arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+// ── CORE CALCULATION ──
+function cm_computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, params) {
+  // φ
+  const pm = (is + io > 0) ? 1 - Math.abs(is - io) / (is + io) : 1;
+  const pt = (hs + ho > 0) ? 1 - Math.abs(hs - ho) / (hs + ho) : 1;
+  const phi_raw = pm * params.wMoney + pt * params.wTime;
+
+  // direction
+  const inc_hi_self = is > io;
+  const hrs_hi_self = hs > ho;
+  const inc_gap = (is + io > 0) ? Math.abs(is - io) / (is + io) : 0;
+  const hrs_gap = (hs + ho > 0) ? Math.abs(hs - ho) / (hs + ho) : 0;
+
+  let dirType, adj;
+  if (inc_gap < 0.01 || hrs_gap < 0.01) {
+    dirType = '無顯著方向'; adj = 0;
+  } else if (inc_hi_self === hrs_hi_self) {
+    dirType = '單邊過載'; adj = -(inc_gap * hrs_gap * params.overloadCoef);
+  } else {
+    dirType = '互補分工'; adj = +(inc_gap * hrs_gap * params.compCoef);
+  }
+  const phi = Math.max(0, Math.min(1, phi_raw + adj));
+  const w = 1 - phi;
+
+  // A
+  let A = 0, A_raw = 0;
+  if (ageSelf !== null && ageOther !== null) {
+    const gap = Math.abs(ageSelf - ageOther);
+    const mean = (ageSelf + ageOther) / 2;
+    A_raw = (gap * gap) / (mean * mean);
+    A = Math.min(1, A_raw);
+  }
+
+  // F (v3.1)
+  let F = null, F_gap = null, F_base = null;
+  if (fSelf !== null && fOther !== null) {
+    F_gap  = Math.abs(fSelf * fSelf - fOther * fOther) / 100;
+    F_base = ((fSelf + fOther) / 2) / 10;
+    F = Math.min(1, F_gap * params.fGapW + F_base * params.fBaseW);
+  }
+
+  return { pm, pt, phi_raw, dirType, adj, phi, w, A, A_raw, F, F_gap, F_base };
+}
+
+function cm_phiStatus(phi) {
+  if (phi >= 0.80) return { text:'結構良好', color:'var(--green)' };
+  if (phi >= 0.65) return { text:'輕度不對稱', color:'var(--accent)' };
+  if (phi >= 0.50) return { text:'中度不對稱', color:'var(--yellow)' };
+  return { text:'高度不對稱', color:'var(--red)' };
+}
+function cm_aStatus(a) {
+  if (a < 0.10) return { text:'背景相近', color:'var(--green)' };
+  if (a < 0.25) return { text:'差距可接受', color:'var(--accent)' };
+  if (a < 0.50) return { text:'差距明顯', color:'var(--yellow)' };
+  return { text:'差距顯著', color:'var(--red)' };
+}
+function cm_fStatus(f) {
+  if (f < 0.10) return { text:'家境相近', color:'var(--green)' };
+  if (f < 0.30) return { text:'差距可接受', color:'var(--accent)' };
+  if (f < 0.60) return { text:'差距明顯', color:'var(--yellow)' };
+  return { text:'差距顯著', color:'var(--red)' };
+}
+
+function cm_crossDiag(phi, A, F) {
+  const phiUp = phi >= 0.65;
+  const aDown = A < 0.25;
+  if (F === null) {
+    const map = {
+      '11':'φ↑ A↓ — 雙軸穩定型|貢獻對稱且年齡背景差距小，系統具備較強的外部壓力緩衝能力。',
+      '10':'φ↑ A↑ — 貢獻對稱，背景存差|當下分工均衡，但年齡差距是潛在變數，在重大決策節點才浮現。',
+      '01':'φ↓ A↓ — 背景相近，貢獻待調整|人生座標一致是有利條件，主要壓力來自貢獻不對稱。',
+      '00':'φ↓ A↑ — 雙軸壓力型|兩個軸均顯示結構壓力，貢獻不對稱更難透過溝通單獨解決。',
+    };
+    const k = (phiUp?'1':'0')+(aDown?'1':'0');
+    const parts = map[k].split('|');
+    return { tag: parts[0], desc: parts[1] };
+  } else {
+    const fDown = F < 0.30;
+    const map = {
+      '111':'φ↑ A↓ F↓ — 三軸穩定型|三個診斷軸均指向穩定，系統抗壓能力最強。',
+      '110':'φ↑ A↓ F↑ — 貢獻穩定，家境存差|當下運作穩定，但家境差距是潛在的價值觀摩擦來源。',
+      '101':'φ↑ A↑ F↓ — 貢獻對稱，年齡存差|家境背景一致降低了部分風險，仍需關注人生階段不同步。',
+      '100':'φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差|當下分工均衡，但年齡與家境差距同時存在。',
+      '011':'φ↓ A↓ F↓ — 背景一致，貢獻待調整|年齡與家境均相近，溝通調整的成本相對較低。',
+      '010':'φ↓ A↓ F↑ — 貢獻失衡，家境存差|家境差距使「公平感」基準不一致，加深對貢獻不對稱的感知落差。',
+      '001':'φ↓ A↑ F↓ — 年齡存差，貢獻失衡|家境相近是相對有利條件，但年齡與貢獻不對稱同時存在。',
+      '000':'φ↓ A↑ F↑ — 三軸壓力型|三個軸均顯示結構壓力，是模型中風險最集中的組合。',
+    };
+    const k = (phiUp?'1':'0')+(aDown?'1':'0')+(fDown?'1':'0');
+    const parts = map[k].split('|');
+    return { tag: parts[0], desc: parts[1] };
+  }
+}
+
+function cm_getSContext(s, phi) {
+  const hi = s >= 15, lo = s < 6, hp = phi >= 0.70, lp = phi < 0.50;
+  if (hi && hp) return '資源充足且結構對稱。系統在面對外部衝擊時具備較強的緩衝能力。';
+  if (hi && lp) return '資源充足但結構失衡。S 高可短期掩蓋內耗，但無法從根本解決結構問題。';
+  if (hi)       return '資源尚可，結構存在一定不對稱。';
+  if (lo && hp) return '資源有限但結構對稱。雙方共同承擔壓力，韌性相對較高。';
+  if (lo && lp) return '資源有限且結構失衡，屬於雙重風險狀態。';
+  if (lo)       return '資源偏低，建議評估整體財務規劃對關係穩定性的影響。';
+  return '資源規模中等，φ 是當前主要參考指標。';
+}
+
+function cm_setText(id, text, color) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  if (color) el.style.color = color;
+}
+
+function cm_calculate() {
+  const is = parseFloat(document.getElementById('cm_income_self').value);
+  const io = parseFloat(document.getElementById('cm_income_other').value);
+  const hs = parseFloat(document.getElementById('cm_hours_self').value);
+  const ho = parseFloat(document.getElementById('cm_hours_other').value);
+  const ageSelf  = parseFloat(document.getElementById('cm_age_self').value);
+  const ageOther = parseFloat(document.getElementById('cm_age_other').value);
+  const fsRaw = document.getElementById('cm_f_self').value;
+  const foRaw = document.getElementById('cm_f_other').value;
+  const fSelf  = fsRaw !== '' ? parseInt(fsRaw) : null;
+  const fOther = foRaw !== '' ? parseInt(foRaw) : null;
+
+  if ([is,io,hs,ho,ageSelf,ageOther].some(v => isNaN(v) || v < 0)) {
+    alert('請填入所有必填欄位（月收入、每週時數、年齡）的有效數值。'); return;
+  }
+  if (ageSelf < 16 || ageOther < 16) { alert('年齡需≥16歲。'); return; }
+  if (hs > 168 || ho > 168) { alert('每週勞動時數不得超過 168 小時。'); return; }
+  if (is + io === 0 && hs + ho === 0) { alert('收入合計與時數合計不得皆為 0。'); return; }
+
+  const canon = cm_computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, CM_DEFAULT);
+  const custom = cm_computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, cm_getCustomParams());
+
+  const cPs = cm_phiStatus(canon.phi);
+  const uPs = cm_phiStatus(custom.phi);
+  const cAs = cm_aStatus(canon.A);
+
+  // φ cols
+  cm_setText('c_phi', canon.phi.toFixed(2), cPs.color);
+  cm_setText('c_phi_status', cPs.text, cPs.color);
+  cm_setText('c_w', 'W = ' + canon.w.toFixed(3));
+  cm_setText('u_phi', custom.phi.toFixed(2), uPs.color);
+  cm_setText('u_phi_status', uPs.text, uPs.color);
+  cm_setText('u_w', 'W = ' + custom.w.toFixed(3));
+
+  // A / F
+  cm_setText('c_a', (canon.A * 100).toFixed(1) + '%');
+  cm_setText('c_a_status', cAs.text, cAs.color);
+  const hasFData = fSelf !== null && fOther !== null;
+  const fRows = ['c_f_row','c_f_status_row','c_f_custom_row','c_f_custom_status_row'];
+  fRows.forEach(id => { const el=document.getElementById(id); if(el) el.style.display = hasFData ? '' : 'none'; });
+  if (hasFData) {
+    const cFs = cm_fStatus(canon.F);
+    const uFs = cm_fStatus(custom.F);
+    cm_setText('c_f', (canon.F * 100).toFixed(1) + '%');
+    cm_setText('c_f_status', cFs.text, cFs.color);
+    cm_setText('c_f_custom', (custom.F * 100).toFixed(1) + '%', uFs.color);
+    cm_setText('c_f_custom_status', uFs.text, uFs.color);
+    // F breakdown
+    const fBdRows = ['f_bd_section'];
+    fBdRows.forEach(id => { const el=document.getElementById(id); if(el) el.style.display=''; });
+    cm_setText('bd_c_fgap',  (canon.F_gap  * 100).toFixed(2) + '%');
+    cm_setText('bd_c_fbase', (canon.F_base * 100).toFixed(2) + '%');
+    cm_setText('bd_c_f',     (canon.F      * 100).toFixed(2) + '%');
+    const cp2 = cm_getCustomParams();
+    cm_setText('bd_fg_w',   (cp2.fGapW  * 100).toFixed(0) + '%');
+    cm_setText('bd_fb_w',   (cp2.fBaseW * 100).toFixed(0) + '%');
+    cm_setText('bd_u_fgap',  (custom.F_gap  * 100).toFixed(2) + '%');
+    cm_setText('bd_u_fbase', (custom.F_base * 100).toFixed(2) + '%');
+    cm_setText('bd_u_f',     (custom.F      * 100).toFixed(2) + '%');
+  } else {
+    const el = document.getElementById('f_bd_section');
+    if (el) el.style.display = 'none';
+  }
+
+  // φ breakdown cols
+  cm_setText('c_pm', canon.pm.toFixed(3));
+  cm_setText('u_pm', custom.pm.toFixed(3)); // same raw pm
+  cm_setText('c_pt', canon.pt.toFixed(3));
+  cm_setText('u_pt', custom.pt.toFixed(3));
+  cm_setText('dir_label', canon.dirType);
+  cm_setText('c_adj', (canon.adj >= 0 ? '+' : '') + canon.adj.toFixed(4));
+  cm_setText('u_adj', (custom.adj >= 0 ? '+' : '') + custom.adj.toFixed(4));
+
+  // breakdown tables
+  cm_setText('bd_c_pm', canon.pm.toFixed(4));
+  cm_setText('bd_c_pt', canon.pt.toFixed(4));
+  cm_setText('bd_c_raw', canon.phi_raw.toFixed(4));
+  cm_setText('bd_c_adj', (canon.adj >= 0 ? '+' : '') + canon.adj.toFixed(4));
+  cm_setText('bd_c_phi', canon.phi.toFixed(4));
+  cm_setText('bd_c_w', canon.w.toFixed(4));
+  const cp = cm_getCustomParams();
+  cm_setText('bd_wm', (cp.wMoney * 100).toFixed(0) + '%');
+  cm_setText('bd_wt', (cp.wTime * 100).toFixed(0) + '%');
+  cm_setText('bd_u_pm', custom.pm.toFixed(4));
+  cm_setText('bd_u_pt', custom.pt.toFixed(4));
+  cm_setText('bd_u_raw', custom.phi_raw.toFixed(4));
+  cm_setText('bd_u_adj', (custom.adj >= 0 ? '+' : '') + custom.adj.toFixed(4));
+  cm_setText('bd_u_phi', custom.phi.toFixed(4));
+  cm_setText('bd_u_w', custom.w.toFixed(4));
+
+  // delta chips
+  const chips = [];
+  const wm = cp.wMoney * 100;
+  if (Math.abs(wm - 50) > 0.5) chips.push({ text: 'φ_money ' + wm.toFixed(0) + '%', color: wm > 50 ? 'var(--accent)' : 'var(--studio)' });
+  if (Math.abs(cp.compCoef - 0.1) > 0.005) chips.push({ text: '互補 ' + (cp.compCoef > 0.1 ? '+' : '') + (cp.compCoef - 0.1).toFixed(2), color: cp.compCoef > 0.1 ? 'var(--green)' : 'var(--yellow)' });
+  if (Math.abs(cp.overloadCoef - 0.4) > 0.005) chips.push({ text: '過載 ' + (cp.overloadCoef > 0.4 ? '+' : '') + (cp.overloadCoef - 0.4).toFixed(2), color: cp.overloadCoef > 0.4 ? 'var(--red)' : 'var(--green)' });
+  if (Math.abs(cp.fGapW - 0.7) > 0.005) chips.push({ text: 'F_gap ' + (cp.fGapW*100).toFixed(0) + '%', color: cp.fGapW > 0.7 ? 'var(--orange)' : 'var(--blue)' });
+  const phiDiff = custom.phi - canon.phi;
+  if (Math.abs(phiDiff) > 0.005) chips.push({ text: 'φ ' + (phiDiff > 0 ? '+' : '') + phiDiff.toFixed(3), color: phiDiff > 0 ? 'var(--green)' : 'var(--red)' });
+  if (hasFData) {
+    const fDiff = custom.F - canon.F;
+    if (Math.abs(fDiff) > 0.005) chips.push({ text: 'F ' + (fDiff > 0 ? '+' : '') + (fDiff*100).toFixed(1) + '%', color: fDiff > 0 ? 'var(--red)' : 'var(--green)' });
+  }
+
+  const chipsEl = document.getElementById('delta_chips');
+  if (chips.length === 0) {
+    chipsEl.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:10px;color:var(--text-muted);">與官方模型相同</span>';
+  } else {
+    chipsEl.innerHTML = chips.map(c =>
+      `<span class="di-chip" style="color:${c.color};border-color:${c.color};">${c.text}</span>`
+    ).join('');
+  }
+
+  // cross diag
+  const cCross = cm_crossDiag(canon.phi, canon.A, hasFData ? canon.F : null);
+  const uCross = cm_crossDiag(custom.phi, custom.A, hasFData ? custom.F : null);
+  cm_setText('c_cross_tag', cCross.tag, cPs.color);
+  cm_setText('c_cross_desc', cCross.desc);
+  cm_setText('u_cross_tag', uCross.tag, uPs.color);
+  cm_setText('u_cross_desc', uCross.desc);
+
+  // S
+  const s = is + io;
+  cm_setText('s_val', s.toFixed(1) + ' 萬元／月');
+  cm_setText('s_ctx', cm_getSContext(s, canon.phi));
+
+  // custom param desc
+  document.getElementById('custom_param_desc').textContent =
+    `φ_money ${(cp.wMoney*100).toFixed(0)}% · 互補 ${cp.compCoef.toFixed(2)} · 過載 ${cp.overloadCoef.toFixed(2)} · F_gap ${(cp.fGapW*100).toFixed(0)}%`;
+
+  const rs = document.getElementById('cm_result_section');
+  rs.classList.add('visible');
+  rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── FEEDBACK ──
+function cm_buildReport() {
+  const match = document.querySelector('input[name="cm_fb_match"]:checked');
+  const axes = Array.from(document.querySelectorAll('input[name="cm_fb_axis"]:checked')).map(el => el.value);
+  const text = document.getElementById('fb_text').value.trim();
+  const cp = cm_getCustomParams();
+  const lines = [
+    '[DSBM Custom Mode — 意見回報]',
+    '',
+    '診斷符合程度：' + (match ? match.value : '未選擇'),
+    '最不準的軸：' + (axes.length ? axes.join('、') : '未選擇'),
+    '',
+    '使用者自定義參數：',
+    '  \u03c6_money \u6b0a\u91cd = ' + (cp.wMoney*100).toFixed(0) + '%',
+    '  \u03c6_time  \u6b0a\u91cd = ' + (cp.wTime*100).toFixed(0) + '%',
+    '  \u4e92\u88dc\u4fc2\u6578     = ' + cp.compCoef.toFixed(2) + '\uff08\u5b98\u65b9 0.10\uff09',
+    '  \u904e\u8f09\u61f2\u7f70     = ' + cp.overloadCoef.toFixed(2) + '\uff08\u5b98\u65b9 0.40\uff09',
+    '  F_gap  \u6b0a\u91cd  = ' + (cp.fGapW*100).toFixed(0) + '%\uff08\u5b98\u65b9 70%\uff09',
+    '  F_base \u6b0a\u91cd  = ' + (cp.fBaseW*100).toFixed(0) + '%\uff08\u5b98\u65b9 30%\uff09',
+    '',
+    '\u88dc\u5145\u8aaa\u660e\uff1a',
+    text || '\uff08\u7121\uff09',
+    '',
+    '\u25b8 DSBM v3.1 Custom Mode',
+  ];
+  return lines.join('\n');
+}
+
+function cm_copyFeedback() {
+  const out = cm_buildReport();
+  const btn = document.getElementById('copy_btn');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(out).then(() => {
+      btn.textContent = '✓ 已複製';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '▸ 複製回報內容'; btn.classList.remove('copied'); }, 2500);
+    });
+  } else {
+    const el = document.createElement('textarea');
+    el.value = out;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    btn.textContent = '✓ 已複製';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '▸ 複製回報內容'; btn.classList.remove('copied'); }, 2500);
+  }
+}
+
+function cm_mailFeedback() {
+  // 防爬蟲：信箱分段組合，不明文出現完整地址
+  const u = ['allen','1990923'].join('');
+  const d = ['gmail','.','com'].join('');
+  const addr = u + '@' + d;
+  const subject = encodeURIComponent('DSBM Custom Mode — 意見回報');
+  const body = encodeURIComponent(cm_buildReport());
+  const btn = document.getElementById('mail_btn');
+  window.location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
+  btn.textContent = '✓ 已開啟郵件';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = '▸ 寄出意見回報'; btn.classList.remove('copied'); }, 3000);
+}
+
 </script>
+
+<!-- CUSTOM PAGE -->
+<div class="spa-page" id="page-custom">
+  <div style="max-width:800px;margin:0 auto;padding:28px 20px 80px;">
+<div class="container">
+
+  <div class="page-header">
+    <div class="page-tag">參數工作室</div>
+    <h1 class="page-h1">自定義模式<br><span style="color:var(--text-dim);font-size:16px;font-weight:300;">調整模型參數，對照官方診斷</span></h1>
+    <p class="page-desc">在這裡調整 DSBM 的核心係數，系統會同時顯示官方模型與你的模型的診斷結果。並排對照讓你看見自己的價值觀與模型預設值的差距。</p>
+  </div>
+
+  <!-- ── SECTION 01: 參數工作室 ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-num">01</span>
+        <span class="sec-title studio">參數工作室</span>
+      </div>
+      <button class="reset-btn" onclick="cm_resetParams()">↺ 重置預設</button>
+    </div>
+    <div class="sec-body" style="padding:0;">
+
+      <!-- φ 權重區 -->
+      <div class="studio-grid">
+        <div class="studio-cell">
+          <div class="param-label">φ 第一維度
+            <span class="tip">i<span class="tip-popup">φ_money 與 φ_time 的權重加總鎖定為 100%。調整此滑桿，另一個會自動跟著變。</span></span>
+          </div>
+          <div class="param-name">φ_money 收入對稱<br><span style="font-size:11px;color:var(--text-muted);">佔 φ 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="w_money" min="10" max="90" value="50" step="5" oninput="cm_onMoneyWeight(this.value)">
+              <div class="tick-default" id="tick_money" style="left:50%;"></div>
+            </div>
+            <span class="slider-val" id="wm_val">50%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 50%</span>
+            <span class="delta-val zero" id="wm_delta">± 0%</span>
+          </div>
+        </div>
+        <div class="studio-cell studio-tint">
+          <div class="param-label" style="color:var(--studio);">φ 第二維度
+            <span class="tip" style="border-color:var(--studio);color:var(--studio);">i<span class="tip-popup">與 φ_money 聯動，兩者加總永遠為 100%。</span></span>
+          </div>
+          <div class="param-name">φ_time 時間對稱<br><span style="font-size:11px;color:var(--text-muted);">佔 φ 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="w_time" min="10" max="90" value="50" step="5" oninput="cm_onTimeWeight(this.value)" class="studio-range">
+              <div class="tick-default" id="tick_time" style="left:50%;"></div>
+            </div>
+            <span class="slider-val studio-color" id="wt_val">50%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 50%</span>
+            <span class="delta-val zero" id="wt_delta">± 0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 權重視覺條 -->
+      <div class="weight-lock">
+        <span class="weight-lock-label">權重分配</span>
+        <div style="flex:1;">
+          <div class="weight-bar-track">
+            <div class="weight-bar-fill" id="wb_money" style="width:50%;"></div>
+            <div class="weight-bar-rest" id="wb_time" style="width:50%;left:auto;right:0;"></div>
+          </div>
+          <div class="weight-labels">
+            <span class="weight-label-text" id="wb_ml">φ_money 50%</span>
+            <span class="weight-label-text" id="wb_tl" style="color:var(--studio);">φ_time 50%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 互補係數 & 過載懲罰 -->
+      <div class="studio-grid" style="margin-top:1px;">
+        <div class="studio-cell">
+          <div class="param-label">方向性修正 — 加分
+            <span class="tip">i<span class="tip-popup">互補分工時（收入高者時數少），給予 φ 加分。預設 0.1。數值越高代表你認為互補分工的紅利越大。</span></span>
+          </div>
+          <div class="param-name">互補係數<br><span style="font-size:11px;color:var(--text-muted);">complementary bonus × ?</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="comp_coef" min="0" max="0.5" value="0.1" step="0.01" oninput="cm_updateSlider('comp_coef','cc_val',2,'',0.1,'cc_delta')">
+              <div class="tick-default" id="tick_comp" style="left:20%;"></div>
+            </div>
+            <span class="slider-val" id="cc_val">0.10</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 0.10</span>
+            <span class="delta-val zero" id="cc_delta">± 0.00</span>
+          </div>
+        </div>
+        <div class="studio-cell studio-tint">
+          <div class="param-label" style="color:var(--red);">方向性修正 — 扣分
+            <span class="tip" style="border-color:var(--red);color:var(--red);">i<span class="tip-popup">單邊過載時（收入高者時數也多），對 φ 懲罰。預設 0.4。數值越高代表你認為單邊過載的破壞力越強。</span></span>
+          </div>
+          <div class="param-name">過載懲罰<br><span style="font-size:11px;color:var(--text-muted);">overload penalty × ?</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="overload_coef" min="0.05" max="0.9" value="0.4" step="0.01" oninput="cm_updateSlider('overload_coef','oc_val',2,'',0.4,'oc_delta')" class="studio-range" style="--webkit-slider-thumb-bg:var(--red);">
+              <div class="tick-default" id="tick_overload" style="left:42%;"></div>
+            </div>
+            <span class="slider-val" id="oc_val" style="color:var(--red);">0.40</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 0.40</span>
+            <span class="delta-val zero" id="oc_delta">± 0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- F_gap / F_base 權重區 -->
+      <div style="height:1px;background:var(--border);margin:0;"></div>
+      <div class="studio-grid" style="margin-top:1px;">
+        <div class="studio-cell">
+          <div class="param-label" style="color:var(--orange);">F 軸 — 差距維度
+            <span class="tip" style="border-color:var(--orange);color:var(--orange);">i<span class="tip-popup">F_gap 捕捉雙方家境差距的價值觀摩擦。預設 70%。調高代表你認為差距問題比資源匱乏更傷關係。</span></span>
+          </div>
+          <div class="param-name">F_gap 差距摩擦<br><span style="font-size:11px;color:var(--text-muted);">佔 F 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="f_gap_w" min="10" max="90" value="70" step="5" oninput="cm_onFGapWeight(this.value)" class="studio-range" style="">
+              <div class="tick-default" style="left:75%;background:var(--orange);"></div>
+            </div>
+            <span class="slider-val" id="fg_val" style="color:var(--orange);">70%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 70%</span>
+            <span class="delta-val zero" id="fg_delta">± 0%</span>
+          </div>
+        </div>
+        <div class="studio-cell studio-tint">
+          <div class="param-label" style="color:var(--blue);">F 軸 — 匱乏維度
+            <span class="tip" style="border-color:var(--blue);color:var(--blue);">i<span class="tip-popup">F_base 捕捉雙方絕對資源不足的生存壓力。預設 30%。調高代表你認為「一起窮」的壓力比差距更大。兩者加總鎖定 100%。</span></span>
+          </div>
+          <div class="param-name">F_base 資源匱乏<br><span style="font-size:11px;color:var(--text-muted);">佔 F 的比重</span></div>
+          <div class="slider-row">
+            <div class="slider-wrap">
+              <input type="range" id="f_base_w" min="10" max="90" value="30" step="5" oninput="cm_onFBaseWeight(this.value)">
+              <div class="tick-default" style="left:25%;"></div>
+            </div>
+            <span class="slider-val" id="fb_val" style="color:var(--blue);">30%</span>
+          </div>
+          <div class="delta-row">
+            <span class="delta-label">vs 預設 30%</span>
+            <span class="delta-val zero" id="fb_delta">± 0%</span>
+          </div>
+        </div>
+      </div>
+      <!-- F 權重視覺條 -->
+      <div class="weight-lock">
+        <span class="weight-lock-label">F 權重分配</span>
+        <div style="flex:1;">
+          <div class="weight-bar-track">
+            <div class="weight-bar-fill" id="wf_gap" style="width:70%;background:var(--orange);"></div>
+            <div class="weight-bar-rest" id="wf_base" style="width:30%;background:var(--blue);left:auto;right:0;"></div>
+          </div>
+          <div class="weight-labels">
+            <span class="weight-label-text" id="wf_gl" style="color:var(--orange);">F_gap 70%</span>
+            <span class="weight-label-text" id="wf_bl" style="color:var(--blue);">F_base 30%</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 22px 14px;background:var(--surface);border-top:1px solid var(--border);">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.08em;">
+          F_gap = |自己等級²−對方等級²| / 100 &nbsp;·&nbsp; F_base = (自己等級+對方等級) / 20 &nbsp;·&nbsp; F = min(1, F_gap×w_gap + F_base×w_base)
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SECTION 02: 資料輸入 ── -->
+  <div class="sec" style="margin-top:2px;">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-num">02</span>
+        <span class="sec-title">資料輸入</span>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="input-grid" style="margin-bottom:14px;">
+        <div class="input-group"><span class="input-label">項目</span></div>
+        <div class="input-group"><span class="input-label">自己</span></div>
+        <div class="input-group"><span class="input-label">對方</span></div>
+      </div>
+      <div class="input-grid" style="margin-bottom:10px;">
+        <div class="input-group"><span class="input-label">月收入</span><span class="input-sublabel">萬元／月</span></div>
+        <input type="number" id="cm_income_self" placeholder="例：8" min="0" step="0.1">
+        <input type="number" id="cm_income_other" placeholder="例：3" min="0" step="0.1">
+      </div>
+      <div class="input-grid" style="margin-bottom:10px;">
+        <div class="input-group"><span class="input-label">每週勞動時數</span><span class="input-sublabel">工作＋家務＋照顧</span></div>
+        <input type="number" id="cm_hours_self" placeholder="例：55" min="0" max="168" step="1">
+        <input type="number" id="cm_hours_other" placeholder="例：30" min="0" max="168" step="1">
+      </div>
+      <div class="input-grid" style="margin-bottom:10px;">
+        <div class="input-group"><span class="input-label">年齡</span><span class="input-sublabel">實際歲數（≥16）</span></div>
+        <input type="number" id="cm_age_self" placeholder="例：32" min="16" step="1">
+        <input type="number" id="cm_age_other" placeholder="例：28" min="16" step="1">
+      </div>
+      <div class="f-ref">
+        <div class="f-ref-toggle" onclick="cm_toggleFRef()">
+          <span class="f-ref-label">家境等級對照表 ▾</span>
+          <span class="f-ref-arrow" id="cm_f_arrow">▾</span>
+        </div>
+        <div class="f-ref-body" id="cm_f_ref_body">
+          <div class="f-ref-grid">
+            <div class="f-ref-cell"><div class="f-ref-grade">1 級</div><div class="f-ref-amt">&gt;3,391萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">2 級</div><div class="f-ref-amt">≈3,391萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">3 級</div><div class="f-ref-amt">≈2,134萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">4 級</div><div class="f-ref-amt">≈1,547萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">5 級</div><div class="f-ref-amt">≈1,171萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">6 級</div><div class="f-ref-amt">≈894萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">7 級</div><div class="f-ref-amt">≈677萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">8 級</div><div class="f-ref-amt">≈490萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">9 級</div><div class="f-ref-amt">≈319萬</div></div>
+            <div class="f-ref-cell"><div class="f-ref-grade">10 級</div><div class="f-ref-amt">&lt;143萬</div></div>
+          </div>
+          <div class="f-ref-note">1 級最富，10 級最低。填入最接近自身家庭狀況的整數等級。資料來源：行政院主計總處。</div>
+        </div>
+      </div>
+      <div class="input-grid" style="margin-bottom:6px;">
+        <div class="input-group"><span class="input-label">家境等級<span class="optional-badge">選填</span></span><span class="input-sublabel">1=最富 10=最低</span></div>
+        <input type="number" id="cm_f_self" placeholder="1–10" min="1" max="10" step="1" class="optional">
+        <input type="number" id="cm_f_other" placeholder="1–10" min="1" max="10" step="1" class="optional">
+      </div>
+      <button class="calc-btn" onclick="cm_calculate()">▸ 執行對照診斷</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 03: 對照診斷結果 ── -->
+  <div class="result-section" id="cm_result_section" style="margin-top:2px;">
+
+    <div class="sec-head" style="margin-bottom:1px;">
+      <div class="sec-head-left">
+        <span class="sec-num">03</span>
+        <span class="sec-title">對照診斷結果</span>
+      </div>
+    </div>
+
+    <!-- col headers -->
+    <div class="dual-head">
+      <div class="dual-col-head canonical">
+        <div class="dual-col-tag c">官方模型 — Canonical</div>
+        <div class="dual-col-desc">DSBM v3.0 預設參數</div>
+      </div>
+      <div class="dual-col-head custom">
+        <div class="dual-col-tag s">你的模型 — Custom</div>
+        <div class="dual-col-desc" id="custom_param_desc">—</div>
+      </div>
+    </div>
+
+    <!-- φ display -->
+    <div class="dual-phi">
+      <div class="phi-col canonical">
+        <div class="phi-axis-label">第一軸 — φ</div>
+        <div class="phi-num" id="c_phi">—</div>
+        <div class="phi-status-text" id="c_phi_status">—</div>
+        <div class="phi-w" id="c_w">W = —</div>
+      </div>
+      <div class="phi-col custom">
+        <div class="phi-axis-label" style="color:var(--studio);">第一軸 — φ (custom)</div>
+        <div class="phi-num" id="u_phi">—</div>
+        <div class="phi-status-text" id="u_phi_status">—</div>
+        <div class="phi-w" id="u_w">W = —</div>
+      </div>
+    </div>
+
+    <!-- A & F axes -->
+    <div class="dual-axes">
+      <div class="axis-pair canonical">
+        <div class="ap-label">軸 A · F（A 共用；F 受權重影響）</div>
+        <div class="ap-row"><span class="ap-key">A 年齡背景</span><span class="ap-val" id="c_a">—</span></div>
+        <div class="ap-row"><span class="ap-key">A 狀態</span><span class="ap-val" id="c_a_status">—</span></div>
+        <div class="ap-row" id="c_f_row"><span class="ap-key">F 官方</span><span class="ap-val" id="c_f">—</span></div>
+        <div class="ap-row" id="c_f_status_row"><span class="ap-key">F 官方狀態</span><span class="ap-val" id="c_f_status">—</span></div>
+        <div class="ap-row" id="c_f_custom_row"><span class="ap-key">F custom</span><span class="ap-val" id="c_f_custom">—</span></div>
+        <div class="ap-row" id="c_f_custom_status_row"><span class="ap-key">F custom 狀態</span><span class="ap-val" id="c_f_custom_status">—</span></div>
+      </div>
+      <div class="axis-pair custom">
+        <div class="ap-label" style="color:var(--studio);">φ 分解對照</div>
+        <div class="ap-row"><span class="ap-key">φ_money (官方)</span><span class="ap-val" id="c_pm">—</span></div>
+        <div class="ap-row"><span class="ap-key">φ_money (custom)</span><span class="ap-val" id="u_pm">—</span></div>
+        <div class="ap-row"><span class="ap-key">φ_time (官方)</span><span class="ap-val" id="c_pt">—</span></div>
+        <div class="ap-row"><span class="ap-key">φ_time (custom)</span><span class="ap-val" id="u_pt">—</span></div>
+        <div class="ap-row"><span class="ap-key">方向類型</span><span class="ap-val" id="dir_label">—</span></div>
+        <div class="ap-row"><span class="ap-key">修正值 (官方)</span><span class="ap-val" id="c_adj">—</span></div>
+        <div class="ap-row"><span class="ap-key">修正值 (custom)</span><span class="ap-val" id="u_adj">—</span></div>
+      </div>
+    </div>
+
+    <!-- delta indicator -->
+    <div class="delta-indicator">
+      <span class="di-label">參數偏移</span>
+      <div class="di-chips" id="delta_chips">—</div>
+    </div>
+
+    <!-- cross diagnosis -->
+    <div class="cross-row">
+      <div class="cross-cell canonical">
+        <div class="cross-tag-diag" id="c_cross_tag">—</div>
+        <div class="cross-desc-diag" id="c_cross_desc">—</div>
+      </div>
+      <div class="cross-cell custom">
+        <div class="cross-tag-diag" id="u_cross_tag" style="color:var(--studio);">—</div>
+        <div class="cross-desc-diag" id="u_cross_desc">—</div>
+      </div>
+    </div>
+
+    <!-- S -->
+    <div class="s-strip">
+      <div class="s-strip-title">S — 月收入合計（背景參考）</div>
+      <div class="s-strip-val" id="s_val">—</div>
+      <div class="s-strip-ctx" id="s_ctx">—</div>
+    </div>
+
+    <!-- breakdown -->
+    <div class="breakdown-dual">
+      <div class="breakdown-col">
+        <div class="bd-title">計算明細 — 官方</div>
+        <div class="bd-row"><span class="bd-key">φ_money</span><span class="bd-val" id="bd_c_pm">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ_time</span><span class="bd-val" id="bd_c_pt">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 原始</span><span class="bd-val" id="bd_c_raw">—</span></div>
+        <div class="bd-row"><span class="bd-key">修正值</span><span class="bd-val" id="bd_c_adj">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 最終</span><span class="bd-val" id="bd_c_phi">—</span></div>
+        <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_c_w">—</span></div>
+      </div>
+      <div class="breakdown-col custom-bd">
+        <div class="bd-title" style="color:var(--studio);">計算明細 — Custom</div>
+        <div class="bd-row"><span class="bd-key">φ_money (w=<span id="bd_wm">—</span>)</span><span class="bd-val" id="bd_u_pm">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ_time (w=<span id="bd_wt">—</span>)</span><span class="bd-val" id="bd_u_pt">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 原始</span><span class="bd-val" id="bd_u_raw">—</span></div>
+        <div class="bd-row"><span class="bd-key">修正值</span><span class="bd-val" id="bd_u_adj">—</span></div>
+        <div class="bd-row"><span class="bd-key">φ 最終</span><span class="bd-val" id="bd_u_phi">—</span></div>
+        <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_u_w">—</span></div>
+      </div>
+    </div>
+
+    <!-- F breakdown (shown only if F data provided) -->
+    <div class="breakdown-dual" id="f_bd_section" style="margin-top:1px;display:none;">
+      <div class="breakdown-col">
+        <div class="bd-title" style="color:var(--orange);">F 計算明細 — 官方 (gap 70% · base 30%)</div>
+        <div class="bd-row"><span class="bd-key">F_gap</span><span class="bd-val" id="bd_c_fgap">—</span></div>
+        <div class="bd-row"><span class="bd-key">F_base</span><span class="bd-val" id="bd_c_fbase">—</span></div>
+        <div class="bd-row"><span class="bd-key">F 最終</span><span class="bd-val" id="bd_c_f">—</span></div>
+      </div>
+      <div class="breakdown-col custom-bd">
+        <div class="bd-title" style="color:var(--orange);">F 計算明細 — Custom (gap <span id="bd_fg_w">—</span> · base <span id="bd_fb_w">—</span>)</div>
+        <div class="bd-row"><span class="bd-key">F_gap</span><span class="bd-val" id="bd_u_fgap">—</span></div>
+        <div class="bd-row"><span class="bd-key">F_base</span><span class="bd-val" id="bd_u_fbase">—</span></div>
+        <div class="bd-row"><span class="bd-key">F 最終</span><span class="bd-val" id="bd_u_f">—</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SECTION 04: 意見回報 ── -->
+  <div class="sec" style="margin-top:2px;">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-num">04</span>
+        <span class="sec-title">意見回報</span>
+      </div>
+    </div>
+    <div class="sec-body" style="padding:0;">
+      <div class="fb-grid">
+        <div class="fb-cell">
+          <div class="fb-q">診斷結果符合你的感受嗎？</div>
+          <div class="fb-options">
+            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="符合"> <span class="fb-opt-label">符合</span></label>
+            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="部分符合"> <span class="fb-opt-label">部分符合</span></label>
+            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="不符合"> <span class="fb-opt-label">不符合</span></label>
+          </div>
+        </div>
+        <div class="fb-cell">
+          <div class="fb-q">哪個軸你覺得最不準？</div>
+          <div class="fb-options">
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="φ（貢獻對稱）"> <span class="fb-opt-label">φ 貢獻對稱</span></label>
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="A（年齡背景）"> <span class="fb-opt-label">A 年齡背景</span></label>
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="F（家境背景）"> <span class="fb-opt-label">F 家境背景</span></label>
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="方向性修正"> <span class="fb-opt-label">方向性修正</span></label>
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="都還好"> <span class="fb-opt-label">都還好</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="sec-body" style="border-top:1px solid var(--border);padding:16px 20px;">
+        <div class="fb-q" style="margin-bottom:8px;">補充說明（選填）</div>
+        <textarea class="fb-text" id="fb_text" placeholder="例：我認為時間的權重應該更高，因為在我的關係裡..."></textarea>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:1px;">
+      <button class="copy-btn" id="copy_btn" onclick="cm_copyFeedback()">▸ 複製回報內容</button>
+      <button class="copy-btn" id="mail_btn" onclick="cm_mailFeedback()" style="border-left:none;color:var(--accent);border-color:var(--accent);">▸ 寄出意見回報</button>
+    </div>
+  </div>
+
+  <div class="note">
+    本頁為 DSBM v3.1 自定義模式（Custom Mode）。官方模型參數：φ_money:φ_time = 50:50、互補係數 0.1、過載懲罰 0.4、F_gap:F_base = 70:30。F 軸採 v3.1 公式，修正雙方同為 10 級時 F=0 的問題（現為 30%）。A 軸在兩種模式下完全相同。結果僅供結構性參考。
+  </div>
+  <div class="version">DSBM v3.1 — Custom Mode · 獨立版 Beta</div>
+
+</div>
+  </div>
+</div>
 </body>
 </html>
