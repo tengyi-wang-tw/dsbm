@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" id="html-root">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -553,6 +553,30 @@
     .f-ref-grid{grid-template-columns:repeat(2,1fr);}
     .tip-popup{left:auto;right:20px;}
   }
+
+  /* ── WORD BREAK for English ── */
+  html[lang^="en"] .prose, html[lang^="en"] .report-text, html[lang^="en"] .cross-desc,
+  html[lang^="en"] .cross-desc-diag, html[lang^="en"] .quad-desc, html[lang^="en"] .axis-card-desc,
+  html[lang^="en"] .s-box-context, html[lang^="en"] .s-strip-ctx, html[lang^="en"] .callout,
+  html[lang^="en"] .note, html[lang^="en"] .doc-table td, html[lang^="en"] .breakdown-key,
+  html[lang^="en"] .breakdown-val, html[lang^="en"] .bd-key, html[lang^="en"] .bd-val,
+  html[lang^="en"] .ap-key, html[lang^="en"] .ap-val, html[lang^="en"] .param-name,
+  html[lang^="en"] .home-nav-sub, html[lang^="en"] .cover-desc, html[lang^="en"] .toc-text,
+  html[lang^="en"] .matrix-caption, html[lang^="en"] .f-ref-note, html[lang^="en"] .f-ref-amt {
+    word-break: break-word; overflow-wrap: break-word;
+  }
+  /* ── LANG TOGGLE BUTTON ── */
+  .lang-toggle-btn {
+    font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);
+    background:none;border:1px solid var(--border2);
+    padding:4px 9px;cursor:pointer;letter-spacing:.08em;
+    transition:border-color .15s,color .15s;margin-left:6px;
+    vertical-align:middle;
+  }
+  .lang-toggle-btn:hover{border-color:var(--text-dim);color:var(--text);}
+  /* ── DUAL-LANG SPANS ── */
+  html[lang^="en"] .zh{display:none!important;}
+  html[lang^="zh"] .en{display:none!important;}
 </style>
 </head>
 <body>
@@ -561,32 +585,32 @@
 <nav class="spa-nav">
   <span class="spa-nav-brand">DSBM</span>
   <div class="spa-nav-links">
-    <button class="spa-nav-btn active" onclick="showPage('home')" id="nav-home">首頁</button>
-    <button class="spa-nav-btn" onclick="showPage('tool')" id="nav-tool">診斷</button>
-    <button class="spa-nav-btn" onclick="showPage('manual')" id="nav-manual">說明</button>
-    <button class="spa-nav-btn" onclick="showPage('game')" id="nav-game">模擬</button>
-    <button class="spa-nav-btn" onclick="showPage('custom')" id="nav-custom" style="color:var(--studio);">自訂</button>
-    <button class="spa-nav-btn" onclick="showPage('timeline')" id="nav-timeline" style="color:var(--blue);">時間軸<span id="tl-nav-badge" style="font-size:8px;margin-left:3px;color:var(--text-muted);"></span></button>
+    <button class="spa-nav-btn active" onclick="showPage('home')" id="nav-home"><span class="zh">首頁</span><span class="en">Home</span></button>
+    <button class="spa-nav-btn" onclick="showPage('tool')" id="nav-tool"><span class="zh">診斷</span><span class="en">Diagnose</span></button>
+    <button class="spa-nav-btn" onclick="showPage('manual')" id="nav-manual"><span class="zh">說明</span><span class="en">Manual</span></button>
+    <button class="spa-nav-btn" onclick="showPage('game')" id="nav-game"><span class="zh">模擬</span><span class="en">Stories</span></button>
+    <button class="spa-nav-btn" onclick="showPage('custom')" id="nav-custom" style="color:var(--studio);"><span class="zh">自訂</span><span class="en">Custom</span></button>
+    <button class="spa-nav-btn" onclick="showPage('timeline')" id="nav-timeline" style="color:var(--blue);"><span class="zh">時間軸</span><span class="en">Timeline</span><span id="tl-nav-badge" style="font-size:8px;margin-left:3px;color:var(--text-muted);"></span></button>
   </div>
+
+  <button class="lang-toggle-btn" id="lang-btn" onclick="toggleLang()" title="Switch language">EN</button>
 </nav>
 
 <!-- HOME PAGE -->
 <div class="spa-page active" id="page-home">
   <div class="home-container">
     <div class="home-sys-tag">System Portal</div>
-    <div class="home-title-en">Dyadic Symmetry-Bottleneck Model</div>
-    <h1 class="home-title-zh">二元對稱瓶頸模型</h1>
+    <div class="home-title-en"><span class="zh">Dyadic Symmetry-Bottleneck Model</span><span class="en">Dyadic Symmetry-Bottleneck Model</span></div>
+    <h1 class="home-title-zh"><span class="zh">二元對稱瓶頸模型</span><span class="en">Dyadic Symmetry-Bottleneck Model</span></h1>
     <p class="home-desc">
-      一個用於評估二元關係結構健康程度的診斷系統。<br>
-      它不測量情感滿意度，也不對關係做出價值判斷——<br>
-      它只測量<strong style="color:#e0e0e0;font-weight:400;">結構</strong>。
+      <span class="zh">一個用於評估二元關係結構健康程度的診斷系統。<br>它不測量情感滿意度，也不對關係做出價值判斷——<br>它只測量<strong style="color:#e0e0e0;font-weight:400;">結構</strong>。</span><span class="en">A diagnostic system for evaluating the structural health of dyadic relationships.<br>It does not measure emotional satisfaction or make value judgments—<br>it only measures <strong style="color:#e0e0e0;font-weight:400;">structure</strong>.</span>
     </p>
     <div class="home-nav">
       <button class="home-nav-item" onclick="showPage('tool')">
         <span class="home-nav-num">01</span>
         <div class="home-nav-info">
-          <div class="home-nav-title">關係結構診斷工具</div>
-          <div class="home-nav-sub">輸入收入、勞動時數、年齡、家境等級，生成 φ · A · F 三軸結構診斷與座標矩陣</div>
+          <div class="home-nav-title"><span class="zh">關係結構診斷工具</span><span class="en">Relationship Structure Diagnostic</span></div>
+          <div class="home-nav-sub"><span class="zh">輸入收入、勞動時數、年齡、家境等級，生成 φ · A · F 三軸結構診斷與座標矩陣</span><span class="en">Enter income, labor hours, age, and wealth tier to generate φ · A · F three-axis diagnosis and coordinate matrix</span></div>
         </div>
         <span class="home-nav-tag tag-tool">TOOL</span>
         <span class="home-nav-arrow">→</span>
@@ -594,8 +618,8 @@
       <button class="home-nav-item" onclick="showPage('manual')">
         <span class="home-nav-num">02</span>
         <div class="home-nav-info">
-          <div class="home-nav-title">使用說明書</div>
-          <div class="home-nav-sub">模型設計邏輯、公式推導、診斷區間說明與版本更新紀錄</div>
+          <div class="home-nav-title"><span class="zh">使用說明書</span><span class="en">User Manual</span></div>
+          <div class="home-nav-sub"><span class="zh">模型設計邏輯、公式推導、診斷區間說明與版本更新紀錄</span><span class="en">Model design rationale, formula derivation, diagnostic ranges, and version history</span></div>
         </div>
         <span class="home-nav-tag tag-doc">DOC</span>
         <span class="home-nav-arrow">→</span>
@@ -603,8 +627,8 @@
       <button class="home-nav-item" onclick="showPage('game')">
         <span class="home-nav-num">03</span>
         <div class="home-nav-info">
-          <div class="home-nav-title">結構敘事模擬</div>
-          <div class="home-nav-sub">三個案例，三條軸線。你的選擇將被記錄，並在最後生成行為結構分析報告</div>
+          <div class="home-nav-title"><span class="zh">結構敘事模擬</span><span class="en">Structural Narrative Simulation</span></div>
+          <div class="home-nav-sub"><span class="zh">三個案例，三條軸線。你的選擇將被記錄，並在最後生成行為結構分析報告</span><span class="en">Three relationships. Three axes. Your choices shape the outcome — and generate a behavioral structure report.</span></div>
         </div>
         <span class="home-nav-tag tag-game">GAME</span>
         <span class="home-nav-arrow">→</span>
@@ -612,8 +636,8 @@
       <button class="home-nav-item" onclick="showPage('custom')">
         <span class="home-nav-num">04</span>
         <div class="home-nav-info">
-          <div class="home-nav-title">參數工作室 — 自訂模式</div>
-          <div class="home-nav-sub">調整 φ 權重、互補係數、過載懲罰與 F 軸比重，與官方模型並排對照，探索你的診斷價值觀</div>
+          <div class="home-nav-title"><span class="zh">參數工作室 — 自訂模式</span><span class="en">Parameter Studio — Custom Mode</span></div>
+          <div class="home-nav-sub"><span class="zh">調整 φ 權重、互補係數、過載懲罰與 F 軸比重，與官方模型並排對照，探索你的診斷價值觀</span><span class="en">Adjust φ weights, complementary coefficient, overload penalty, and F-axis ratio; compare side-by-side with the canonical model</span></div>
         </div>
         <span class="home-nav-tag" style="color:var(--studio);border-color:rgba(255,157,92,0.3);">CUSTOM</span>
         <span class="home-nav-arrow">→</span>
@@ -622,17 +646,16 @@
       <button class="home-nav-item" onclick="showPage('timeline')">
         <span class="home-nav-num">05</span>
         <div class="home-nav-info">
-          <div class="home-nav-title">結構時間軸</div>
-          <div class="home-nav-sub">追蹤 φ · A · F 三軸隨時間的變化，觀察關係結構的漂移趨勢</div>
+          <div class="home-nav-title"><span class="zh">結構時間軸</span><span class="en">Structure Timeline</span></div>
+          <div class="home-nav-sub"><span class="zh">追蹤 φ · A · F 三軸隨時間的變化，觀察關係結構的漂移趨勢</span><span class="en">Track how φ · A · F evolve over time and visualize structural drift trends</span></div>
         </div>
         <span class="home-nav-tag" style="color:var(--blue);border-color:rgba(96,184,240,0.3);">TIMELINE</span>
         <span class="home-nav-arrow">→</span>
       </button>
     </div>
     <div class="home-footer">
-      <div class="home-footer-note">本系統基於 DSBM v3.1<br>結果僅供結構性參考，不代表任何關係判決</div>
+      <div class="home-footer-note"><span class="zh">本系統基於 DSBM v3.1<br>結果僅供結構性參考，不代表任何關係判決</span><span class="en">Based on DSBM v3.1 · Results are structural reference only</span></div>
       <div class="home-footer-ver">DSBM v3.1<br>Beta</div>
-    </div>
   </div>
 </div>
 
@@ -643,43 +666,42 @@
 
   <header>
     <div class="label-tag">DSBM v3.1 — Dyadic Symmetry-Bottleneck Model</div>
-    <h1>二元對稱瓶頸模型<br>關係結構診斷工具</h1>
+    <h1><span class="zh">二元對稱瓶頸模型<br>關係結構診斷工具</span><span class="en">Relationship Structure<br>Diagnostic Tool</span></h1>
     <p class="subtitle">
-      φ 貢獻對稱係數（含方向性修正）· A 年齡背景內耗比 · F 家境背景內耗比（選填）<br>
-      S 月收入合計為背景參考，不影響任何診斷指標。本工具不測量情感滿意度。
+      <span class="zh">φ 貢獻對稱係數（含方向性修正）· A 年齡背景內耗比 · F 家境背景內耗比（選填）<br>S 月收入合計為背景參考，不影響任何診斷指標。本工具不測量情感滿意度。</span><span class="en">φ Contribution Symmetry Coefficient (with directional correction) · A Age Background Friction · F Wealth Background Friction (optional)<br>S (combined monthly income) is background reference only. This tool does not measure emotional satisfaction.</span>
     </p>
   </header>
 
   <div class="section">
-    <div class="section-title">01 資料輸入</div>
+    <div class="section-title"><span class="zh">01 資料輸入</span><span class="en">01 Data Input</span></div>
     <div class="input-grid" style="margin-bottom:14px;">
-      <div class="input-group"><span class="input-label" style="color:var(--text-muted);">項目</span></div>
-      <div class="input-group"><span class="input-label">自己</span></div>
-      <div class="input-group"><span class="input-label">對方</span></div>
+      <div class="input-group"><span class="input-label" style="color:var(--text-muted);"><span class="zh">項目</span><span class="en">Field</span></span></div>
+      <div class="input-group"><span class="input-label"><span class="zh">自己</span><span class="en">Self</span></span></div>
+      <div class="input-group"><span class="input-label"><span class="zh">對方</span><span class="en">Partner</span></span></div>
     </div>
     <div class="input-grid">
-      <div class="input-group"><span class="input-label">月收入</span><span class="input-sublabel">萬元／月</span></div>
+      <div class="input-group"><span class="input-label"><span class="zh">月收入</span><span class="en">Monthly Income</span></span><span class="input-sublabel"><span class="zh">萬元／月</span><span class="en">$K / month</span></span></div>
       <div class="input-group"><input type="number" id="income_self" placeholder="例：8" min="0" step="0.1"></div>
       <div class="input-group"><input type="number" id="income_other" placeholder="例：3" min="0" step="0.1"></div>
     </div>
     <div class="input-grid" style="margin-top:10px;">
-      <div class="input-group"><span class="input-label">每週勞動時數</span><span class="input-sublabel">工作＋家務＋照顧</span></div>
+      <div class="input-group"><span class="input-label"><span class="zh">每週勞動時數</span><span class="en">Weekly Labor Hours</span></span><span class="input-sublabel"><span class="zh">工作＋家務＋照顧</span><span class="en">work + housework + caregiving</span></span></div>
       <div class="input-group"><input type="number" id="hours_self" placeholder="例：10" min="0" max="168" step="1"></div>
       <div class="input-group"><input type="number" id="hours_other" placeholder="例：30" min="0" max="168" step="1"></div>
     </div>
     <div class="input-grid" style="margin-top:10px;">
-      <div class="input-group"><span class="input-label">年齡</span><span class="input-sublabel">實際歲數（≥16）</span></div>
+      <div class="input-group"><span class="input-label"><span class="zh">年齡</span><span class="en">Age</span></span><span class="input-sublabel"><span class="zh">實際歲數（≥16）</span><span class="en">actual age (≥16)</span></span></div>
       <div class="input-group"><input type="number" id="age_self" placeholder="例：32" min="16" step="1"></div>
       <div class="input-group"><input type="number" id="age_other" placeholder="例：28" min="16" step="1"></div>
     </div>
     <div class="input-grid" style="margin-top:10px;margin-bottom:4px;">
-      <div class="input-group"><span class="input-label">家境等級<span class="optional-badge">選填</span></span><span class="input-sublabel">1=最富　10=最低</span></div>
+      <div class="input-group"><span class="input-label"><span class="zh">家境等級</span><span class="en">Wealth Tier</span><span class="optional-badge"><span class="zh">選填</span><span class="en">Optional</span></span></span><span class="input-sublabel"><span class="zh">1=最富　10=最低</span><span class="en">1=wealthiest · 10=lowest</span></span></div>
       <div class="input-group"><input type="number" id="grade_self" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
       <div class="input-group"><input type="number" id="grade_other" placeholder="1–10" min="1" max="10" step="1" class="optional"></div>
     </div>
     <div class="f-ref">
       <div class="f-ref-toggle" onclick="toggleRef()">
-        <span class="f-ref-label">家境等級對照表（主計處）</span>
+        <span class="f-ref-label"><span class="zh">家境等級對照表（主計處）</span><span class="en">Wealth Tier Reference (US Fed SCF)</span></span>
         <span class="f-ref-arrow" id="ref-arrow">▾</span>
       </div>
       <div class="f-ref-body" id="ref-body">
@@ -695,17 +717,17 @@
           <div class="f-ref-cell"><div class="f-ref-grade">9 級</div><div class="f-ref-amt">≈319萬</div></div>
           <div class="f-ref-cell"><div class="f-ref-grade">10 級</div><div class="f-ref-amt">&lt;143萬</div></div>
         </div>
-        <div class="f-ref-note">兩欄均填寫時才啟動 F 軸計算。填入最接近自身家庭狀況的整數等級。</div>
+        <div class="f-ref-note"><span class="zh">兩欄均填寫時才啟動 F 軸計算。填入最接近自身家庭狀況的整數等級。</span><span class="en">F-axis activates when both fields are filled. Enter the tier closest to your family of origin's net worth.</span></div>
       </div>
     </div>
-    <button class="btn" onclick="calculate()">▸ 執行診斷</button>
+    <button class="btn" onclick="calculate()"><span class="zh">▸ 執行診斷</span><span class="en">▸ Run Diagnosis</span></button>
   </div>
 
   <div class="result-box" id="result">
 
     <!-- SVG矩陣：用viewBox，完全不依賴DOM尺寸 -->
     <div class="matrix-wrapper">
-      <div class="matrix-title">結構座標矩陣 — φ · A · F 三軸定位</div>
+      <div class="matrix-title"><span class="zh">結構座標矩陣 — φ · A · F 三軸定位</span><span class="en">Structure Coordinate Matrix — φ · A · F Three-Axis Positioning</span></div>
       <!--
         viewBox座標系：720×360
         繪圖區：x=60~700, y=30~330  (plotW=640, plotH=300)
@@ -774,18 +796,18 @@
         </g>
       </svg>
       <div class="matrix-caption">Bubble position: φ (x, right=symmetric) · A (y, up=risk) · Bubble size: F gap · Dashed circle = F not provided</div>
-      <div class="matrix-caption" style="margin-top:5px;color:#484848;">泡泡大小代表家境差距（F 軸）——視覺上刻意放大，因為家境對價值觀的影響往往比薪資或年齡更深遠，但屬於個人隱私，故設計為選填。越大越不穩定，如同充氣越足的氣球，越容易在外部壓力下破裂。</div>
+      <div class="matrix-caption" style="margin-top:5px;color:#484848;"><span class="zh">泡泡大小代表家境差距（F 軸）——視覺上刻意放大，因為家境對價值觀的影響往往比薪資或年齡更深遠，但屬於個人隱私，故設計為選填。越大越不穩定，如同充氣越足的氣球，越容易在外部壓力下破裂。</span><span class="en">Bubble size represents the wealth gap (F-axis) — deliberately enlarged, as family background shapes values more deeply than salary or age, yet it is personal, hence optional. Larger = more unstable, like an over-inflated balloon.</span></div>
     </div>
 
     <div class="axes-row">
       <div class="axis-card">
-        <div class="axis-meta-label">第一軸 — 貢獻對稱係數</div>
+        <div class="axis-meta-label"><span class="zh">第一軸 — 貢獻對稱係數</span><span class="en">Axis 1 — Contribution Symmetry</span></div>
         <div class="axis-num" id="phi_display">—</div>
         <div class="axis-status" id="phi_status">—</div>
         <div class="axis-sub" id="w_label">W = —</div>
       </div>
       <div class="axis-card">
-        <div class="axis-meta-label">第二軸 — 年齡背景內耗比</div>
+        <div class="axis-meta-label"><span class="zh">第二軸 — 年齡背景內耗比</span><span class="en">Axis 2 — Age Background Friction</span></div>
         <div class="axis-num" id="a_display">—</div>
         <div class="axis-status" id="a_status">—</div>
         <div class="axis-sub" id="age_info">—</div>
@@ -793,7 +815,7 @@
     </div>
     <div id="f_card_row" style="display:none;margin-top:1px;">
       <div class="axis-card orange-top">
-        <div class="axis-meta-label" style="color:var(--orange);">第三軸 — 家境背景內耗比（選填）</div>
+        <div class="axis-meta-label" style="color:var(--orange);"><span class="zh">第三軸 — 家境背景內耗比（選填）</span><span class="en">Axis 3 — Wealth Background Friction (Optional)</span></div>
         <div class="axis-num" id="f_display" style="color:var(--orange);">—</div>
         <div class="axis-status" id="f_status">—</div>
         <div class="axis-sub" id="f_info">—</div>
@@ -803,17 +825,17 @@
     <div style="height:1px;background:var(--border);margin-top:1px;"></div>
     <div class="metrics-strip">
       <div class="metric-cell">
-        <div class="metric-name">φ_money</div>
+        <div class="metric-name"><span class="zh">φ_money</span><span class="en">φ_money</span></div>
         <div class="metric-val" id="phi_money">—</div>
-        <div class="metric-desc">收入對稱</div>
+        <div class="metric-desc"><span class="zh">收入對稱</span><span class="en">Income Symmetry</span></div>
       </div>
       <div class="metric-cell">
         <div class="metric-name">φ_time</div>
         <div class="metric-val" id="phi_time">—</div>
-        <div class="metric-desc">時間對稱</div>
+        <div class="metric-desc"><span class="zh">時間對稱</span><span class="en">Time Symmetry</span></div>
       </div>
       <div class="metric-cell">
-        <div class="metric-name">方向修正</div>
+        <div class="metric-name"><span class="zh">方向修正</span><span class="en">Direction Correction</span></div>
         <div class="metric-val" id="dir_type" style="font-size:14px;">—</div>
         <div class="metric-desc" id="dir_adj">—</div>
       </div>
@@ -826,7 +848,7 @@
     </div>
 
     <div class="s-box">
-      <div class="s-box-title">S — 月收入合計（背景參考）</div>
+      <div class="s-box-title"><span class="zh">S — 月收入合計（背景參考）</span><span class="en">S — Combined Monthly Income (background reference)</span></div>
       <div class="s-box-val" id="s_value">—</div>
       <div class="s-box-context" id="s_context">—</div>
     </div>
@@ -835,39 +857,39 @@
     <div class="report-text" id="report_text"></div>
 
     <div class="breakdown">
-      <div class="breakdown-title">計算明細 — 第一軸 φ</div>
-      <div class="breakdown-row"><span class="breakdown-key">自己收入</span><span class="breakdown-val" id="d_income_self">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">對方收入</span><span class="breakdown-val" id="d_income_other">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">自己時數</span><span class="breakdown-val" id="d_hours_self">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">對方時數</span><span class="breakdown-val" id="d_hours_other">—</span></div>
+      <div class="breakdown-title"><span class="zh">計算明細 — 第一軸 φ</span><span class="en">Calculation Details — Axis 1 φ</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">自己收入</span><span class="en">Self Income</span></span><span class="breakdown-val" id="d_income_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">對方收入</span><span class="en">Partner Income</span></span><span class="breakdown-val" id="d_income_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">自己時數</span><span class="en">Self Hours</span></span><span class="breakdown-val" id="d_hours_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">對方時數</span><span class="en">Partner Hours</span></span><span class="breakdown-val" id="d_hours_other">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">φ_money</span><span class="breakdown-val" id="d_phi_money">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">φ_time</span><span class="breakdown-val" id="d_phi_time">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">φ 原始</span><span class="breakdown-val" id="d_phi_raw">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">方向類型</span><span class="breakdown-val" id="d_dir_type">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">修正值</span><span class="breakdown-val" id="d_dir_adj">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">φ 最終</span><span class="breakdown-val" id="d_phi_final">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">φ 原始</span><span class="en">φ raw</span></span><span class="breakdown-val" id="d_phi_raw">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">方向類型</span><span class="en">Direction Type</span></span><span class="breakdown-val" id="d_dir_type">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">修正值</span><span class="en">Correction</span></span><span class="breakdown-val" id="d_dir_adj">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">φ 最終</span><span class="en">φ final</span></span><span class="breakdown-val" id="d_phi_final">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">W = 1 − φ</span><span class="breakdown-val" id="d_w">—</span></div>
     </div>
     <div class="breakdown" style="margin-top:16px;">
-      <div class="breakdown-title">計算明細 — 第二軸 A</div>
-      <div class="breakdown-row"><span class="breakdown-key">自己年齡</span><span class="breakdown-val" id="d_age_self">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">對方年齡</span><span class="breakdown-val" id="d_age_other">—</span></div>
+      <div class="breakdown-title"><span class="zh">計算明細 — 第二軸 A</span><span class="en">Calculation Details — Axis 2 A</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">自己年齡</span><span class="en">Self Age</span></span><span class="breakdown-val" id="d_age_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">對方年齡</span><span class="en">Partner Age</span></span><span class="breakdown-val" id="d_age_other">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">gap</span><span class="breakdown-val" id="d_gap">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">mean</span><span class="breakdown-val" id="d_mean">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">gap²</span><span class="breakdown-val" id="d_gap2">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">mean²</span><span class="breakdown-val" id="d_mean2">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">gap²/mean²</span><span class="breakdown-val" id="d_a_raw">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">A（cap後）</span><span class="breakdown-val" id="d_a_final">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">A（cap後）</span><span class="en">A (capped)</span></span><span class="breakdown-val" id="d_a_final">—</span></div>
     </div>
     <div class="breakdown" id="breakdown_f" style="margin-top:16px;display:none;">
-      <div class="breakdown-title" style="color:var(--orange);">計算明細 — 第三軸 F</div>
-      <div class="breakdown-row"><span class="breakdown-key">自己家境等級</span><span class="breakdown-val" id="d_grade_self">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">對方家境等級</span><span class="breakdown-val" id="d_grade_other">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">自己等級²</span><span class="breakdown-val" id="d_grade_self_sq">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">對方等級²</span><span class="breakdown-val" id="d_grade_other_sq">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">|自己²−對方²|</span><span class="breakdown-val" id="d_f_diff">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">F_gap = 差值/100</span><span class="breakdown-val" id="d_f_gap">—</span></div>
-      <div class="breakdown-row"><span class="breakdown-key">F_base = 平均等級/10</span><span class="breakdown-val" id="d_f_base">—</span></div>
+      <div class="breakdown-title" style="color:var(--orange);"><span class="zh">計算明細 — 第三軸 F</span><span class="en">Calculation Details — Axis 3 F</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">自己家境等級</span><span class="en">Self Wealth Tier</span></span><span class="breakdown-val" id="d_grade_self">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">對方家境等級</span><span class="en">Partner Wealth Tier</span></span><span class="breakdown-val" id="d_grade_other">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">自己等級²</span><span class="en">Self Tier²</span></span><span class="breakdown-val" id="d_grade_self_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key"><span class="zh">對方等級²</span><span class="en">Partner Tier²</span></span><span class="breakdown-val" id="d_grade_other_sq">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">|self²−partner²|</span><span class="breakdown-val" id="d_f_diff">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_gap = diff/100</span><span class="breakdown-val" id="d_f_gap">—</span></div>
+      <div class="breakdown-row"><span class="breakdown-key">F_base = avg tier/10</span><span class="breakdown-val" id="d_f_base">—</span></div>
       <div class="breakdown-row"><span class="breakdown-key">F = gap×0.7 + base×0.3</span><span class="breakdown-val" id="d_f_final">—</span></div>
     </div>
 
@@ -875,18 +897,18 @@
     <div class="tl-save-section">
       <div class="tl-save-title">儲存這次記錄</div>
       <div class="tl-save-row">
-        <input type="text" class="tl-save-note" id="tl_save_note" placeholder="備註（選填）：例如「換工作後」、「搬家前」">
-        <button class="tl-save-btn" onclick="tlSaveRecord()">▸ 儲存至時間軸</button>
+        <input type="text" class="tl-save-note" id="tl_save_note" class="zh-placeholder" placeholder="備註（選填）：例如「換工作後」、「搬家前」">
+        <button class="tl-save-btn" onclick="tlSaveRecord()"><span class="zh">▸ 儲存至時間軸</span><span class="en">▸ Save to Timeline</span></button>
       </div>
-      <div class="tl-save-confirm" id="tl_save_confirm">✓ 已儲存。切換至「時間軸」可查看歷史記錄。</div>
+      <div class="tl-save-confirm" id="tl_save_confirm"><span class="zh">✓ 已儲存。切換至「時間軸」可查看歷史記錄。</span><span class="en">✓ Saved. Switch to "Timeline" to view records.</span></div>
     </div>
 
   </div>
 
   <div class="note">
-    本工具基於二元對稱瓶頸模型（DSBM v3.0）。φ 含方向性修正，區分單邊過載與互補分工。A 使用 gap²/mean² 捕捉年齡差距的相對衝擊。F 為選填項，參考主計處家庭財富十等級（1 級最富，10 級最低）。S 不影響診斷。結果僅供結構性參考。
+    <span class="zh">本工具基於二元對稱瓶頸模型（DSBM v3.1）。φ 含方向性修正，區分單邊過載與互補分工。A 使用 gap²/mean² 捕捉年齡差距的相對衝擊。F 為選填項，參考主計處家庭財富十等級（1 級最富，10 級最低）。S 不影響診斷。結果僅供結構性參考。</span><span class="en">Based on the Dyadic Symmetry-Bottleneck Model (DSBM v3.1). φ includes directional correction distinguishing complementary division from unilateral overload. A uses gap²/mean² to capture the relative impact of age gaps. F is optional. S does not affect diagnosis. Results are structural reference only.</span>
   </div>
-  <div class="version">DSBM v3.1 — F 軸修正版 Beta</div>
+  <div class="version"><span class="zh">DSBM v3.1 — F 軸修正版 Beta</span><span class="en">DSBM v3.1 — F-axis revision · Beta</span></div>
 
 </div>
   </div>
@@ -898,20 +920,17 @@
     <div class="container">
 
   <header>
-    <div class="label-tag">DSBM v3.1 — 結構時間軸</div>
-    <h1>關係結構時間軸</h1>
+    <div class="label-tag">DSBM v3.1 — <span class="zh">結構時間軸</span><span class="en">Structure Timeline</span></div>
+    <h1><span class="zh">關係結構時間軸</span><span class="en">Relationship Structure Timeline</span></h1>
     <p class="subtitle">
-      追蹤 φ · A · F 三軸隨時間的變化趨勢。<br>
-      資料儲存於本機瀏覽器（localStorage），清除瀏覽器資料或更換裝置將無法找回記錄。
+      <span class="zh">追蹤 φ · A · F 三軸隨時間的變化趨勢。<br>資料儲存於本機瀏覽器（localStorage），清除瀏覽器資料或更換裝置將無法找回記錄。</span><span class="en">Track how φ · A · F evolve over time.<br>Data is stored locally in your browser (localStorage). Clearing browser data or switching devices will remove records.</span>
     </p>
   </header>
 
   <div id="tl-empty-state" style="text-align:center;padding:80px 20px;display:none;">
     <div style="font-size:28px;opacity:.2;margin-bottom:20px;">◎</div>
     <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:2;">
-      尚無歷史記錄。<br>
-      執行診斷後，點選「儲存至時間軸」<br>
-      即可開始追蹤關係結構的變化。
+      <span class="zh">尚無歷史記錄。<br>執行診斷後，點選「儲存至時間軸」<br>即可開始追蹤關係結構的變化。</span><span class="en">No records yet.<br>Run a diagnosis and click "Save to Timeline"<br>to begin tracking structural changes.</span>
     </div>
   </div>
 
@@ -922,9 +941,9 @@
       <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
         <span>結構指標歷史走勢</span>
         <div style="display:flex;gap:12px;">
-          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--accent);"><span style="display:inline-block;width:16px;height:2px;background:var(--accent);"></span>φ 對稱</span>
-          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--yellow);"><span style="display:inline-block;width:16px;height:2px;background:var(--yellow);opacity:.7;"></span>A 年齡</span>
-          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--orange);"><span style="display:inline-block;width:16px;height:2px;background:var(--orange);opacity:.7;"></span>F 家境</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--accent);"><span style="display:inline-block;width:16px;height:2px;background:var(--accent);"></span><span class="zh">φ 對稱</span><span class="en">φ Symmetry</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--yellow);"><span style="display:inline-block;width:16px;height:2px;background:var(--yellow);opacity:.7;"></span><span class="zh">A 年齡</span><span class="en">A Age</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;gap:5px;color:var(--orange);"><span style="display:inline-block;width:16px;height:2px;background:var(--orange);opacity:.7;"></span><span class="zh">F 家境</span><span class="en">F Wealth</span></span>
         </div>
       </div>
       <div style="background:#000;border:1px solid var(--border);position:relative;height:220px;">
@@ -935,8 +954,8 @@
     <!-- 記錄列表 -->
     <div class="section">
       <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
-        <span>歷史記錄</span>
-        <button onclick="tlClearAll()" style="background:none;border:1px solid #3a1a1a;color:var(--red);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#2a1010'" onmouseout="this.style.background='none'">清除全部</button>
+        <span><span class="zh">歷史記錄</span><span class="en">Records</span></span>
+        <button onclick="tlClearAll()" style="background:none;border:1px solid #3a1a1a;color:var(--red);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#2a1010'" onmouseout="this.style.background='none'"><span class="zh">清除全部</span><span class="en">Clear All</span></button>
       </div>
       <div id="tl-record-list" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
@@ -944,9 +963,9 @@
   </div>
 
   <div class="note">
-    時間軸功能於 DSBM v3.1 新增。資料僅儲存於本機瀏覽器，不經過任何伺服器。建議定期截圖備份重要的歷史資料。
+    <span class="zh">時間軸功能於 DSBM v3.1 新增。資料僅儲存於本機瀏覽器，不經過任何伺服器。建議定期截圖備份重要的歷史資料。</span><span class="en">The timeline feature was introduced in DSBM v3.1. Data is stored locally in your browser only and never sent to any server. It is recommended to take periodic screenshots to back up important records.</span>
   </div>
-  <div class="version">DSBM v3.1 — 結構時間軸 Beta</div>
+  <div class="version">DSBM v3.1 — <span class="zh">結構時間軸</span><span class="en">Structure Timeline</span> Beta</div>
 
     </div>
   </div>
@@ -955,19 +974,18 @@
 <!-- MANUAL PAGE -->
 <div class="spa-page" id="page-manual">
   <div class="manual-container">
-    
-<div class="container">
+<div class="zh"><div class="container">
 
   <!-- PREFACE -->
-  <div style="margin-bottom:48px;padding-bottom:40px;border-bottom:1px solid var(--border);">
-    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;">為什麼需要這個模型</div>
-    <p style="font-size:15px;color:var(--text);line-height:2;margin-bottom:16px;font-weight:300;">
+  <div style="margin-bottom:56px;padding-bottom:48px;border-bottom:1px solid var(--border);">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:28px;">為什麼需要這個模型</div>
+    <p style="font-size:15px;color:var(--text);line-height:2;margin-bottom:20px;font-weight:300;">
       有些關係沒有明顯的裂痕。沒有背叛，沒有爭吵，甚至相處起來還算愉快。但某個時間點之後，雙方開始漸行漸遠，卻說不清楚原因。
     </p>
-    <p style="font-size:15px;color:var(--text-dim);line-height:2;margin-bottom:16px;font-weight:300;">
+    <p style="font-size:15px;color:var(--text-dim);line-height:2;margin-bottom:20px;font-weight:300;">
       這個「說不清楚」，本身就是問題所在。
     </p>
-    <p style="font-size:15px;color:var(--text-dim);line-height:2;margin-bottom:16px;font-weight:300;">
+    <p style="font-size:15px;color:var(--text-dim);line-height:2;margin-bottom:20px;font-weight:300;">
       當一件事情沒有名字，你就無法討論它。無法討論，就無法選擇面對或接受。它只會以另一種形式持續出現——疲憊、距離感、或者一種模糊的委屈。
     </p>
     <p style="font-size:15px;color:var(--text);line-height:2;font-weight:300;">
@@ -978,14 +996,14 @@
   <!-- COVER -->
   <div class="cover">
     <div class="cover-tag">使用說明書 — User Manual</div>
-    <h1>二元對稱瓶頸模型<br>DSBM v3.1</h1>
+    <h1>二元對稱瓶頸模型<br>DSBM v3.1.1</h1>
     <p class="cover-desc">
-      本說明書說明 DSBM v3.1 的設計邏輯、輸入規範、計算公式與輸出詮釋方式。v3.1 在 v3.0 三軸架構基礎上修正 F 軸公式，引入雙項合併計算（F_gap + F_base），修正雙底層家境得到 F=0 的設計盲點。F 軸為選填項，不填時模型回歸雙軸運算。
+      本說明書說明 DSBM v3.1.1 的設計邏輯、輸入規範、計算公式與輸出詮釋方式。v3.1.1 在 v3.1 三軸架構基礎上新增結構時間軸功能，支援手動儲存診斷記錄並以折線圖呈現三軸的歷史變化趨勢。F 軸為選填項，不填時模型回歸雙軸運算。
     </p>
     <div class="cover-meta">
       <div class="cover-meta-item">
         <span class="cover-meta-key">版本</span>
-        <span class="cover-meta-val">v3.1 — F 軸修正版</span>
+        <span class="cover-meta-val">v3.1.1 — 時間軸版</span>
       </div>
       <div class="cover-meta-item">
         <span class="cover-meta-key">模型類型</span>
@@ -1013,6 +1031,9 @@
       <li><span class="toc-num">09</span><span class="toc-text">計算範例</span><span class="toc-dots"></span><span class="toc-page">§9</span></li>
       <li><span class="toc-num">10</span><span class="toc-text">模型假設與局限性</span><span class="toc-dots"></span><span class="toc-page">§10</span></li>
       <li><span class="toc-num">11</span><span class="toc-text">版本更新紀錄</span><span class="toc-dots"></span><span class="toc-page">§11</span></li>
+      <li><span class="toc-num">12</span><span class="toc-text">結構時間軸</span><span class="toc-dots"></span><span class="toc-page">§12</span></li>
+      <li><span class="toc-num">13</span><span class="toc-text">參數工作室 — 自訂模式</span><span class="toc-dots"></span><span class="toc-page">§13</span></li>
+      <li><span class="toc-num">14</span><span class="toc-text">結構敘事模擬</span><span class="toc-dots"></span><span class="toc-page">§14</span></li>
     </ul>
   </div>
 
@@ -1024,7 +1045,7 @@
     </div>
     <div class="prose">
       <p>DSBM（Dyadic Symmetry-Bottleneck Model，二元對稱瓶頸模型）是一個用於評估二元關係結構健康程度的診斷工具。它不測量情感滿意度、主觀幸福感，也不對關係做出價值判斷——它只測量<strong>結構</strong>。</p>
-      <p>v3.0 為重大架構更新版本。在原有 φ 軸與 A 軸的基礎上，新增第三軸 F（家境背景內耗比），模型自由度從二維演進為三維，能同時描述貢獻分工、年齡背景與原生家庭資源三個層次的結構問題。</p>
+      <p>v3.1 在 v3.0 三軸架構基礎上修正 F 軸公式，引入雙項合併計算（F_gap + F_base），修正雙底層家境得到 F=0 的設計盲點。v3.1.1 進一步新增結構時間軸功能。</p>
     </div>
 
     <div class="axis-diagram">
@@ -1270,7 +1291,7 @@
   <div class="doc-section">
     <div class="section-header">
       <span class="section-num">06</span>
-      <span class="section-title">第三軸 F — 家境背景內耗比 <span style="font-size:13px;color:var(--orange);font-family:'DM Mono',monospace;">v3.0 新增 · 選填</span></span>
+      <span class="section-title">第三軸 F — 家境背景內耗比 <span style="font-size:13px;color:var(--orange);font-family:'DM Mono',monospace;">v3.0 新增 · v3.1 修正 · 選填</span></span>
     </div>
     <div class="prose">
       <p>F 衡量雙方原生家庭資產等級差距所產生的結構內耗。家境差距影響的不只是可動用的財務資源，更包含金錢觀、消費基準、風險容忍度與重大決策時的支援網絡——這些差異在日常運作中往往隱而不顯，但在關鍵節點（如購屋、育兒、家庭危機）時會集中顯現。</p>
@@ -1291,7 +1312,7 @@
     </div>
 
     <div class="prose">
-      <p>v3.0 的 F 軸由兩個子項組成：<strong>F_gap</strong> 捕捉雙方家境差距所產生的價值觀摩擦，<strong>F_base</strong> 捕捉雙方絕對資源水準不足所產生的生存壓力。兩者以 7:3 的權重合併，反映差距問題通常比資源匱乏更直接影響關係結構，但資源匱乏的影響不應被忽略。</p>
+      <p>v3.1 的 F 軸由兩個子項組成：<strong>F_gap</strong> 捕捉雙方家境差距所產生的價值觀摩擦，<strong>F_base</strong> 捕捉雙方絕對資源水準不足所產生的生存壓力。兩者以 7:3 的權重合併，反映差距問題通常比資源匱乏更直接影響關係結構，但資源匱乏的影響不應被忽略。</p>
       <p>這個設計修正了舊版公式的一個盲點：當雙方家境同樣偏低時，舊版會得到 F = 0（無風險），但現實中兩個都很窮的組合面臨的是生存壓力直接壓縮關係空間的問題，風險並非為零。</p>
     </div>
 
@@ -1443,7 +1464,7 @@
       <span class="section-title">計算範例</span>
     </div>
     <div class="prose">
-      <p>以下案例在 v2.1 範例基礎上，加入 F 軸計算示範。F 軸採用 v3.1 雙項公式：F = F_gap × 0.7 + F_base × 0.3。</p>
+      <p>以下案例在 v2.1 範例基礎上，加入 F 軸計算示範。</p>
     </div>
 
     <div class="case-box">
@@ -1459,8 +1480,8 @@
         <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val yellow">0.546 — 中度不對稱</span></div>
         <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val">18% — 差距可接受</span></div>
         <div class="case-row"><span class="case-key">F_gap（3 配 6）</span><span class="case-val">|9 − 36| / 100 = 27%</span></div>
-      <div class="case-row"><span class="case-key">F_base（平均 4.5 級）</span><span class="case-val">4.5 / 10 = 45%</span></div>
-      <div class="case-row"><span class="case-key">F（v3.1 公式）</span><span class="case-val">27%×0.7 + 45%×0.3 = 32% — 差距明顯</span></div>
+        <div class="case-row"><span class="case-key">F_base（平均 4.5 級）</span><span class="case-val">4.5 / 10 = 45%</span></div>
+        <div class="case-row"><span class="case-key">F（v3.1 公式）</span><span class="case-val">27%×0.7 + 45%×0.3 = 32% — 差距明顯</span></div>
         <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val accent">φ↓ A↓ F↓ — 背景一致，貢獻待調整</span></div>
       </div>
     </div>
@@ -1478,8 +1499,8 @@
         <div class="case-row"><span class="case-key">φ 最終</span><span class="case-val red">0.432 — 高度不對稱</span></div>
         <div class="case-row"><span class="case-key">A（年齡差 4 歲，均值 30 歲）</span><span class="case-val">18% — 差距可接受</span></div>
         <div class="case-row"><span class="case-key">F_gap（3 配 8）</span><span class="case-val">|9 − 64| / 100 = 55%</span></div>
-      <div class="case-row"><span class="case-key">F_base（平均 5.5 級）</span><span class="case-val">5.5 / 10 = 55%</span></div>
-      <div class="case-row"><span class="case-key">F（v3.1 公式）</span><span class="case-val red">55%×0.7 + 55%×0.3 = 55% — 差距明顯</span></div>
+        <div class="case-row"><span class="case-key">F_base（平均 5.5 級）</span><span class="case-val">5.5 / 10 = 55%</span></div>
+        <div class="case-row"><span class="case-key">F（v3.1 公式）</span><span class="case-val red">55%×0.7 + 55%×0.3 = 55% — 差距明顯</span></div>
         <div class="case-row"><span class="case-key">交叉診斷</span><span class="case-val red">φ↓ A↓ F↑ — 貢獻失衡，家境存差</span></div>
       </div>
     </div>
@@ -1569,19 +1590,369 @@
           <td style="color:var(--accent)">v3.1</td>
           <td>F 軸公式修正。原公式僅捕捉家境差距（F_gap），忽略雙方絕對資源不足的生存壓力。v3.1 引入雙項合併公式：F = min(1, F_gap × 0.7 + F_base × 0.3)，其中 F_base = 平均等級 / 10，修正雙底層家境得到 F=0 的設計盲點。</td>
         </tr>
+        <tr>
+          <td style="color:var(--accent)">v3.1.1</td>
+          <td>新增結構時間軸功能。支援手動儲存診斷記錄，以折線圖呈現 φ、A、F 三軸的歷史變化趨勢。資料儲存於本機瀏覽器（localStorage），不經過任何伺服器。同步新增說明書 §12–§14，說明時間軸、參數工作室與結構敘事模擬的設計邏輯與使用情境。</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
+  <!-- §12 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-title">結構時間軸 <span style="font-size:13px;color:var(--blue);font-family:'DM Mono',monospace;">v3.1.1 新增</span></span>
+    </div>
+    <div class="prose">
+      <p>結構時間軸讓使用者得以追蹤 φ、A、F 三軸隨時間的變化趨勢。單次診斷只是一個截面，時間軸才能讓結構的漂移方向變得可見——φ 是在緩慢下滑還是逐步回升，A 軸的相對衝擊是否因年齡增長而改變，F 軸的壓力是否在某個生活事件後突然顯現。</p>
+      <p>關係結構的問題往往不是突然發生的，而是長期漂移的結果。時間軸的設計，試圖讓這個漂移過程從隱形變成可見。</p>
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">為什麼是「主動儲存」而非自動存檔</div>
+      系統不會自動記錄每一次診斷，因為使用者可能在探索不同假設情境時多次執行診斷，自動存檔會產生大量不具參考價值的雜訊記錄。主動儲存讓使用者決定「這一次的數據值得被記錄」，確保時間軸上的每一個點都是有意識的快照。
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">使用方式</div>
+      執行診斷後，在結果頁面下方的「儲存至時間軸」區塊填入備註（選填），點選儲存按鈕即可。備註可記錄當時的生活背景，例如「換工作後」、「搬家前」、「生育後六個月」，讓未來回顧時有脈絡可循。
+    </div>
+
+    <div class="callout red">
+      <div class="callout-label">資料儲存限制</div>
+      時間軸資料儲存於本機瀏覽器的 localStorage，具有以下限制：清除瀏覽器資料會導致記錄消失；更換裝置或瀏覽器無法找回記錄；不同裝置之間的記錄無法同步。建議定期截圖備份重要的歷史資料。
+    </div>
+  </div>
+
+  <!-- §13 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <span class="section-title">參數工作室 — 自訂模式</span>
+    </div>
+    <div class="prose">
+      <p>參數工作室讓使用者調整 DSBM 的核心計算係數，並與官方預設模型並排對照。它的設計初衷不只是技術探索，而是讓使用者看清楚自己對「公平」的定義，與模型預設值之間的差距。</p>
+      <p>可調整的參數包含：φ_money 與 φ_time 的相對權重（預設各 50%）、互補分工的補償係數（預設 0.1）、單邊過載的懲罰係數（預設 0.4）、以及 F 軸中 F_gap 與 F_base 的相對權重（預設 7:3）。</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">雙人使用情境</div>
+      參數工作室最有價值的使用方式，是兩個人<strong>各自</strong>調整自己認為重要的係數，然後比較兩個版本的診斷結果。
+      <br><br>
+      例如，一方認為時間投入比收入更重要，將 φ_time 權重調高至 70%；另一方認為收入貢獻更關鍵，將 φ_money 調高至 70%。兩個版本並排出現後，雙方可能第一次清楚地看見——我們對「公平分工」的定義，從一開始就不在同一個地方。
+      <br><br>
+      這不是誰對誰錯的問題，而是讓原本說不清楚的認知差距，有了可以討論的形狀。
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">設計說明</div>
+      官方模型的預設參數是模型設計者基於「合理的中立起點」所設定的。它不代表唯一正確的答案。如果你認為在你的關係情境中，某個維度的重要性遠高於預設，調整係數後的結果更能反映你的實際處境。
+    </div>
+  </div>
+
+  <!-- §14 -->
+  <div class="doc-section">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <span class="section-title">結構敘事模擬</span>
+    </div>
+    <div class="prose">
+      <p>結構敘事模擬提供三個以真實社會結構為參照的虛構案例，每個案例對應 DSBM 的一條主軸：CASE A 對應 φ 軸（貢獻不對稱），CASE B 對應 A 軸（年齡背景差距），CASE C 對應 F 軸（家境背景差距）。</p>
+      <p>這不是一個有標準答案的測驗。每一個選擇都有它的結構邏輯，也都有它的代價。遊戲的設計目的不是告訴你「正確的做法」，而是讓你在虛構情境中，觀察自己面對關係壓力時的本能反應模式。</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">行為結構分析報告</div>
+      完成任意案例後，系統會根據你在每個選擇節點的行為傾向，生成一份行為結構分析報告。報告將你的反應模式歸類為四種傾向：主動面對、誠實表達、自我犧牲、迴避距離，並說明每種傾向的結構特性與潛在風險。
+      <br><br>
+      報告的目的不是評判，而是命名。很多人在關係中長期使用某種應對模式，卻從來沒有意識到那是一種模式。看見了，才能選擇是否繼續。
+    </div>
+
+    <div class="callout blue">
+      <div class="callout-label">關於「清創」</div>
+      使用這個工具，有時候會像一次對關係結構的清創手術——不是為了製造傷口，而是因為那個傷口本來就在那裡，只是被覆蓋著，所以沒有辦法癒合。清創讓它暴露出來，這個過程可能會不舒服，但不清創的話，問題只會繼續以另一種形式出現。
+      <br><br>
+      看清楚，然後決定怎麼做——這是使用者自己的事，不是這個工具的工作。
+    </div>
+
+    <div class="callout red">
+      <div class="callout-label">重要提醒</div>
+      所有案例情境均為虛構，人物設定不代表任何真實個人。遊戲中的選擇與結局，僅作為結構性思考的參照，不代表現實關係的判決。
+    </div>
+  </div>
+
   <div class="doc-footer">
-    <span class="doc-footer-left">本說明書適用於 DSBM v3.1。模型仍處於 Beta 階段，歡迎回饋。</span>
-    <span class="doc-footer-right">DSBM v3.1 Manual — Beta</span>
+    <span class="doc-footer-left">本說明書適用於 DSBM v3.1.1。模型仍處於 Beta 階段，歡迎回饋。</span>
+    <span class="doc-footer-right">DSBM v3.1.1 Manual — Beta</span>
   </div>
 
+</div></div><!-- end zh manual -->
+
+<!-- ENGLISH MANUAL -->
+<div class="en" style="max-width:720px;margin:0 auto;padding:20px 20px 100px;">
+<div class="container">
+  <div style="margin-bottom:48px;padding-bottom:40px;border-bottom:1px solid var(--border);">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;">Why this model exists</div>
+    <p style="font-size:15px;color:var(--text);line-height:2;margin-bottom:16px;font-weight:300;">Some relationships have no obvious fracture. No betrayal, no fighting — sometimes even pleasant enough. But at some point, both people drift apart, and neither can explain why.</p>
+    <p style="font-size:15px;color:var(--text-dim);line-height:2;margin-bottom:16px;font-weight:300;">That inability to name it <em>is</em> the problem. When something has no name, it can't be discussed. DSBM tries to do one simple thing: give that wall a shape.</p>
+  </div>
+  <div class="cover">
+    <div class="cover-tag">User Manual</div>
+    <h1>Dyadic Symmetry-Bottleneck Model<br>DSBM v3.1.1</h1>
+    <p class="cover-desc">This manual explains the design rationale, input specifications, calculation formulas, and output interpretation for DSBM v3.1.1. v3.1 revised the F-axis formula. v3.1.1 adds the Structure Timeline feature and expands the manual to §14. F-axis is optional.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span class="cover-meta-key">Version</span><span class="cover-meta-val">v3.1.1 — Timeline &amp; Manual Expanded</span></div>
+      <div class="cover-meta-item"><span class="cover-meta-key">Model type</span><span class="cover-meta-val">Structural diagnostic tool</span></div>
+      <div class="cover-meta-item"><span class="cover-meta-key">Key metrics</span><span class="cover-meta-val">φ · A · F</span></div>
+    </div>
+  </div>
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><span class="toc-text">Model Overview</span><span class="toc-dots"></span><span class="toc-page">§1</span></li>
+      <li><span class="toc-num">02</span><span class="toc-text">Input Specifications</span><span class="toc-dots"></span><span class="toc-page">§2</span></li>
+      <li><span class="toc-num">03</span><span class="toc-text">Axis 1 φ — Contribution Symmetry Coefficient</span><span class="toc-dots"></span><span class="toc-page">§3</span></li>
+      <li><span class="toc-num">04</span><span class="toc-text">Directional Correction</span><span class="toc-dots"></span><span class="toc-page">§4</span></li>
+      <li><span class="toc-num">05</span><span class="toc-text">Axis 2 A — Age Background Friction</span><span class="toc-dots"></span><span class="toc-page">§5</span></li>
+      <li><span class="toc-num">06</span><span class="toc-text">Axis 3 F — Wealth Background Friction (optional)</span><span class="toc-dots"></span><span class="toc-page">§6</span></li>
+      <li><span class="toc-num">07</span><span class="toc-text">S — Background Context Reference</span><span class="toc-dots"></span><span class="toc-page">§7</span></li>
+      <li><span class="toc-num">08</span><span class="toc-text">Cross-Axis Diagnosis</span><span class="toc-dots"></span><span class="toc-page">§8</span></li>
+      <li><span class="toc-num">09</span><span class="toc-text">Calculation Examples</span><span class="toc-dots"></span><span class="toc-page">§9</span></li>
+      <li><span class="toc-num">10</span><span class="toc-text">Model Assumptions &amp; Limitations</span><span class="toc-dots"></span><span class="toc-page">§10</span></li>
+      <li><span class="toc-num">11</span><span class="toc-text">Version History</span><span class="toc-dots"></span><span class="toc-page">§11</span></li>
+      <li><span class="toc-num">12</span><span class="toc-text">Structure Timeline</span><span class="toc-dots"></span><span class="toc-page">§12</span></li>
+      <li><span class="toc-num">13</span><span class="toc-text">Parameter Studio — Custom Mode</span><span class="toc-dots"></span><span class="toc-page">§13</span></li>
+      <li><span class="toc-num">14</span><span class="toc-text">Structural Narrative Simulation</span><span class="toc-dots"></span><span class="toc-page">§14</span></li>
+    </ul>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">01</span><span class="section-title">Model Overview</span></div>
+    <div class="prose"><p>DSBM is a diagnostic tool for evaluating the structural health of dyadic relationships. It does not measure emotional satisfaction or make value judgments — it only measures <strong>structure</strong>. v3.0 added the F-axis, evolving the model from two-dimensional to three-dimensional diagnosis.</p></div>
+    <div class="axis-diagram">
+      <div class="axis-card"><div class="axis-card-label">Axis 1</div><div class="axis-card-name">φ — Contribution Symmetry</div><div class="axis-card-desc">Measures whether income and labor-hour contributions are symmetric, with directional correction. Range 0–1.</div></div>
+      <div class="axis-card"><div class="axis-card-label">Axis 2</div><div class="axis-card-name">A — Age Background Friction</div><div class="axis-card-desc">Measures the age gap relative to average age. Range 0–100%.</div></div>
+      <div class="axis-card"><div class="axis-card-label">Axis 3 — Optional</div><div class="axis-card-name">F — Wealth Background Friction</div><div class="axis-card-desc">Measures structural friction from family-of-origin wealth differences. Range 0–100%.</div><div class="axis-card-optional">OPTIONAL</div></div>
+    </div>
+    <div class="callout"><div class="callout-label">Design Principle</div>All three axes are computed independently. φ reflects current contribution division; A reflects the age-gap in life starting points; F reflects family-of-origin resource differences. Omitting F reverts the model to two-axis mode.</div>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">02</span><span class="section-title">Input Specifications</span></div>
+    <table class="doc-table">
+      <thead><tr><th>Field</th><th>Unit</th><th>Range</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Monthly Income</td><td>$K / month</td><td>≥ 0</td><td>Pre- or post-tax, but use the same basis for both parties. Include stable salary; optionally add regular bonuses.</td></tr>
+        <tr><td>Weekly Labor Hours</td><td>hrs / week</td><td>0–168</td><td>Includes formal work, housework, and caregiving (children, elderly). Use a 3-month average.</td></tr>
+        <tr><td>Age</td><td>years</td><td>≥ 16</td><td>Actual age as an integer.</td></tr>
+        <tr><td>Wealth Tier <span class="chip orange">Optional</span></td><td>tier (1–10)</td><td>1–10</td><td>1 = wealthiest, 10 = lowest. Enter the tier closest to your family of origin's net worth.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout red"><div class="callout-label">Note</div>Combined monthly income (S) and combined weekly hours cannot both be zero. A caregiver with zero income is valid as long as the partner has income. If either wealth tier is blank, the F-axis is not computed.</div>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">03</span><span class="section-title">Axis 1 φ — Contribution Symmetry Coefficient</span></div>
+    <div class="formula-box">
+      φ_money = 1 − |self income − partner income| / (self income + partner income)<br>
+      φ_time &nbsp;= 1 − |self hours − partner hours| / (self hours + partner hours)<br><br>
+      φ_raw = (φ_money + φ_time) / 2<br>
+      <span class="comment">── directional correction applied → φ_final (see §4)</span>
+    </div>
+    <table class="doc-table">
+      <thead><tr><th>φ Range</th><th>Status</th><th>Diagnostic Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>0.80–1.00</td><td><span class="chip green">Structurally Sound</span></td><td>High symmetry; structural friction W is low; strong resilience under external pressure.</td></tr>
+        <tr><td>0.65–0.79</td><td><span class="chip accent">Mild Asymmetry</span></td><td>Gap becoming visible but not yet in the high-risk zone. Confirm whether current arrangement is mutually agreed.</td></tr>
+        <tr><td>0.50–0.64</td><td><span class="chip yellow">Moderate Asymmetry</span></td><td>Elevated structural loss; effective resilience limited. Sustained imbalance tends to surface at high-pressure events.</td></tr>
+        <tr><td>0.00–0.49</td><td><span class="chip red">Severe Asymmetry</span></td><td>High-risk zone. System resilience critically limited; minor external pressure may trigger significant instability.</td></tr>
+      </tbody>
+    </table>
+    <div class="prose"><p><strong>W — Structural Friction</strong>: W = 1 − φ. The higher W is, the lower the effective resilience.</p></div>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">04</span><span class="section-title">Directional Correction</span></div>
+    <div class="callout blue"><div class="callout-label">Scenario Contrast</div><strong>Complementary Division</strong>: High earner works fewer hours; low earner works more. Cross-dimension exchange logic is present.<br><br><strong>Unilateral Overload</strong>: High earner also works more; other party is doubly disadvantaged. Same φ_raw, very different reality.</div>
+    <div class="formula-box">
+      income_gap = |self income − partner income| / (self income + partner income)<br>
+      hours_gap &nbsp;= |self hours − partner hours| / (self hours + partner hours)<br><br>
+      <span class="comment">── Unilateral overload (same direction):</span><br>
+      correction = −(income_gap × hours_gap × 0.4)<br><br>
+      <span class="comment">── Complementary (opposite direction):</span><br>
+      correction = +(income_gap × hours_gap × 0.1)<br><br>
+      φ_final = max(0, min(1, φ_raw + correction))
+    </div>
+    <table class="doc-table">
+      <thead><tr><th>Direction Type</th><th>Adjustment</th><th>Coefficient</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Unilateral Overload</td><td><span class="chip red">Penalty</span></td><td>× 0.4</td><td>High earner also works more; other party doubly disadvantaged.</td></tr>
+        <tr><td>Complementary Division</td><td><span class="chip green">Bonus</span></td><td>× 0.1</td><td>High earner works less; cross-dimension exchange logic present.</td></tr>
+        <tr><td>No Significant Direction</td><td>—</td><td>× 0</td><td>Gap on one dimension is zero; no correction applied.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">05</span><span class="section-title">Axis 2 A — Age Background Friction</span></div>
+    <div class="prose"><p>A measures the age gap relative to the average age. It doesn't measure who is older, but how <em>significant</em> the gap is — the same absolute gap carries different weight at different life stages.</p></div>
+    <div class="formula-box">
+      gap &nbsp;= |self age − partner age|<br>
+      mean = (self age + partner age) / 2<br><br>
+      A_raw = gap² / mean²<br>
+      A &nbsp;&nbsp;&nbsp;&nbsp;= min(1, A_raw) &nbsp;<span class="comment">── capped at 100%</span>
+    </div>
+    <div class="callout purple"><div class="callout-label">Cap Condition</div>A_raw = 100% when gap = mean (e.g. age 20 and 60). This is rare in adult relationships but valid. When capped, the report notes the raw value for reference.</div>
+    <table class="doc-table">
+      <thead><tr><th>A Range</th><th>Status</th><th>Diagnostic Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>0–9%</td><td><span class="chip green">Similar Background</span></td><td>Age gap is minimal; life coordinates are highly aligned.</td></tr>
+        <tr><td>10–24%</td><td><span class="chip accent">Acceptable Gap</span></td><td>Some gap; not typically a primary stressor in most contexts.</td></tr>
+        <tr><td>25–49%</td><td><span class="chip yellow">Notable Gap</span></td><td>Life stage, risk tolerance, and long-term expectations may diverge significantly.</td></tr>
+        <tr><td>50–100%</td><td><span class="chip red">Significant Gap</span></td><td>Background gap is an independent structural risk factor, especially at major decision points.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">06</span><span class="section-title">Axis 3 F — Wealth Background Friction <span style="font-size:12px;color:var(--orange);font-family:'DM Mono',monospace;">v3.0 · optional</span></span></div>
+    <div class="prose"><p>F measures structural friction from family-of-origin wealth differences. Wealth gaps affect money attitudes, consumption baselines, risk tolerance, and support networks — staying hidden day-to-day but surfacing acutely at inflection points. The F-axis is optional; family wealth is personal.</p></div>
+    <div class="formula-box">
+      F_gap &nbsp;= |self tier² − partner tier²| / 100<br>
+      F_base = ((self tier + partner tier) / 2) / 10<br>
+      F &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= min(1, F_gap × 0.7 + F_base × 0.3)<br><br>
+      <span class="comment">── F_gap captures value-system friction from wealth divergence</span><br>
+      <span class="comment">── F_base captures survival pressure from absolute resource scarcity</span><br>
+      <span class="comment">── Two Tier-10 partners: F_gap=0, F_base=1.0, F=30%</span>
+    </div>
+    <div class="callout orange"><div class="callout-label">Calculation Examples</div>
+      Tier 1 + Tier 3: F_gap=8%, F_base=20%, F = <strong>8.6%</strong> (similar background)<br>
+      Tier 3 + Tier 7: F_gap=40%, F_base=50%, F = <strong>43%</strong> (notable gap)<br>
+      Tier 1 + Tier 10: F_gap=99%, F_base=55%, F = <strong>86%</strong> (significant gap)<br>
+      Tier 10 + Tier 10: F_gap=0%, F_base=100%, F = <strong>30%</strong> (resource scarcity pressure)
+    </div>
+    <table class="doc-table">
+      <thead><tr><th>F Range</th><th>Status</th><th>Diagnostic Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>0–9%</td><td><span class="chip green">Similar Background</span></td><td>Family-of-origin resources are highly aligned; money attitudes are close.</td></tr>
+        <tr><td>10–29%</td><td><span class="chip accent">Acceptable Gap</span></td><td>Some gap; not typically a primary friction source in daily decisions.</td></tr>
+        <tr><td>30–59%</td><td><span class="chip yellow">Notable Gap</span></td><td>Baselines for "normal" living costs may diverge; structural friction emerges at major financial decisions.</td></tr>
+        <tr><td>60–100%</td><td><span class="chip red">Significant Gap</span></td><td>Wealth gap is an independent high-risk source. One party's daily baseline may be the other's exceptional expenditure.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">07</span><span class="section-title">S — Background Context Reference</span></div>
+    <div class="formula-box">S = self monthly income + partner monthly income</div>
+    <div class="prose"><p>S does <strong>not</strong> affect φ, A, or F. It contextualizes the diagnostic tone. Thresholds: S ≥ $15K/month = resource-adequate; S &lt; $6K/month = resource-constrained. These are relative reference values, not absolute standards.</p></div>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">08</span><span class="section-title">Cross-Axis Diagnosis — Multi-Axis Combined Report</span></div>
+    <div class="prose"><p>Boundaries: φ ≥ 0.65 = φ↑; A &lt; 25% = A↓; F &lt; 30% = F↓. Two modes: two-axis (F not provided) and three-axis (F provided).</p></div>
+    <div class="quad-grid">
+      <div class="quad-cell"><div class="quad-type" style="color:var(--green)">φ↑ A↓ — Dual-Axis Stable</div><div class="quad-desc">Contributions symmetric and ages close. Strong resilience.</div></div>
+      <div class="quad-cell"><div class="quad-type" style="color:var(--yellow)">φ↑ A↑ — Balanced, Age Gap</div><div class="quad-desc">Division balanced; age gap is a latent variable surfacing at major decisions.</div></div>
+      <div class="quad-cell"><div class="quad-type" style="color:var(--accent)">φ↓ A↓ — Aligned, Contribution Imbalance</div><div class="quad-desc">Life alignment is an advantage; main pressure is contribution asymmetry, easier to address.</div></div>
+      <div class="quad-cell"><div class="quad-type" style="color:var(--red)">φ↓ A↑ — Dual-Axis Pressure</div><div class="quad-desc">Both axes show structural pressure. Age gap makes asymmetry harder to resolve through dialogue alone.</div></div>
+    </div>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">09</span><span class="section-title">Calculation Examples</span></div>
+    <div class="case-box">
+      <div class="case-header">Case A — Complementary Division · with wealth data</div>
+      <div class="case-body">
+        <div class="case-row"><span class="case-key">Self: income / hours / age / tier</span><span class="case-val">$8K / 10 hrs / 32 yrs / Tier 3</span></div>
+        <div class="case-row"><span class="case-key">Partner: income / hours / age / tier</span><span class="case-val">$3K / 30 hrs / 28 yrs / Tier 6</span></div>
+        <div class="case-row"><span class="case-key">φ final</span><span class="case-val yellow">0.546 — Moderate Asymmetry</span></div>
+        <div class="case-row"><span class="case-key">A (4-yr gap, avg 30)</span><span class="case-val">18% — Acceptable Gap</span></div>
+        <div class="case-row"><span class="case-key">F (v3.1)</span><span class="case-val">27%×0.7 + 45%×0.3 = 32% — Notable Gap</span></div>
+        <div class="case-row"><span class="case-key">Cross-diagnosis</span><span class="case-val accent">φ↓ A↓ F↓ — Aligned Backgrounds, Contribution Imbalance</span></div>
+      </div>
+    </div>
+    <div class="case-box">
+      <div class="case-header">Case B — Unilateral Overload · with wealth data</div>
+      <div class="case-body">
+        <div class="case-row"><span class="case-key">Self: income / hours / age / tier</span><span class="case-val">$8K / 30 hrs / 32 yrs / Tier 3</span></div>
+        <div class="case-row"><span class="case-key">Partner: income / hours / age / tier</span><span class="case-val">$3K / 10 hrs / 28 yrs / Tier 8</span></div>
+        <div class="case-row"><span class="case-key">φ final</span><span class="case-val red">0.432 — Severe Asymmetry</span></div>
+        <div class="case-row"><span class="case-key">A (4-yr gap, avg 30)</span><span class="case-val">18% — Acceptable Gap</span></div>
+        <div class="case-row"><span class="case-key">F (v3.1)</span><span class="case-val red">55%×0.7 + 55%×0.3 = 55% — Notable Gap</span></div>
+        <div class="case-row"><span class="case-key">Cross-diagnosis</span><span class="case-val red">φ↓ A↓ F↑ — Imbalanced Contributions, Wealth Gap</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">10</span><span class="section-title">Model Assumptions &amp; Limitations</span></div>
+    <table class="doc-table">
+      <thead><tr><th>Assumption</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Equal Weighting</td><td>φ_money and φ_time each contribute 50%. Their relative importance varies by couple.</td></tr>
+        <tr><td>Linear Trade-off</td><td>Complementary bonus (0.1) is much smaller than overload penalty (0.4), reflecting asymmetric real-world impact.</td></tr>
+        <tr><td>Age Thresholds</td><td>Based on designer judgment; no external academic validation.</td></tr>
+        <tr><td>Wealth Tier Proxy</td><td>Cannot fully capture money attitudes, family dynamics, or non-financial resources.</td></tr>
+        <tr><td>Excluded Dimensions</td><td>Emotional labor, decision-making power, geography, and education are not modeled.</td></tr>
+        <tr><td>Direction-Neutral</td><td>Same inputs yield the same result regardless of gender or role.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout red"><div class="callout-label">Important Reminder</div>A low φ does not mean the relationship is unhealthy. A high A or F does not mean the relationship is necessarily troubled. The model outputs a structural description, not a verdict. Interpret results in the context of your own situation.</div>
+  </div>
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">11</span><span class="section-title">Version History</span></div>
+    <table class="doc-table">
+      <thead><tr><th>Version</th><th>Changes</th></tr></thead>
+      <tbody>
+        <tr><td>v1.0</td><td>Initial release. φ as primary metric; W = 1 − φ.</td></tr>
+        <tr><td>v1.1</td><td>Clarified S does not affect φ. Added type labels.</td></tr>
+        <tr><td>v2.0</td><td>Added Axis A. Four-quadrant cross-diagnosis.</td></tr>
+        <tr><td>v2.1</td><td>Added directional correction (complementary/overload).</td></tr>
+        <tr><td style="color:var(--accent)">v3.0</td><td>Added Axis F (optional). Eight three-axis combinations.</td></tr>
+        <tr><td style="color:var(--accent)">v3.1</td><td>F-axis revised: F = F_gap×0.7 + F_base×0.3. Fixes two Tier-10 → F=0 flaw.</td></tr>
+        <tr><td style="color:var(--accent)">v3.1.1</td><td>Added Structure Timeline. Supports manual snapshot saving; renders φ, A, F history as a line chart. Data stored in browser localStorage, never transmitted. Added Manual §12–§14 covering Timeline, Parameter Studio, and Structural Narrative Simulation.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- §12 -->
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">12</span><span class="section-title">Structure Timeline <span style="font-size:13px;color:var(--blue);font-family:'DM Mono',monospace;">Added in v3.1.1</span></span></div>
+    <div class="prose">
+      <p>The Structure Timeline lets users track how φ, A, and F change over time. A single diagnosis is a snapshot; the timeline makes structural drift visible — whether φ is slowly declining or recovering, whether A's relative impact is shifting as both parties age, whether F pressure appeared suddenly after a major life event.</p>
+      <p>Relationship structure problems rarely arise suddenly; they accumulate. The Timeline is designed to make that drift visible before it becomes irreversible.</p>
+    </div>
+    <div class="callout blue"><div class="callout-label">Why Manual Save Instead of Auto-Save</div>The system does not automatically record every diagnosis. Users may run the tool repeatedly while exploring hypothetical scenarios — auto-save would generate noise. Manual saving lets you decide "this snapshot is worth keeping," ensuring every point on the timeline is intentional.</div>
+    <div class="callout"><div class="callout-label">How to Use</div>After running a diagnosis, fill in an optional note at the bottom of the results page (e.g. "after job change," "before baby," "six months post-move"), then click Save to Timeline. Notes provide context when you review the record later.</div>
+    <div class="callout red"><div class="callout-label">Storage Limitations</div>Timeline data is stored in your browser's localStorage. Clearing browser data, switching browsers, or using a different device will erase the records. Consider taking screenshots to back up important history.</div>
+  </div>
+
+  <!-- §13 -->
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">13</span><span class="section-title">Parameter Studio — Custom Mode</span></div>
+    <div class="prose">
+      <p>The Parameter Studio lets users adjust DSBM's core calculation coefficients and compare results side-by-side with the canonical model. Its purpose is not only technical exploration — it's to help users see the gap between their own definition of "fairness" and the model's default values.</p>
+      <p>Adjustable parameters: relative weight of φ_money vs φ_time (default 50/50); complementary division bonus coefficient (default 0.1); unilateral overload penalty coefficient (default 0.4); relative weight of F_gap vs F_base (default 70/30).</p>
+    </div>
+    <div class="callout"><div class="callout-label">Two-Person Use Case</div>The most valuable use of the Parameter Studio is for both partners to <strong>independently</strong> adjust the coefficients they consider important, then compare the two versions side by side.<br><br>For example: one partner believes time investment matters more than income and raises φ_time weight to 70%; the other believes income contribution is more critical and raises φ_money to 70%. When the two versions appear side by side, both parties may realize for the first time — our definitions of "fair contribution" were never in the same place to begin with.<br><br>This isn't about who is right. It's about giving an unspoken cognitive gap a shape that can be discussed.</div>
+    <div class="callout blue"><div class="callout-label">Design Note</div>The canonical model's default parameters represent the model designer's "reasonable neutral starting point." They are not the only correct answer. If a particular dimension feels far more important in your relationship context, adjusting the coefficients may yield a result that better reflects your actual situation.</div>
+  </div>
+
+  <!-- §14 -->
+  <div class="doc-section">
+    <div class="section-header"><span class="section-num">14</span><span class="section-title">Structural Narrative Simulation <span style="font-size:13px;color:var(--accent);font-family:'DM Mono',monospace;">Stories</span></span></div>
+    <div class="prose">
+      <p>The Structural Narrative Simulation is an interactive fiction feature built on top of the DSBM diagnostic framework. It presents three relationship cases — each centered on a different axis — and asks the reader to make decisions at each turning point. Those decisions affect the case's structural indicators (φ, A) in real time, and determine which of three endings is reached.</p>
+      <p>The simulation does not test knowledge of the model. It tests intuition. How you respond under structural pressure — whether you avoid, face, sacrifice, or speak honestly — accumulates into a behavioral profile that is reported at the end.</p>
+    </div>
+    <div class="callout"><div class="callout-label">Three Cases</div><strong>Case A — The Loneliness at the Top</strong> · φ axis · When income and time stop moving together, what gets left behind?<br><br><strong>Case B — Travelers Out of Time</strong> · A axis · Two people in the same world, but different seasons of life.<br><br><strong>Case C — The Gravity Trap of Two Worlds</strong> · F axis · This is not a problem between two people. It is a problem between two realities.</div>
+    <div class="callout blue"><div class="callout-label">Behavioral Report</div>After completing one or more cases, a behavioral structure report becomes available. The report classifies your response pattern across four dimensions: active confrontation, honest expression, self-sacrifice, and avoidance. It does not evaluate which pattern is correct — it gives your tendencies a shape that can be seen and discussed.</div>
+    <div class="callout red"><div class="callout-label">Note</div>The simulation is a structural reference tool, not a psychological assessment. All characters and scenarios are fictional. The behavioral report reflects patterns within the simulation only and should not be used to draw conclusions about real-world behavior.</div>
+  </div>
+
+  <div class="doc-footer">
+    <span class="doc-footer-left">Applies to DSBM v3.1.1. Beta — feedback welcome.</span>
+    <span class="doc-footer-right">DSBM v3.1.1 Manual — Beta</span>
+  </div>
 </div>
+</div><!-- end en manual -->
 
   </div>
 </div>
+
+
 
 <!-- GAME PAGE -->
 <div class="spa-page" id="page-game">
@@ -1589,55 +1960,51 @@
     <div class="game-inner">
       <!-- 標題畫面 -->
 <div id="screen-title">
-  <div class="title-tag">DSBM — Dyadic Symmetry-Bottleneck Model</div>
+  <div class="title-tag"><span class="zh">DSBM — Dyadic Symmetry-Bottleneck Model</span><span class="en">DSBM — Structural Narrative Simulation</span></div>
 
   <div class="title-main">
-    <span>這不是愛情故事。</span><br>
-    這是關於結構的故事。<br><br>
-    三段關係。三種軸線。<br>
-    沒有對錯，只有<span>你的選擇</span>。
+    <span class="zh"><span>這不是愛情故事。</span><br>這是關於結構的故事。<br><br>三段關係。三種軸線。<br>沒有對錯，只有<span>你的選擇</span>。</span><span class="en"><span style="color:var(--text);">This is not a love story.</span><br>It is a story about structure.<br><br>Three relationships. Three axes.<br>No right answers. Only <span style="color:var(--text);">your choices</span>.</span>
   </div>
 
   <div class="case-list">
     <button class="case-item" onclick="startCase('A')">
       <span class="case-num">CASE A</span>
       <div class="case-info">
-        <div class="case-title">萬國之巔的寂寞</div>
-        <div class="case-sub">當資源不再稀缺，時間反而成為唯一的瓶頸</div>
+        <div class="case-title"><span class="zh">萬國之巔的寂寞</span><span class="en">The Loneliness at the Top</span></div>
+        <div class="case-sub"><span class="zh">當資源不再稀缺，時間反而成為唯一的瓶頸</span><span class="en">When time becomes scarcer than money.</span></div>
       </div>
       <span class="case-axis axis-phi">φ 軸</span>
     </button>
     <button class="case-item" onclick="startCase('B')">
       <span class="case-num">CASE B</span>
       <div class="case-info">
-        <div class="case-title">時空的異位旅者</div>
-        <div class="case-sub">你們活在同一個世界，卻不在同一個時代</div>
+        <div class="case-title"><span class="zh">時空的異位旅者</span><span class="en">Travelers Out of Time</span></div>
+        <div class="case-sub"><span class="zh">你們活在同一個世界，卻不在同一個時代</span><span class="en">You live in the same world, but not the same stage of life.</span></div>
       </div>
       <span class="case-axis axis-a">A 軸</span>
     </button>
     <button class="case-item" onclick="startCase('C')">
       <span class="case-num">CASE C</span>
       <div class="case-info">
-        <div class="case-title">深宮的引力陷阱</div>
-        <div class="case-sub">這不是兩個人的問題，而是兩個世界的問題</div>
+        <div class="case-title"><span class="zh">深宮的引力陷阱</span><span class="en">The Gravity Trap of Two Worlds</span></div>
+        <div class="case-sub"><span class="zh">這不是兩個人的問題，而是兩個世界的問題</span><span class="en">This is not just a relationship between two people.</span></div>
       </div>
       <span class="case-axis axis-f">F 軸</span>
     </button>
   </div>
 
   <div id="report-btn-area" style="display:none;margin-bottom:20px;">
-    <button class="btn-report" onclick="showGlobalReport()">▸ 查看行為結構分析報告</button>
+    <button class="btn-report" onclick="showGlobalReport()"><span class="zh">▸ 查看行為結構分析報告</span><span class="en">▸ View Behavioral Structure Report</span></button>
   </div>
   <div class="title-note">
-    本作品情境設計參考真實社會結構案例，所有角色均為虛構，不代表任何真實人物。<br>
-    本工具基於二元對稱瓶頸模型（DSBM v3.1），結果僅供結構性參考。
+    <span class="zh">本作品情境設計參考真實社會結構案例，所有角色均為虛構，不代表任何真實人物。<br>本工具基於二元對稱瓶頸模型（DSBM v3.1），結果僅供結構性參考。</span><span class="en">All characters and scenarios are fictional. Based on the Dyadic Symmetry-Bottleneck Model (DSBM v3.1). Results are structural reference only.</span>
   </div>
 </div>
 
 <!-- 報告畫面 -->
 <div id="screen-report" style="display:none;max-width:680px;width:100%;">
   <div class="game-header">
-    <div class="game-case-title" style="color:var(--accent);">DSBM — 行為結構分析報告</div>
+    <div class="game-case-title" style="color:var(--accent);"><span class="zh">DSBM — 行為結構分析報告</span><span class="en">DSBM — Behavioral Structure Report</span></div>
     <button class="game-back" onclick="closeReport()">← 返回</button>
   </div>
   <div id="report-content"></div>
@@ -1647,26 +2014,26 @@
 <div id="screen-game">
   <div class="game-header">
     <div class="game-case-title" id="game-case-label">—</div>
-    <button class="game-back" onclick="goTitle()">← 返回</button>
+    <button class="game-back" onclick="goTitle()"><span class="zh">← 返回</span><span class="en">← Back</span></button>
   </div>
 
   <div class="metrics-bar">
     <div class="metric-box">
-      <div class="metric-label" style="color:var(--phi);">φ 貢獻對稱</div>
+      <div class="metric-label" style="color:var(--phi);"><span class="zh">φ 貢獻對稱</span><span class="en">φ Contribution Symmetry</span></div>
       <div class="metric-bar-track">
         <div class="metric-bar-fill" id="bar-phi" style="background:var(--phi);width:70%"></div>
       </div>
       <div class="metric-value" id="val-phi">0.70</div>
     </div>
     <div class="metric-box">
-      <div class="metric-label" style="color:var(--a);">A 年齡內耗</div>
+      <div class="metric-label" style="color:var(--a);"><span class="zh">A 年齡內耗</span><span class="en">A Age Friction</span></div>
       <div class="metric-bar-track">
         <div class="metric-bar-fill" id="bar-a" style="background:var(--a);width:20%"></div>
       </div>
       <div class="metric-value" id="val-a">20%</div>
     </div>
     <div class="metric-box">
-      <div class="metric-label" style="color:var(--f);">W 內耗值</div>
+      <div class="metric-label" style="color:var(--f);"><span class="zh">W 內耗值</span><span class="en">W Friction</span></div>
       <div class="metric-bar-track">
         <div class="metric-bar-fill" id="bar-w" style="background:var(--red);width:30%"></div>
       </div>
@@ -1689,12 +2056,89 @@
 </div>
 
 <script>
+
+// ── LANGUAGE TOGGLE ──
+// Auto-detect language: check localStorage first, then fall back to browser setting.
+// localStorage key: 'dsbm_lang' — stores 'zh' or 'en' only when user manually toggles.
+(function() {
+  const saved = localStorage.getItem('dsbm_lang');
+  if (saved === 'zh' || saved === 'en') {
+    // User has explicitly chosen a language before — respect that choice.
+    window.__DSBM_INIT_LANG = saved;
+  } else {
+    // No saved preference: detect from browser.
+    const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
+    window.__DSBM_INIT_LANG = browserLang.startsWith('zh') ? 'zh' : 'en';
+  }
+})();
+
+let LANG = window.__DSBM_INIT_LANG;
+
+// Apply initial lang attribute immediately (before DOMContentLoaded) to avoid flash.
+document.getElementById('html-root').setAttribute('lang', LANG === 'zh' ? 'zh-TW' : 'en');
+
+function getLang() { return LANG; } // LANG is 'zh' or 'en' (internal)
+
+function toggleLang() {
+  LANG = LANG === 'zh' ? 'en' : 'zh';
+  // Persist the user's manual choice so it overrides browser detection on next visit.
+  localStorage.setItem('dsbm_lang', LANG);
+  const htmlEl = document.getElementById('html-root');
+  htmlEl.setAttribute('lang', LANG === 'zh' ? 'zh-TW' : 'en');
+  document.getElementById('lang-btn').textContent = LANG === 'zh' ? 'EN' : '中文';
+  document.title = LANG === 'zh'
+    ? 'DSBM — 二元對稱瓶頸模型'
+    : 'DSBM — Dyadic Symmetry-Bottleneck Model';
+
+  // Update placeholders
+  const plEl = document.querySelector('.zh-placeholder');
+  const plEl2 = document.querySelector('.zh-placeholder2');
+  if (plEl2) plEl2.placeholder = LANG==='zh'?'例：我認為時間的權重應該更高，因為在我的關係裡...':'e.g. I think time should be weighted more heavily because in my relationship...';
+  const plDummy = null; // placeholder2 handled
+  if (plEl) {
+    plEl.placeholder = LANG === 'zh'
+      ? '備註（選填）：例如「換工作後」、「搬家前」'
+      : 'Note (optional): e.g. "after job change", "before moving"';
+  }
+
+  // Re-render timeline list (it contains language-specific labels)
+  if (document.getElementById('page-timeline') &&
+      document.getElementById('page-timeline').classList.contains('active')) {
+    tlRender();
+  }
+
+  // Clear result boxes so user reruns diagnosis in new language
+  document.getElementById('result').classList.remove('visible');
+  const cmResult = document.getElementById('cm_result_section');
+  if (cmResult) cmResult.classList.remove('visible');
+
+  // Reset game state display
+  if (typeof GLOBAL !== 'undefined') {
+    GLOBAL.tags = { avoid: 0, face: 0, sacrifice: 0, honest: 0 };
+    GLOBAL.history = [];
+    GLOBAL.completedCases = {};
+    GLOBAL.finalPhi = {};
+  }
+  const titleEl = document.getElementById('screen-title');
+  const gameEl = document.getElementById('screen-game');
+  const reportEl = document.getElementById('screen-report');
+  if (titleEl) titleEl.style.display = 'block';
+  if (gameEl) gameEl.style.display = 'none';
+  if (reportEl) reportEl.style.display = 'none';
+  const rba = document.getElementById('report-btn-area');
+  if (rba) rba.style.display = 'none';
+}
+
 // ── SPA 頁面切換 ──
 function showPage(name) {
   document.querySelectorAll('.spa-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.spa-nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   document.getElementById('nav-' + name).classList.add('active');
+  // Update title
+  const pageTitles = {zh:{home:'DSBM — 二元對稱瓶頸模型',tool:'診斷工具 — DSBM',manual:'說明書 — DSBM',game:'結構模擬 — DSBM',custom:'自訂模式 — DSBM',timeline:'時間軸 — DSBM'},en:{home:'DSBM — Dyadic Symmetry-Bottleneck Model',tool:'Diagnostic Tool — DSBM',manual:'User Manual — DSBM',game:'Story Simulation — DSBM',custom:'Custom Mode — DSBM',timeline:'Timeline — DSBM'}};
+  const pt = pageTitles[getLang()];
+  if(pt&&pt[name]) document.title = pt[name];
   // 切換到tool時重繪矩陣
   if (name === 'tool' && typeof drawMatrix === 'function') {
     setTimeout(() => { if (typeof BS !== 'undefined' && BS.phi !== null) drawMatrix(); }, 50);
@@ -1713,10 +2157,14 @@ function showPage(name) {
   history.replaceState(null, '', '#' + name);
 }
 
-// 根據hash載入對應頁面
+// 根據hash載入對應頁面，並同步初始語言狀態至UI
 window.addEventListener('load', () => {
+  // Sync lang-btn label to whatever LANG was initialised to.
+  const langBtn = document.getElementById('lang-btn');
+  if (langBtn) langBtn.textContent = LANG === 'zh' ? 'EN' : '中文';
+
   const hash = location.hash.replace('#', '') || 'home';
-  const valid = ['home','tool','manual','game','timeline'];
+  const valid = ['home','tool','manual','game','timeline','custom'];
   showPage(valid.includes(hash) ? hash : 'home');
 });
 
@@ -1815,35 +2263,38 @@ document.head.appendChild(styleEl);
 // ── 工具函式 ──
 function getSContext(s,phi){
   const hi=s>=15,lo=s<6,hp=phi>=0.70,lp=phi<0.50;
-  if(hi&&hp) return '資源充足且結構對稱。系統面對外部衝擊時具備較強的緩衝能力。';
-  if(hi&&lp) return '資源充足但結構失衡。S 高可短期掩蓋內耗，無法從根本解決結構問題。';
-  if(hi)     return '資源尚可，結構存在一定不對稱。建議持續關注分工平衡。';
-  if(lo&&hp) return '資源有限但結構對稱。雙方共同承擔壓力，韌性相對較高。';
-  if(lo&&lp) return '資源有限且結構失衡。雙重風險狀態，系統承壓能力較弱。';
-  if(lo)     return '資源偏低，建議評估整體財務規劃對關係穩定性的影響。';
-  return '資源規模中等。結構健康度（φ）是當前主要參考指標。';
+  const en=getLang()==='en';
+  if(hi&&hp) return en?'Adequate resources and symmetric structure. The system handles external shocks with balanced resilience.':'資源充足且結構對稱。系統面對外部衝擊時具備較強的緩衝能力。';
+  if(hi&&lp) return en?'Adequate resources but imbalanced structure. High S can mask friction short-term but cannot fix structural problems.':'資源充足但結構失衡。S 高可短期掩蓋內耗，無法從根本解決結構問題。';
+  if(hi)     return en?'Resources are adequate; some structural asymmetry exists.':'資源尚可，結構存在一定不對稱。建議持續關注分工平衡。';
+  if(lo&&hp) return en?'Limited resources but symmetric structure. Both parties share the burden; resilience is relatively high.':'資源有限但結構對稱。雙方共同承擔壓力，韌性相對較高。';
+  if(lo&&lp) return en?'Limited resources and imbalanced structure — a dual-risk state.':'資源有限且結構失衡。雙重風險狀態，系統承壓能力較弱。';
+  if(lo)     return en?'Resources are constrained. Consider overall financial planning and its impact on structural stability.':'資源偏低，建議評估整體財務規劃對關係穩定性的影響。';
+  return en?'Mid-range resources. The structural health score (φ) is the primary reference.':'資源規模中等。結構健康度（φ）是當前主要參考指標。';
 }
 function getFStatus(f){
-  if(f<0.10) return {text:'家境相近',   color:'var(--green)'};
-  if(f<0.30) return {text:'差距可接受', color:'var(--accent)'};
-  if(f<0.60) return {text:'差距明顯',   color:'var(--yellow)'};
-  return           {text:'差距顯著',   color:'var(--red)'};
+  const en=getLang()==='en';
+  if(f<0.10) return {text:en?'Similar Background':'家境相近',   color:'var(--green)'};
+  if(f<0.30) return {text:en?'Acceptable Gap':'差距可接受', color:'var(--accent)'};
+  if(f<0.60) return {text:en?'Notable Gap':'差距明顯',   color:'var(--yellow)'};
+  return           {text:en?'Significant Gap':'差距顯著',   color:'var(--red)'};
 }
 function getCross(pu,ad,hasF,fd){
+  const en=getLang()==='en';
   if(!hasF){
-    if(pu&&ad)  return {tag:'φ↑ A↓ — 雙軸穩定型',           desc:'貢獻對稱且年齡背景相近，系統具備較強的外部壓力緩衝能力。',danger:false};
-    if(pu)      return {tag:'φ↑ A↑ — 貢獻對稱，背景存差',   desc:'當下分工均衡，年齡差距是潛在變數，風險在重大決策節點才浮現。',danger:false};
-    if(ad)      return {tag:'φ↓ A↓ — 背景相近，貢獻待調整', desc:'年齡背景一致是有利條件，主要壓力來自貢獻不對稱，調整相對容易。',danger:false};
-    return             {tag:'φ↓ A↑ — 雙軸壓力型',           desc:'兩軸均顯示結構壓力，年齡差距使貢獻不對稱更難透過溝通單獨解決。',danger:true};
+    if(pu&&ad)  return {tag:en?'φ↑ A↓ — Dual-Axis Stable':'φ↑ A↓ — 雙軸穩定型', desc:en?'Contributions are symmetric and age backgrounds are close. The system has strong external pressure resilience.':'貢獻對稱且年齡背景相近，系統具備較強的外部壓力緩衝能力。',danger:false};
+    if(pu)      return {tag:en?'φ↑ A↑ — Balanced Contributions, Age Gap':'φ↑ A↑ — 貢獻對稱，背景存差', desc:en?'Current division is balanced, but the age gap is a latent variable that surfaces at major decision points.':'當下分工均衡，年齡差距是潛在變數，風險在重大決策節點才浮現。',danger:false};
+    if(ad)      return {tag:en?'φ↓ A↓ — Similar Backgrounds, Contribution Imbalance':'φ↓ A↓ — 背景相近，貢獻待調整', desc:en?'Aligned life stages are an advantage; the main pressure is contribution asymmetry, which is easier to address.':'年齡背景一致是有利條件，主要壓力來自貢獻不對稱，調整相對容易。',danger:false};
+    return             {tag:en?'φ↓ A↑ — Dual-Axis Pressure':'φ↓ A↑ — 雙軸壓力型', desc:en?'Both axes show structural pressure. The age gap makes contribution asymmetry harder to resolve through dialogue alone.':'兩軸均顯示結構壓力，年齡差距使貢獻不對稱更難透過溝通單獨解決。',danger:true};
   }
-  if( pu&& ad&& fd) return {tag:'φ↑ A↓ F↓ — 三軸穩定型',            desc:'三個診斷軸均指向穩定狀態，系統抗壓能力最強。',danger:false};
-  if( pu&& ad&&!fd) return {tag:'φ↑ A↓ F↑ — 貢獻穩定，家境存差',    desc:'當下運作穩定，家境差距在重大財務決策時較易浮現。',danger:false};
-  if( pu&&!ad&& fd) return {tag:'φ↑ A↑ F↓ — 貢獻對稱，年齡存差',    desc:'家境背景一致降低部分風險，但年齡差距仍是潛在變數。',danger:false};
-  if( pu&&!ad&&!fd) return {tag:'φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差',desc:'當下分工均衡，但年齡與家境差距同時存在，重大決策節點壓力較集中。',danger:false};
-  if(!pu&& ad&& fd) return {tag:'φ↓ A↓ F↓ — 背景一致，貢獻待調整',  desc:'年齡與家境均相近，主要問題來自貢獻不對稱，調整成本相對較低。',danger:false};
-  if(!pu&& ad&&!fd) return {tag:'φ↓ A↓ F↑ — 貢獻失衡，家境存差',    desc:'家境差距使公平感基準不一致，可能加深對貢獻不對稱的感知落差。',danger:true};
-  if(!pu&&!ad&& fd) return {tag:'φ↓ A↑ F↓ — 年齡存差，貢獻失衡',    desc:'家境相近是相對有利條件，但年齡差距與貢獻不對稱同時存在。',danger:true};
-  return                   {tag:'φ↓ A↑ F↑ — 三軸壓力型',            desc:'三軸均顯示結構壓力，貢獻失衡、年齡差距、家境落差三者並存，風險最集中。',danger:true};
+  if( pu&& ad&& fd) return {tag:en?'φ↑ A↓ F↓ — Three-Axis Stable':'φ↑ A↓ F↓ — 三軸穩定型', desc:en?'All three diagnostic axes point toward stability. The system has the strongest resistance to pressure.':'三個診斷軸均指向穩定狀態，系統抗壓能力最強。',danger:false};
+  if( pu&& ad&&!fd) return {tag:en?'φ↑ A↓ F↑ — Stable Contributions, Wealth Gap':'φ↑ A↓ F↑ — 貢獻穩定，家境存差', desc:en?'Current operations are stable, but the wealth gap is a latent source of value friction at major financial decisions.':'當下運作穩定，家境差距在重大財務決策時較易浮現。',danger:false};
+  if( pu&&!ad&& fd) return {tag:en?'φ↑ A↑ F↓ — Symmetric Contributions, Age Gap':'φ↑ A↑ F↓ — 貢獻對稱，年齡存差', desc:en?'Aligned wealth backgrounds reduce some risk, but the age gap remains a latent variable.':'家境背景一致降低部分風險，但年齡差距仍是潛在變數。',danger:false};
+  if( pu&&!ad&&!fd) return {tag:en?'φ↑ A↑ F↑ — Balanced, Dual Background Gap':'φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差', desc:en?'Current division is balanced, but age and wealth gaps coexist — pressure may concentrate at major decision points.':'當下分工均衡，但年齡與家境差距同時存在，重大決策節點壓力較集中。',danger:false};
+  if(!pu&& ad&& fd) return {tag:en?'φ↓ A↓ F↓ — Aligned Backgrounds, Contribution Imbalance':'φ↓ A↓ F↓ — 背景一致，貢獻待調整', desc:en?'Age and wealth are both aligned; the main issue is contribution asymmetry, which is relatively easier to address.':'年齡與家境均相近，主要問題來自貢獻不對稱，調整成本相對較低。',danger:false};
+  if(!pu&& ad&&!fd) return {tag:en?'φ↓ A↓ F↑ — Imbalanced Contributions, Wealth Gap':'φ↓ A↓ F↑ — 貢獻失衡，家境存差', desc:en?'The wealth gap creates misaligned fairness baselines, deepening the perceived burden of contribution asymmetry.':'家境差距使公平感基準不一致，可能加深對貢獻不對稱的感知落差。',danger:true};
+  if(!pu&&!ad&& fd) return {tag:en?'φ↓ A↑ F↓ — Age Gap, Contribution Imbalance':'φ↓ A↑ F↓ — 年齡存差，貢獻失衡', desc:en?'Aligned wealth is a relative advantage, but the age gap and contribution asymmetry coexist.':'家境相近是相對有利條件，但年齡差距與貢獻不對稱同時存在。',danger:true};
+  return                   {tag:en?'φ↓ A↑ F↑ — Three-Axis Pressure':'φ↓ A↑ F↑ — 三軸壓力型', desc:en?'All three axes show structural pressure — imbalanced contributions, age gap, and wealth divergence — the highest-risk combination.':'三軸均顯示結構壓力，貢獻失衡、年齡差距、家境落差三者並存，風險最集中。',danger:true};
 }
 
 // ── 主計算 ──
@@ -1857,14 +2308,14 @@ function calculate(){
   const gsr = document.getElementById('grade_self').value.trim();
   const gor = document.getElementById('grade_other').value.trim();
 
-  if([is,io,hs,ho,as_,ao].some(v=>isNaN(v)||v<0)){alert('請填入所有必填欄位的有效數值。');return;}
-  if(hs>168||ho>168){alert('每週勞動時數不得超過 168 小時。');return;}
-  if(as_<16||ao<16){alert('年齡需為 16 歲以上。');return;}
-  if(is+io===0||hs+ho===0){alert('收入合計與時數合計不得皆為 0。');return;}
+  if([is,io,hs,ho,as_,ao].some(v=>isNaN(v)||v<0)){alert(getLang()==='en'?'Please fill in all required fields with valid values.':'請填入所有必填欄位的有效數值。');return;}
+  if(hs>168||ho>168){alert(getLang()==='en'?'Weekly labor hours cannot exceed 168.':'每週勞動時數不得超過 168 小時。');return;}
+  if(as_<16||ao<16){alert(getLang()==='en'?'Age must be 16 or older.':'年齡需為 16 歲以上。');return;}
+  if(is+io===0||hs+ho===0){alert(getLang()==='en'?'Combined income and combined hours cannot both be zero.':'收入合計與時數合計不得皆為 0。');return;}
 
   const gs=parseFloat(gsr),go=parseFloat(gor);
   const hasF=!isNaN(gs)&&!isNaN(go)&&gs>=1&&gs<=10&&go>=1&&go<=10;
-  if((gsr!==''||gor!=='')&&!hasF){alert('家境等級需為 1–10 的整數，或兩欄皆留空。');return;}
+  if((gsr!==''||gor!=='')&&!hasF){alert(getLang()==='en'?'Wealth tier must be an integer 1–10, or leave both blank.':'家境等級需為 1–10 的整數，或兩欄皆留空。');return;}
 
   // φ
   const phi_m=1-Math.abs(is-io)/(is+io);
@@ -1874,30 +2325,32 @@ function calculate(){
   const hrs_gap=Math.abs(hs-ho)/(hs+ho);
   const inc_hi=is>=io, hrs_hi=hs>=ho;
   let dirType,dirAdj,adjVal=0;
-  if(inc_gap===0||hrs_gap===0){dirType='無顯著方向';dirAdj='修正值 0';}
-  else if(inc_hi===hrs_hi){adjVal=-(inc_gap*hrs_gap*0.4);dirType='單邊過載';dirAdj='扣分 × 0.4';}
-  else{adjVal=+(inc_gap*hrs_gap*0.1);dirType='互補分工';dirAdj='加分 × 0.1';}
+  const en_=getLang()==='en';
+  if(inc_gap===0||hrs_gap===0){dirType=en_?'No Significant Direction':'無顯著方向';dirAdj=en_?'correction 0':'修正值 0';}
+  else if(inc_hi===hrs_hi){adjVal=-(inc_gap*hrs_gap*0.4);dirType=en_?'Unilateral Overload':'單邊過載';dirAdj=en_?'penalty × 0.4':'扣分 × 0.4';}
+  else{adjVal=+(inc_gap*hrs_gap*0.1);dirType=en_?'Complementary Division':'互補分工';dirAdj=en_?'bonus × 0.1':'加分 × 0.1';}
   const phi=Math.max(0,Math.min(1,phi_raw+adjVal));
   const w=1-phi, s=is+io;
 
   let phiStatus,phiColor,report;
-  if(phi>=0.80){phiStatus='結構良好';phiColor='#60d080';
-    report=`<p>雙方貢獻高度對稱，結構內耗 W = ${w.toFixed(3)} 偏低。系統面對外部壓力時承擔能力均衡。</p><p>建議持續維持現有分工結構，並在重大生活變動前重新評估。</p>`;}
-  else if(phi>=0.65){phiStatus='輕度不對稱';phiColor='#c8f060';
-    report=`<p>結構存在一定程度的不對稱，內耗值 W = ${w.toFixed(3)}，尚未進入高風險區間。</p><p>建議雙方確認現有分工是否為共識安排，並評估是否需要調整。</p>`;}
-  else if(phi>=0.50){phiStatus='中度不對稱';phiColor='#f0c060';
-    report=`<p>結構呈現中度不對稱，內耗值 W = ${w.toFixed(3)}，有效韌性受限。長期維持此結構，壓力易在具體事件中顯現。</p><p>建議檢視不對稱的主要來源，評估是否有結構調整的可能性。</p>`;}
-  else{phiStatus='高度不對稱';phiColor='#ff5c5c';
-    report=`<p>結構處於高度不對稱狀態，內耗值 W = ${w.toFixed(3)}，屬高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</p><p>建議認真檢視現有分工結構，評估雙方是否對此結構有共識。</p>`;}
+  const _en=getLang()==='en';
+  if(phi>=0.80){phiStatus=_en?'Structurally Sound':'結構良好';phiColor='#60d080';
+    report=_en?`<p>Contributions are highly symmetric. Structural friction W = ${w.toFixed(3)} is low; the system handles external pressure with balanced resilience.</p><p>Maintain the current arrangement and reassess before major life changes.</p>`:`<p>雙方貢獻高度對稱，結構內耗 W = ${w.toFixed(3)} 偏低。系統面對外部壓力時承擔能力均衡。</p><p>建議持續維持現有分工結構，並在重大生活變動前重新評估。</p>`;}
+  else if(phi>=0.65){phiStatus=_en?'Mild Asymmetry':'輕度不對稱';phiColor='#c8f060';
+    report=_en?`<p>Some structural asymmetry exists; friction W = ${w.toFixed(3)}, not yet in the high-risk zone.</p><p>Confirm whether the current arrangement is mutually agreed upon and assess whether adjustment is needed.</p>`:`<p>結構存在一定程度的不對稱，內耗值 W = ${w.toFixed(3)}，尚未進入高風險區間。</p><p>建議雙方確認現有分工是否為共識安排，並評估是否需要調整。</p>`;}
+  else if(phi>=0.50){phiStatus=_en?'Moderate Asymmetry':'中度不對稱';phiColor='#f0c060';
+    report=_en?`<p>Moderate asymmetry is present; friction W = ${w.toFixed(3)}, effective resilience is limited. Sustained imbalance tends to surface during high-pressure events.</p><p>Examine the primary source of asymmetry and assess whether structural adjustment is feasible.</p>`:`<p>結構呈現中度不對稱，內耗值 W = ${w.toFixed(3)}，有效韌性受限。長期維持此結構，壓力易在具體事件中顯現。</p><p>建議檢視不對稱的主要來源，評估是否有結構調整的可能性。</p>`;}
+  else{phiStatus=_en?'Severe Asymmetry':'高度不對稱';phiColor='#ff5c5c';
+    report=_en?`<p>The structure is severely asymmetric; friction W = ${w.toFixed(3)}, a high-risk zone. System resilience is critically limited — even minor external pressure may trigger significant instability.</p><p>Seriously evaluate the current arrangement and whether both parties have a shared understanding of it.</p>`:`<p>結構處於高度不對稱狀態，內耗值 W = ${w.toFixed(3)}，屬高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</p><p>建議認真檢視現有分工結構，評估雙方是否對此結構有共識。</p>`;}
 
   // A
   const gap=Math.abs(as_-ao),mean=(as_+ao)/2;
   const a_raw=(gap*gap)/(mean*mean),a=Math.min(1,a_raw);
   let aStatus,aColor;
-  if(a<0.10){aStatus='背景相近';aColor='var(--green)';}
-  else if(a<0.25){aStatus='差距可接受';aColor='var(--accent)';}
-  else if(a<0.50){aStatus='差距明顯';aColor='var(--yellow)';}
-  else{aStatus='差距顯著';aColor='var(--red)';}
+  if(a<0.10){aStatus=_en?'Similar Background':'背景相近';aColor='var(--green)';}
+  else if(a<0.25){aStatus=_en?'Acceptable Gap':'差距可接受';aColor='var(--accent)';}
+  else if(a<0.50){aStatus=_en?'Notable Gap':'差距明顯';aColor='var(--yellow)';}
+  else{aStatus=_en?'Significant Gap':'差距顯著';aColor='var(--red)';}
 
   // F
   let f=0,fStatus='',fColor='',f_down=true;
@@ -1911,17 +2364,17 @@ function calculate(){
 
   // 類型
   let typeLabel,typeColor;
-  if(is===io&&hs===ho){typeLabel='完全對稱型';typeColor='var(--green)';}
-  else if(inc_hi===hrs_hi&&inc_gap>0.1){typeLabel='單邊過載型';typeColor='var(--red)';}
-  else if(inc_hi!==hrs_hi){typeLabel='互補分工型';typeColor='var(--yellow)';}
-  else{typeLabel='輕度不對稱型';typeColor='var(--text-muted)';}
+  if(is===io&&hs===ho){typeLabel=_en?'Perfectly Symmetric':'完全對稱型';typeColor='var(--green)';}
+  else if(inc_hi===hrs_hi&&inc_gap>0.1){typeLabel=_en?'Unilateral Overload':'單邊過載型';typeColor='var(--red)';}
+  else if(inc_hi!==hrs_hi){typeLabel=_en?'Complementary Division':'互補分工型';typeColor='var(--yellow)';}
+  else{typeLabel=_en?'Mild Asymmetry':'輕度不對稱型';typeColor='var(--text-muted)';}
 
   // ── Render UI ──
   const phiEl=document.getElementById('phi_display');
   phiEl.textContent=phi.toFixed(2);phiEl.style.color=phiColor;
   document.getElementById('phi_status').textContent=phiStatus;
   document.getElementById('phi_status').style.color=phiColor;
-  document.getElementById('w_label').textContent=`W = ${w.toFixed(3)}（內耗值）`;
+  document.getElementById('w_label').textContent=_en?`W = ${w.toFixed(3)} (structural friction)`:`W = ${w.toFixed(3)}（內耗值）`;
   document.getElementById('phi_money').textContent=phi_m.toFixed(3);
   document.getElementById('phi_time').textContent=phi_t.toFixed(3);
   const dirEl=document.getElementById('dir_type');
@@ -1933,7 +2386,7 @@ function calculate(){
   aEl.textContent=(a*100).toFixed(1)+'%';aEl.style.color=aColor;
   document.getElementById('a_status').textContent=aStatus;
   document.getElementById('a_status').style.color=aColor;
-  document.getElementById('age_info').textContent=`年齡差 ${gap} 歲 · 均值 ${mean.toFixed(1)} 歲`;
+  document.getElementById('age_info').textContent=_en?`${gap}-yr gap · avg age ${mean.toFixed(1)}`:`年齡差 ${gap} 歲 · 均值 ${mean.toFixed(1)} 歲`;
 
   const fCard=document.getElementById('f_card_row');
   const fBreak=document.getElementById('breakdown_f');
@@ -1942,9 +2395,9 @@ function calculate(){
     document.getElementById('f_display').textContent=(f*100).toFixed(1)+'%';
     document.getElementById('f_status').textContent=fStatus;
     document.getElementById('f_status').style.color=fColor;
-    document.getElementById('f_info').textContent=`自己 ${gs} 級 · 對方 ${go} 級`;
-    document.getElementById('d_grade_self').textContent=gs+' 級';
-    document.getElementById('d_grade_other').textContent=go+' 級';
+    document.getElementById('f_info').textContent=_en?`Self Tier ${gs} · Partner Tier ${go}`:`自己 ${gs} 級 · 對方 ${go} 級`;
+    document.getElementById('d_grade_self').textContent=_en?'Tier '+gs:gs+' 級';
+    document.getElementById('d_grade_other').textContent=_en?'Tier '+go:go+' 級';
     document.getElementById('d_grade_self_sq').textContent=(gs*gs).toFixed(0);
     document.getElementById('d_grade_other_sq').textContent=(go*go).toFixed(0);
     document.getElementById('d_f_diff').textContent=Math.abs(gs*gs-go*go).toFixed(0);
@@ -1958,17 +2411,17 @@ function calculate(){
   document.getElementById('cross_desc').textContent=cross.desc;
   document.getElementById('cross_box').classList.toggle('danger',cross.danger);
 
-  document.getElementById('s_value').textContent=s.toFixed(1)+' 萬元／月';
+  document.getElementById('s_value').textContent=_en?'$'+s.toFixed(1)+'K / month':s.toFixed(1)+' 萬元／月';
   document.getElementById('s_context').textContent=getSContext(s,phi);
 
   const tEl=document.getElementById('type_tag');
   tEl.textContent=typeLabel;tEl.style.color=typeColor;tEl.style.borderColor=typeColor;
   document.getElementById('report_text').innerHTML=report;
 
-  document.getElementById('d_income_self').textContent=is.toFixed(1)+' 萬元';
-  document.getElementById('d_income_other').textContent=io.toFixed(1)+' 萬元';
-  document.getElementById('d_hours_self').textContent=hs.toFixed(0)+' 小時／週';
-  document.getElementById('d_hours_other').textContent=ho.toFixed(0)+' 小時／週';
+  document.getElementById('d_income_self').textContent=_en?'$'+is.toFixed(1)+'K':is.toFixed(1)+' 萬元';
+  document.getElementById('d_income_other').textContent=_en?'$'+io.toFixed(1)+'K':io.toFixed(1)+' 萬元';
+  document.getElementById('d_hours_self').textContent=_en?hs.toFixed(0)+' hrs/week':hs.toFixed(0)+' 小時／週';
+  document.getElementById('d_hours_other').textContent=_en?ho.toFixed(0)+' hrs/week':ho.toFixed(0)+' 小時／週';
   document.getElementById('d_phi_money').textContent=phi_m.toFixed(4);
   document.getElementById('d_phi_time').textContent=phi_t.toFixed(4);
   document.getElementById('d_phi_raw').textContent=phi_raw.toFixed(4);
@@ -1976,14 +2429,14 @@ function calculate(){
   document.getElementById('d_dir_adj').textContent=adjVal===0?'0':adjVal.toFixed(4);
   document.getElementById('d_phi_final').textContent=phi.toFixed(4);
   document.getElementById('d_w').textContent=w.toFixed(4);
-  document.getElementById('d_age_self').textContent=as_+' 歲';
-  document.getElementById('d_age_other').textContent=ao+' 歲';
-  document.getElementById('d_gap').textContent=gap+' 歲';
-  document.getElementById('d_mean').textContent=mean.toFixed(1)+' 歲';
+  document.getElementById('d_age_self').textContent=_en?as_+' yrs':as_+' 歲';
+  document.getElementById('d_age_other').textContent=_en?ao+' yrs':ao+' 歲';
+  document.getElementById('d_gap').textContent=_en?gap+' yrs':gap+' 歲';
+  document.getElementById('d_mean').textContent=_en?mean.toFixed(1)+' yrs':mean.toFixed(1)+' 歲';
   document.getElementById('d_gap2').textContent=(gap*gap).toFixed(0);
   document.getElementById('d_mean2').textContent=(mean*mean).toFixed(2);
   document.getElementById('d_a_raw').textContent=(a_raw*100).toFixed(2)+'%';
-  document.getElementById('d_a_final').textContent=(a*100).toFixed(2)+'%'+(a_raw>1?' (已cap)':'');
+  document.getElementById('d_a_final').textContent=(a*100).toFixed(2)+'%'+(a_raw>1?(_en?' (capped)':' (已cap)'):'');
 
   // ── 顯示result + 更新SVG矩陣 ──
   document.getElementById('result').classList.add('visible');
@@ -2021,7 +2474,7 @@ function tlUpdateBadge() {
 }
 
 function tlSaveRecord() {
-  if (!tlLastResult) { alert('請先執行診斷。'); return; }
+  if (!tlLastResult) { alert(getLang()==='en'?'Please run a diagnosis first.':'請先執行診斷。'); return; }
   const note = document.getElementById('tl_save_note').value.trim();
   const records = tlLoadRecords();
   records.push({
@@ -2056,7 +2509,7 @@ function tlDeleteRecord(id) {
 }
 
 function tlClearAll() {
-  if (!confirm('確定要清除所有歷史記錄嗎？此操作無法復原。')) return;
+  if (!confirm(getLang()==='en'?'Clear all records? This cannot be undone.':'確定要清除所有歷史記錄嗎？此操作無法復原。')) return;
   localStorage.removeItem('dsbm_records');
   tlUpdateBadge();
   tlRender();
@@ -2107,15 +2560,15 @@ function tlRenderList(records) {
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);">
         <div style="background:var(--surface2);padding:10px 14px;">
-          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">φ 對稱係數</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;"><span class="zh">φ 對稱係數</span><span class="en">φ Symmetry</span></div>
           <div style="font-family:'DM Mono',monospace;font-size:18px;color:${phiColor};">${r.phi.toFixed(2)}</div>
         </div>
         <div style="background:var(--surface2);padding:10px 14px;">
-          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">A 年齡內耗</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">${getLang()==='en'?'A Age Friction':'A 年齡內耗'}</div>
           <div style="font-family:'DM Mono',monospace;font-size:18px;color:${aColor};">${(r.a*100).toFixed(1)}%</div>
         </div>
         <div style="background:var(--surface2);padding:10px 14px;">
-          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">F 家境內耗</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">${getLang()==='en'?'F Wealth Friction':'F 家境內耗'}</div>
           <div style="font-family:'DM Mono',monospace;font-size:18px;color:${fColor};">${fVal}</div>
         </div>
       </div>`;
@@ -2221,6 +2674,72 @@ window.addEventListener('resize', () => {
     tlRenderChart(tlLoadRecords());
   }
 });
+
+
+// ── ENGLISH CASES ──
+const CASES_EN = {
+  A: {
+    label:'CASE A — The Loneliness at the Top',
+    initPhi:0.72, initA:0.18,
+    phases:[
+      {tag:'Prologue',text:'<em>You used to build your lives together from almost nothing.</em><br><br>Back then, both of you were tired in the same way.<br><br>The same cheap dinners. The same late-night trains. The same promise:<br><br><strong>"One day, things will get better."</strong><br><br>Eventually, they did.<br><br>The apartment became larger. The gifts became more expensive. The waiting became quieter.<br><br>One of you started living inside airports and meeting rooms.<br><br>The other started learning how to eat dinner alone.<br><br>Nobody called it loneliness at first.<br><br>It simply looked like success.',choices:[{text:'Continue',effect:null,delta:{}}]},
+      {tag:'Event 01 — The Promotion',inner:'You waited for them to say something.<br>They said: "It\'s your decision."<br>You still aren\'t sure if that was trust — or surrender.',text:'The company offers a new role. Double the salary. But you\'d be traveling constantly — home fewer than ten days a month.<br><br>They were quiet for a moment, then said:<br><br><strong>"It\'s your decision."</strong><br><br><em>You still aren\'t sure if that was support — or a kind of letting go.</em>',choices:[{text:'Accept the promotion',effect:'Income↑↑  Time↓↓',delta:{phi:-0.10},flag:'promoted',tags:['avoid']},{text:'Turn it down',effect:'Less pressure · Long-term anxiety',delta:{phi:+0.05},flag:'stayed',tags:['face']},{text:'"It\'s just temporary — things will settle down."',effect:'Borrowing from the future',delta:{phi:-0.05},flag:'temporary',tags:['avoid']}]},
+      {tag:'Event 02 — The Gift',inner:'The gift is still on the table, unopened.<br>When you bought it, you thought it could stand in for you.',text:'Your wedding anniversary. You\'re locked in a product launch and can\'t leave.<br><br>You order an expensive gift and have it delivered.<br><br>When you get home, it\'s on the table, still wrapped.<br><br>They say: "Thank you. But opening it alone felt strange."<br><br><em>That unopened gift said more than any argument could.</em>',choices:[{text:'"I\'ll be there next time. I promise."',effect:'A promise with a shelf life',delta:{phi:+0.02},tags:['avoid']},{text:'"Why didn\'t you open it? I picked it out."',effect:'Defensive',delta:{phi:-0.08},tags:['avoid']},{text:'Say nothing. Sit down. Take their hand.',effect:'Nothing is solved. But you\'re together.',delta:{phi:+0.01},tags:['sacrifice']}]},
+      {tag:'Event 03 — The Note',inner:'"Did you eat."<br><br>Four words. No question mark.<br><br>You don\'t know how to read it.',text:'You get home late. The lights are on, but they\'re already asleep.<br><br>There\'s a note on the table. It says:<br><br><strong>"Did you eat."</strong><br><br>You stand there for a long time.<br><br><em>You don\'t know if that\'s care — or distance.</em>',choices:[{text:'Explain tomorrow.',effect:'Short-term relief',delta:{phi:+0.03},tags:['face']},{text:'Ignore it. Go to sleep.',effect:'Friction accumulates',delta:{phi:-0.08},tags:['avoid']},{text:'Wake them up now.',effect:'At least you\'re still trying.',delta:{phi:-0.02},tags:['honest']}]},
+      {tag:'One Year Later',text:'Some things were never resolved.<br><br>Both of you just quietly accepted that this is life now.<br><br><em>Acceptance is sometimes gentler than fighting. Sometimes it\'s just numbness.</em>',isTransition:true,choices:[{text:'Continue',effect:null,delta:{}}]},
+      {tag:'Event 04 — The Announcement',inner:'Not a conversation. A statement.<br><br>You froze — not in disagreement.<br>But because you realized: this decision grew while you were gone.',text:'One evening, they say:<br><br><strong>"I\'ve decided to go back to school."</strong><br><br>Not a question. A statement.<br><br>You froze — not because you objected.<br><br>But because you realized: this decision grew in the time you were absent.<br><br>You were building your world. They were building theirs.<br><br><em>The gifts you gave them became the foundation for leaving.</em>',choices:[{text:'"I support you. But we need to talk about what this means."',effect:'Trying to rebalance',delta:{phi:+0.04},tags:['face']},{text:'"Now? We still need my income."',effect:'Dismissing their needs',delta:{phi:-0.06},tags:['avoid']},{text:'"Is this about me?"',effect:'Defensive — tension spikes immediately',delta:{phi:-0.12},tags:['avoid']}]},
+      {tag:'Event 05 — The Question',inner:'No anger in those words.<br>You don\'t know how to answer.',text:'One Sunday afternoon, they ask:<br><br><strong>"What are we, exactly, at this point?"</strong><br><br>No anger. No tears.<br>Just a tiredness you can\'t name.<br><br><em>φ = {phi}  W = {w}</em>',choices:[{text:'"We need to talk."',effect:'Attempting to reconstruct',delta:{phi:+0.08},tags:['face','honest']},{text:'"What do you want?"',effect:'Handing the decision over',delta:{phi:-0.02},tags:['sacrifice']},{text:'Silence.',effect:'Everything stays the same.',delta:{phi:-0.12},tags:['avoid']}]},
+      {tag:'Event 06 — The Last Choice',text:'You sit in the same room.<br><br>Both knowing this conversation will decide what comes next.<br><br>Neither of you speaks first.<br><br>Outside, everything sounds very far away.<br><br><em>You ask yourself: is the person who said "one day things will get better" still here?</em>',isFinal:true,choices:[{text:'"I\'m willing to slow down. For us."',effect:null,delta:{phi:+0.08}},{text:'"I don\'t know if we can go back to what we were."',effect:null,delta:{phi:-0.05}},{text:'"I think we\'re both exhausted."',effect:null,delta:{phi:-0.15}}]}
+    ],
+    endings:[
+      {condition:phi=>phi<0.45,type:'Structural Collapse',typeColor:'var(--red)',title:'No fighting. Just an ending.',text:'No big argument. No slammed doors. No dramatic scene.<br><br>Just a day when both of you agreed: continuing like this isn\'t fair to either of us.<br><br>The last conversation was short. You both said thank you. Then you each walked away.',quote:'"It wasn\'t that we stopped loving. The structure just couldn\'t hold."',quoteColor:'var(--red)'},
+      {condition:phi=>phi>=0.45&&phi<0.65,type:'Functional Relationship',typeColor:'var(--yellow)',title:'We work well. We just stopped being close.',text:'You didn\'t separate. Bills get paid. Chores get done. You look fine in front of friends.<br><br>But that feeling of "you get me" — it\'s been gone for a while.<br><br>Both of you know. Neither says it.',quote:'"Maintaining is a choice. We just don\'t know who it\'s harder on."',quoteColor:'var(--yellow)'},
+      {condition:phi=>phi>=0.65,type:'Reconstructed Balance',typeColor:'var(--green)',title:'You didn\'t conquer the world. You kept each other.',text:'You gave up some success. They gave up some expectations.<br><br>It\'s not a perfect ending. You still argue sometimes. You still get tired.<br><br>But some nights, you\'re both under the same light, talking about nothing in particular.',quote:'"Balance isn\'t found. It\'s chosen."',quoteColor:'var(--green)'}
+    ]
+  },
+  B: {
+    label:'CASE B — Travelers Out of Time',
+    initPhi:0.68, initA:0.42,
+    phases:[
+      {tag:'Prologue',text:'When you first met, you didn\'t notice the age.<br><br>You noticed how they talked — curious about the world, yet somehow already at peace with much of it.<br><br>You thought that was chemistry.<br><br><em>You didn\'t realize you were both living in different times.</em>',choices:[{text:'Continue',effect:null,delta:{}}]},
+      {tag:'Event 01 — Different Life Chapters',inner:'You\'re celebrating something. They\'re talking about something else.<br>Not indifference — just different concerns.',text:'You\'re ready to celebrate a promotion. They\'re talking about lower back pain at dinner.<br><br>You don\'t feel annoyed.<br><br>You feel something lighter — but harder to shake:<br><br><em>You\'re living different lives.</em>',choices:[{text:'Force enthusiasm and share your news.',effect:'φ drifts',delta:{phi:-0.04},tags:['avoid']},{text:'Set it aside. Ask about their back.',effect:'Short-term warmth',delta:{phi:-0.02},tags:['sacrifice']},{text:'Say what you\'re feeling.',effect:'Tension rises',delta:{phi:+0.03},tags:['honest']}]},
+      {tag:'Event 02 — The Server\'s Question',inner:'"Are you dining with a family member?"<br><br>The gap became visible to the world.',text:'When paying, the server asks: "Are you here with a family member today?"<br><br>Three seconds of silence.<br><br>No one corrects them.<br><br>On the way home, neither of you mentions it.',choices:[{text:'Laugh it off.',effect:'A friction increases',delta:{a:+0.03},tags:['avoid']},{text:'Correct the server.',effect:'Brief solidarity — awkward after',delta:{phi:+0.02},tags:['face']},{text:'Bring it up at home.',effect:'Takes courage.',delta:{phi:+0.04},tags:['honest','face']}]},
+      {tag:'Two Years Later',text:'You\'re still together.<br><br>A lot went unresolved. You both just got used to it.<br><br><em>Getting used to something is sometimes tenderness. Sometimes it\'s numbness.</em>',isTransition:true,aChange:-0.05,choices:[{text:'Continue',effect:null,delta:{}}]},
+      {tag:'Event 03 — Wanting Different Things',inner:'You said a lot. Then you realized they\'d been very quiet.<br><br>You\'re anxious about different things now.',text:'A friend asks what you\'ve been up to. You talk for a while. Then you realize:<br><br>They\'ve never asked you that question.<br><br>Not because they don\'t care. But because they\'re no longer in the "try everything" phase.<br><br>You\'re anxious about different things. Things that don\'t intersect.',choices:[{text:'Tell them what you want now.',effect:'The gap becomes clearer',delta:{phi:+0.03},tags:['honest']},{text:'Keep the surface smooth.',effect:'Friction accumulates',delta:{phi:-0.05},tags:['avoid']},{text:'Tell a friend. Not them.',effect:'A gap opens',delta:{phi:-0.03},tags:['avoid']}]},
+      {tag:'Event 04 — The Admission',inner:'"Sometimes I\'m afraid I can\'t keep up with you."<br><br>The first time the limitation was spoken aloud.',text:'One day they stop and quietly say:<br><br><strong>"Sometimes I\'m afraid I can\'t keep up with you."</strong><br><br>It\'s not a complaint.<br><br>It\'s the first time you\'ve heard the limit named out loud.<br><br>Not a feeling. A reality.',choices:[{text:'"That\'s not true. You\'re great."',effect:'Reassurance — but avoids the issue',delta:{phi:-0.03},tags:['avoid']},{text:'"Then we slow down."',effect:'You compress yourself.',delta:{phi:+0.05},tags:['sacrifice']},{text:'Silence. Take their hand.',effect:'No answer — but together.',delta:{phi:+0.01},tags:['sacrifice']}]},
+      {tag:'Five Years Later',text:'You\'ve made it through a lot.<br><br>Some things didn\'t disappear. They just became something you had to face.<br><br><em>Some gaps looked smaller. But you both knew that wasn\'t the answer.</em>',isTransition:true,aChange:-0.07,choices:[{text:'Continue',effect:null,delta:{}}]},
+      {tag:'Event 05 — Different Speeds',inner:'They want to slow down. You want one more sprint.<br><br>For the first time, you can see clearly — you\'re moving at different velocities.',text:'They say they want to start planning for retirement.<br><br>You\'re still in the most important stretch of your career.<br><br>For the first time you can clearly see: you\'re moving at different speeds.<br><br>And this time, there\'s no pretending otherwise.',choices:[{text:'"I support you. How do you want to plan?"',effect:'Surface support, inner anxiety',delta:{phi:-0.03},tags:['sacrifice']},{text:'"Can you wait a few more years?"',effect:'Shifting the pressure to them',delta:{phi:-0.06},tags:['avoid']},{text:'"We need a real conversation."',effect:'Facing it directly.',delta:{phi:+0.04},tags:['face','honest']}]},
+      {tag:'Event 06 — Different Maps',inner:'You want to keep building. They\'re already designing what comes after.<br><br>You\'re not in disagreement — you\'re just at different stages.',text:'You want a few more years of push. Then reassess.<br><br>They say: "I already know what I want retirement to look like."<br><br>No argument. Just a quiet evening where it becomes clear:<br><br>Your visions of "the future" are on different pages.<br><br>This gap has always been there. You just can\'t ignore it anymore.',choices:[{text:'"Then we each live the life we want?"',effect:'Toward separation',delta:{phi:-0.10},tags:['honest']},{text:'"I can adjust my plan."',effect:'Sacrificing yourself',delta:{phi:-0.08},tags:['sacrifice']},{text:'"Can we find a version that works for both of us?"',effect:'No guarantee.',delta:{phi:+0.03},tags:['face']}]},
+      {tag:'Event 07 — The Last Choice',inner:'You look at them and remember the first time you met.<br><br>You noticed how they talked — not the age.<br>You thought that was enough.',text:'An ordinary morning. Neither of you speaks.<br><br>Not a cold war. Just — after so many years, some things carry too much weight to say easily.<br><br>You look at them and remember meeting for the first time.<br><br>You didn\'t imagine it would come to this.<br><br><em>If you could choose again, would you still end up here?</em>',choices:[{text:'"We continue. Whatever comes."',effect:'Toward resonance',delta:{phi:+0.05}},{text:'"I need to be honest — I\'m not sure anymore."',effect:'Toward a seasonal ending',delta:{phi:-0.05}},{text:'"I think we both need to let go."',effect:'Toward dissolution',delta:{phi:-0.15}}]}
+    ],
+    endings:[
+      {condition:(phi,a)=>phi<0.50,type:'Temporal Dissolution',typeColor:'var(--red)',title:'Not wrong — just not in the same time.',text:'The last conversation was calm.<br><br>No one was the villain. You just wanted different things from "what\'s next."<br><br>As you left, you looked back once. They were standing there — looking like the first time you met.',quote:'"Some people arrive for a season. Not a lifetime."',quoteColor:'var(--red)'},
+      {condition:(phi,a)=>phi>=0.50&&phi<0.68,type:'Seasonal Companionship',typeColor:'var(--yellow)',title:'You chose to travel together — not forever.',text:'You didn\'t separate. But you stopped pretending this was forever.<br><br>Each day you choose to continue. Not out of certainty — because for now, it still feels right.<br><br>That\'s also an answer.',quote:'"Not promising forever. Just promising today."',quoteColor:'var(--yellow)'},
+      {condition:(phi,a)=>phi>=0.68,type:'Resonance',typeColor:'var(--green)',title:'Not synchronized — but resonant.',text:'You\'re not at the same point in time. But you found a way to feel each other across different rhythms.<br><br>It wasn\'t easy. You both gave something up.<br><br>But sometimes, difference itself is a kind of nourishment.',quote:'"Out of sync doesn\'t mean apart."',quoteColor:'var(--green)'}
+    ]
+  },
+  C: {
+    label:'CASE C — The Gravity Trap of Two Worlds',
+    initPhi:0.65, initA:0.22,
+    phases:[
+      {tag:'Prologue',text:'The first time you visited their home, you noticed things.<br><br>Not bad things.<br>Just things that were completely different from where you grew up.<br><br>Neither of you said anything.<br><br>You both assumed it didn\'t need discussing.<br><br><em>Later, you learned — you underestimated gravity.</em>',choices:[{text:'Continue',effect:null,delta:{}}]},
+      {tag:'Event 01 — Entering Their World',inner:'You stand there trying to look natural.<br>But you know: real ease doesn\'t require this much effort.',text:'They take you to a gathering.<br><br>The conversation flows easily. Topics shift between investments, real estate, and ways of living you\'re not quite familiar with.<br><br>You\'re not lost. You just can\'t join in.<br><br>Someone asks you a few polite questions. You answer. They smile, nod — and the topic moves on.<br><br><em>You weren\'t excluded. But you weren\'t included either.</em>',choices:[{text:'Talk more. Try to fit in.',effect:'Internal friction increases',delta:{phi:+0.03},tags:['sacrifice']},{text:'Stay quietly at their side.',effect:'Not forcing yourself',delta:{phi:+0.01},tags:['avoid']},{text:'Leave early.',effect:'Distance grows',delta:{phi:-0.03},tags:['avoid']}]},
+      {tag:'Event 02 — Unspoken Rules',inner:'You watch them move through these rules with ease.<br>These things were never explained — they\'ve just always been there.',text:'At dinner, you notice small things.<br><br>Who reaches for food first. Who pours for whom. When to speak. When not to.<br><br>No one taught you. Everyone already knows.<br><br>You watch them move through it naturally.<br><br><em>You realize: knowing a rule isn\'t the same as understanding it.</em>',choices:[{text:'Ask them about it afterward.',effect:'The distance gets named',delta:{phi:+0.03},tags:['honest']},{text:'Note it. Don\'t make the same mistake next time.',effect:'Friction accumulates inside',delta:{phi:-0.02},tags:['sacrifice']},{text:'Pretend you didn\'t notice.',effect:'The gap stays',delta:{phi:-0.03},tags:['avoid']}]},
+      {tag:'Event 03 — A Clash of Defaults',inner:'"That\'s not how we do things in my family."<br><br>Two worlds — each certain of its own logic.',text:'You\'re discussing a life decision.<br><br>You share your idea.<br><br>They pause, then say:<br><br><strong>"That\'s not how things are done in my family."</strong><br><br>Calm. Not critical.<br><br><em>But somewhere in that sentence, there\'s a world you can\'t enter.</em>',choices:[{text:'"How does your family do it?"',effect:'The gap widens',delta:{phi:+0.04},tags:['honest','face']},{text:'"Maybe we can find a middle ground."',effect:'Trying to compromise',delta:{phi:+0.02},tags:['face']},{text:'Give in.',effect:'Friction accumulates',delta:{phi:-0.05},tags:['sacrifice']}]},
+      {tag:'Event 04 — A Different Version of Them',inner:'You thought you knew them.<br>But this person in front of you is slightly different.<br><br>Not performing. Just — you hadn\'t seen this side.',text:'You visit their family home.<br><br>They seem different. More careful. Quicker to respond. Some of the expressions you know — gone.<br><br>It\'s not unnatural. It\'s another kind of natural.<br><br><em>The person you know every day and the person here aren\'t quite the same.</em>',choices:[{text:'Ask them afterward.',effect:'They seem a little tired.',delta:{phi:+0.03},tags:['honest']},{text:'Pretend not to notice.',effect:'Distance accumulates',delta:{phi:-0.02},tags:['avoid']},{text:'Start adjusting how you act in this environment too.',effect:'Internal friction increases',delta:{phi:-0.03},tags:['sacrifice']}]},
+      {tag:'Event 05 — Their Family\'s Concerns',inner:'You can\'t tell if these words are just a report — or part of who they are now.<br>Maybe there\'s no difference.',text:'One day they mention what their family has been thinking.<br><br>No direct opposition. Just "concerns."<br><br>About how your lives might look. About values and whether they\'ll align.<br><br>They say it calmly.<br><br><em>You can\'t tell if they\'re reporting — or if it\'s already part of them.</em>',choices:[{text:'"What do you think?"',effect:'Facing it directly',delta:{phi:+0.04},tags:['face','honest']},{text:'"They don\'t really know me."',effect:'Tension rises',delta:{phi:-0.06},tags:['avoid']},{text:'Silence.',effect:'The question hangs.',delta:{phi:-0.03},tags:['avoid']}]},
+      {tag:'Event 06 — Your Family\'s Concerns',inner:'Everything your family said was reasonable.<br>You couldn\'t argue with any of it.<br><br>That\'s when you realized — you\'re not choosing alone.',text:'Your family asks too.<br><br>Different way of asking — same direction.<br><br>They say they\'re not against it. They just want you to think it through.<br><br>They give examples. All reasonable.<br><br><em>Reasonable enough that you can\'t argue back.</em><br><br>You realize: this isn\'t just your decision.',choices:[{text:'"I\'ll handle it."',effect:'Internalizing the weight',delta:{phi:+0.02},tags:['sacrifice']},{text:'You start to doubt.',effect:'φ drifts',delta:{phi:-0.05},tags:['honest']},{text:'Avoid bringing it up again.',effect:'The question gets shelved',delta:{phi:-0.03},tags:['avoid']}]},
+      {tag:'Event 07 — The Last Choice',inner:'The pieces surface one by one — the space, the table, the phrase, the stranger-yet-familiar person.<br><br>Nothing was anyone\'s fault.<br>But it all led here.',text:'One day, you\'re just sitting together.<br><br>No argument. No one brings up family. Nothing requiring a decision.<br><br>Everything is quiet.<br><br>The unresolved things are still there. You both know.<br><br>Not unsolvable — uncertain whether solvable.<br><br><em>You look at them and ask yourself: if no one had objected, would we really have had no problems?</em>',isFinal:true,choices:[{text:'"Let\'s try again."',effect:null,delta:{phi:+0.08}},{text:'"Maybe this is how we carry on."',effect:null,delta:{phi:-0.03}},{text:'"Maybe this isn\'t something we can solve."',effect:null,delta:{phi:-0.15}}]}
+    ],
+    endings:[
+      {condition:phi=>phi<0.45,type:'Swallowed by Structure',typeColor:'var(--red)',title:'You didn\'t lose to each other — you lost to your starting points.',text:'No one did anything wrong. No argument. No collapse.<br><br>Just a day when you both understood: some distances can\'t be closed by effort alone.<br><br>You didn\'t lose to each other. You lost to where you started.',quote:'"Some walls aren\'t there to be climbed. They\'re there to show you which side you\'re on."',quoteColor:'var(--red)'},
+      {condition:phi=>phi>=0.45&&phi<0.65,type:'Edge Coexistence',typeColor:'var(--yellow)',title:'Same world — different floors.',text:'You didn\'t separate. You didn\'t really cross the gap either.<br><br>You learned where to give in and where not to discuss. Life goes on.<br><br>But some parts always kept their distance. Same world — different floors.',quote:'"You didn\'t take the wrong road. You were just on different coordinates."',quoteColor:'var(--yellow)'},
+      {condition:phi=>phi>=0.65,type:'Against Gravity',typeColor:'var(--green)',title:'Not overcoming gravity — learning to live with it.',text:'You didn\'t deny the gaps. You didn\'t pretend they weren\'t there.<br><br>You just chose, each time they appeared, to make the choice again.<br><br>It\'s exhausting. There\'s no guarantee. But sometimes, even from different starting points, you can walk a short road together.',quote:'"Not overcoming gravity — learning to live with it."',quoteColor:'var(--green)'}
+    ]
+  }
+};
+
+function getCases() { return getLang()==='en' ? CASES_EN : CASES; }
 
 // ── GAME JS ──
 // ── 全域統計資料 ──
@@ -2622,7 +3141,7 @@ function renderNarrative(phaseData) {
   const box  = document.getElementById('narrative-box');
   const tag  = document.getElementById('narrative-tag');
   const text = document.getElementById('narrative-text');
-  const caseData = CASES[state.caseId];
+  const caseData = getCases()[state.caseId];
   const total = caseData.phases.length;
 
   document.getElementById('phase-indicator').textContent =
@@ -2695,7 +3214,7 @@ function makeChoice(choice) {
   updateMetrics();
   state.phase++;
 
-  const caseData = CASES[state.caseId];
+  const caseData = getCases()[state.caseId];
   if (state.phase >= caseData.phases.length) {
     showEnding();
   } else {
@@ -2704,7 +3223,7 @@ function makeChoice(choice) {
 }
 
 function renderPhase() {
-  const caseData = CASES[state.caseId];
+  const caseData = getCases()[state.caseId];
   const phaseData = caseData.phases[state.phase];
 
   // 最終事件：隱藏儀表板，背景變暗
@@ -2733,7 +3252,7 @@ function renderPhase() {
       .filter(p => !p.isTransition).length;
     const eventTotal = caseData.phases.filter(p => !p.isTransition).length;
     document.getElementById('phase-indicator').textContent =
-      '事件 ' + eventNum + ' / ' + eventTotal;
+      (getLang()==='en'?'Scene ':'事件 ') + eventNum + ' / ' + eventTotal;
   }
 
   renderNarrative(phaseData);
@@ -2742,7 +3261,7 @@ function renderPhase() {
 }
 
 function showEnding() {
-  const caseData = CASES[state.caseId];
+  const caseData = getCases()[state.caseId];
   let ending = null;
 
   for (const e of caseData.endings) {
@@ -2756,7 +3275,7 @@ function showEnding() {
   // 清除選項
   document.getElementById('choices-box').innerHTML = '';
   document.getElementById('narrative-box').style.display = 'none';
-  document.getElementById('phase-indicator').textContent = '結局';
+  document.getElementById('phase-indicator').textContent = getLang()==='en'?'Ending':'結局';
 
   // 記錄案例完成
   GLOBAL.completedCases[state.caseId] = true;
@@ -2773,27 +3292,27 @@ function showEnding() {
       <div class="ending-text">${ending.text}</div>
       <div class="ending-metrics">
         <div class="ending-metric">
-          <div class="ending-metric-label">φ 最終值</div>
+          <div class="ending-metric-label">${getLang()==='en'?'φ Final':'φ 最終值'}</div>
           <div class="ending-metric-val" style="color:${state.phi >= 0.65 ? 'var(--green)' : state.phi >= 0.50 ? 'var(--yellow)' : 'var(--red)'};">${state.phi.toFixed(2)}</div>
         </div>
         <div class="ending-metric">
-          <div class="ending-metric-label">A 年齡內耗</div>
+          <div class="ending-metric-label">${getLang()==='en'?'A Age Friction':'A 年齡內耗'}</div>
           <div class="ending-metric-val" style="color:var(--a);">${(state.a * 100).toFixed(0)}%</div>
         </div>
         <div class="ending-metric">
-          <div class="ending-metric-label">W 結構內耗</div>
+          <div class="ending-metric-label">${getLang()==='en'?'W Structural Friction':'W 結構內耗'}</div>
           <div class="ending-metric-val" style="color:var(--red);">${(1 - state.phi).toFixed(2)}</div>
         </div>
       </div>
       <div class="ending-quote" style="color:${ending.quoteColor};">${ending.quote}</div>
     </div>
-    <button class="btn-restart" onclick="goTitle()">← 返回選擇其他案例</button>
+    <button class="btn-restart" onclick="goTitle()">${getLang()==='en'?'← Back to case selection':'← 返回選擇其他案例'}</button>
   `;
 }
 
 // ── 流程控制 ──
 function startCase(id) {
-  const caseData = CASES[id];
+  const caseData = getCases()[id];
   state = {
     caseId: id,
     phase: 0,
@@ -2838,31 +3357,32 @@ function generateReport() {
 
   let type, desc, quote, residual;
 
+  const _gen_en = getLang()==='en';
   if (ratio.avoid >= 0.40) {
-    type = '觀察抽離型';
-    desc = '你傾向在關係中保留空間，以距離換取安全感。你一直在場，但沒有完全走進去。這不是冷漠——是一種長期形成的自我保護機制。';
-    quote = '你一直在關係裡，但沒有完全走進去。';
-    residual = `系統偵測：迴避行為佔比 ${(ratio.avoid*100).toFixed(0)}%。長期迴避會讓關係的情感資本持續消耗，而補充速率趨近於零。`;
+    type = _gen_en?'Detached Observer':'觀察抽離型';
+    desc = _gen_en?'You tend to preserve space in relationships, using distance as a safety mechanism. You\'re present, but never fully inside. This isn\'t coldness — it\'s a self-protection pattern built over time.':'你傾向在關係中保留空間，以距離換取安全感。你一直在場，但沒有完全走進去。這不是冷漠——是一種長期形成的自我保護機制。';
+    quote = _gen_en?'You\'ve always been in the relationship — just never fully inside it.':'你一直在關係裡，但沒有完全走進去。';
+    residual = _gen_en?`System detected: avoidance behavior at ${(ratio.avoid*100).toFixed(0)}%. Long-term avoidance drains emotional capital steadily while the replenishment rate approaches zero.`:`系統偵測：迴避行為佔比 ${(ratio.avoid*100).toFixed(0)}%。長期迴避會讓關係的情感資本持續消耗，而補充速率趨近於零。`;
   } else if (ratio.sacrifice >= 0.40) {
-    type = '結構承受型';
-    desc = '你經常調整自己來維持關係的平衡。你是那個讓事情繼續運作的人，但這份重量幾乎都由你一個人在承擔。';
-    quote = '你撐住了關係，但沒有人撐住你。';
-    residual = `系統偵測：自我犧牲行為佔比 ${(ratio.sacrifice*100).toFixed(0)}%。結構承受型在外部壓力事件（升遷、家庭介入、退休節點）中，崩潰風險比其他類型高出 2.3 倍。`;
+    type = _gen_en?'Structural Load-Bearer':'結構承受型';
+    desc = _gen_en?'You often adjust yourself to maintain balance. You\'re the one who keeps things running — but almost all of that weight falls on you alone.':'你經常調整自己來維持關係的平衡。你是那個讓事情繼續運作的人，但這份重量幾乎都由你一個人在承擔。';
+    quote = _gen_en?'You held the relationship together. But no one held you.':'你撐住了關係，但沒有人撐住你。';
+    residual = _gen_en?`System detected: self-sacrifice behavior at ${(ratio.sacrifice*100).toFixed(0)}%. This type faces 2.3× higher collapse risk at high-pressure events (promotions, family intervention, retirement transitions).`:`系統偵測：自我犧牲行為佔比 ${(ratio.sacrifice*100).toFixed(0)}%。結構承受型在外部壓力事件（升遷、家庭介入、退休節點）中，崩潰風險比其他類型高出 2.3 倍。`;
   } else if (ratio.face >= 0.40) {
-    type = '主動重構型';
-    desc = '你願意正面面對問題，嘗試重新建立關係的結構。你相信問題是可以被討論的，差距是可以被縮小的。';
-    quote = '你相信關係是可以被重新設計的。';
-    residual = `系統偵測：主動面對行為佔比 ${(ratio.face*100).toFixed(0)}%。重構嘗試有效率取決於對方的配合意願。單方面的重構，長期來看會轉化為結構承受。`;
+    type = _gen_en?'Active Restructurer':'主動重構型';
+    desc = _gen_en?'You\'re willing to face problems directly and rebuild the relationship\'s structure. You believe issues can be discussed and gaps can be closed.':'你願意正面面對問題，嘗試重新建立關係的結構。你相信問題是可以被討論的，差距是可以被縮小的。';
+    quote = _gen_en?'You believe relationships can be redesigned.':'你相信關係是可以被重新設計的。';
+    residual = _gen_en?`System detected: proactive engagement at ${(ratio.face*100).toFixed(0)}%. Restructuring effectiveness depends on the partner\'s willingness to cooperate. Unilateral restructuring tends to convert into load-bearing over time.`:`系統偵測：主動面對行為佔比 ${(ratio.face*100).toFixed(0)}%。重構嘗試有效率取決於對方的配合意願。單方面的重構，長期來看會轉化為結構承受。`;
   } else if (ratio.honest >= 0.35) {
-    type = '誠實代入型';
-    desc = '你傾向說出真實想法，即使那會讓氣氛變得沉重。你不擅長表演，但你也不願意讓關係活在謊言裡。';
-    quote = '你說出了別人不敢說的話，但說完之後，你不確定那有沒有用。';
-    residual = `系統偵測：誠實表達行為佔比 ${(ratio.honest*100).toFixed(0)}%。誠實在短期內會增加關係張力，但在長期結構中，它是唯一能防止慢性內耗的機制。`;
+    type = _gen_en?'Honest Confronter':'誠實代入型';
+    desc = _gen_en?'You tend to speak your real thoughts, even when it makes things heavy. You\'re not good at performing, but you refuse to let the relationship live in silence.':'你傾向說出真實想法，即使那會讓氣氛變得沉重。你不擅長表演，但你也不願意讓關係活在謊言裡。';
+    quote = _gen_en?'You said what others wouldn\'t. But after saying it, you weren\'t sure if it helped.':'你說出了別人不敢說的話，但說完之後，你不確定那有沒有用。';
+    residual = _gen_en?`System detected: honest expression at ${(ratio.honest*100).toFixed(0)}%. Honesty increases short-term tension, but in the long-term structure, it is the only mechanism that prevents chronic friction.`:`系統偵測：誠實表達行為佔比 ${(ratio.honest*100).toFixed(0)}%。誠實在短期內會增加關係張力，但在長期結構中，它是唯一能防止慢性內耗的機制。`;
   } else {
-    type = '結構漂移型';
-    desc = '你的行為模式在不同情境下會切換，沒有一種固定的應對方式。這可能是靈活，也可能是你還在尋找自己在關係中的位置。';
-    quote = '你沒有固定的模式。你在每一個選擇裡，都試著找到當下最合理的出口。';
-    residual = `系統偵測：行為分佈較均勻，無顯著主導傾向。結構漂移型在穩定期表現良好，但在高壓節點（臨界點事件）時，決策延遲風險較高。`;
+    type = _gen_en?'Structural Drifter':'結構漂移型';
+    desc = _gen_en?'Your response patterns shift across contexts. There\'s no single fixed approach. This may be flexibility — or it may mean you\'re still finding your place in the relationship.':'你的行為模式在不同情境下會切換，沒有一種固定的應對方式。這可能是靈活，也可能是你還在尋找自己在關係中的位置。';
+    quote = _gen_en?'You have no fixed pattern. In every choice, you look for the most reasonable exit in the moment.':'你沒有固定的模式。你在每一個選擇裡，都試著找到當下最合理的出口。';
+    residual = _gen_en?`System detected: behavior is evenly distributed with no dominant tendency. Structural Drifters perform well in stable periods but face higher decision-delay risk at high-pressure inflection points.`:`系統偵測：行為分佈較均勻，無顯著主導傾向。結構漂移型在穩定期表現良好，但在高壓節點（臨界點事件）時，決策延遲風險較高。`;
   }
 
   return { type, desc, quote, residual, ratio };
@@ -2882,10 +3402,10 @@ function showGlobalReport() {
 
   // 條型圖數據
   const bars = [
-    { key: 'face',     label: '主動面對', color: 'var(--green)',  val: report.ratio.face },
-    { key: 'honest',   label: '誠實表達', color: 'var(--accent)', val: report.ratio.honest },
-    { key: 'sacrifice',label: '自我犧牲', color: 'var(--yellow)', val: report.ratio.sacrifice },
-    { key: 'avoid',    label: '迴避距離', color: 'var(--red)',    val: report.ratio.avoid },
+    { key: 'face',     label: getLang()==='en'?'Proactive Engagement':'主動面對', color: 'var(--green)',  val: report.ratio.face },
+    { key: 'honest',   label: getLang()==='en'?'Honest Expression':'誠實表達', color: 'var(--accent)', val: report.ratio.honest },
+    { key: 'sacrifice',label: getLang()==='en'?'Self-Sacrifice':'自我犧牲', color: 'var(--yellow)', val: report.ratio.sacrifice },
+    { key: 'avoid',    label: getLang()==='en'?'Avoidance/Distance':'迴避距離', color: 'var(--red)',    val: report.ratio.avoid },
   ];
 
   const barsHTML = bars.map(b => `
@@ -2900,23 +3420,24 @@ function showGlobalReport() {
     </div>
   `).join('');
 
+  const _r_en=getLang()==='en';
   const completedLabel = completed.length === 3
-    ? '三個案例已完成'
-    : `已完成 ${completed.length} / 3 個案例`;
+    ? (_r_en?'All 3 cases completed':'三個案例已完成')
+    : (_r_en?`${completed.length} / 3 cases completed`:`已完成 ${completed.length} / 3 個案例`);
 
   document.getElementById('report-content').innerHTML = `
     <div class="narrative-box" style="margin-bottom:1px;">
-      <div class="report-type-tag">行為結構分析 — ${completedLabel}</div>
+      <div class="report-type-tag">${_r_en?'Behavioral Structure Report — ':'行為結構分析 — '}${completedLabel}</div>
       <div class="report-main-type">${report.type}</div>
       <div class="report-desc">${report.desc}</div>
       <div class="report-bars">${barsHTML}</div>
       <div class="report-quote">「${report.quote}」</div>
     </div>
     <div class="report-residual">
-      <div class="report-residual-label">結構診斷附記</div>
+      <div class="report-residual-label">${_r_en?'Structural Diagnosis Notes':'結構診斷附記'}</div>
       ${report.residual}
     </div>
-    <button class="btn-copy" onclick="copyReport()">▸ 複製分享內容</button>
+    <button class="btn-copy" onclick="copyReport()">${_r_en?'▸ Copy & Share':'▸ 複製分享內容'}</button>
   `;
 
   // 條型圖動畫
@@ -2931,7 +3452,19 @@ function showGlobalReport() {
 
 function copyReport() {
   const report = generateReport();
-  const text = `【DSBM 行為結構分析】
+  const _cr_en=getLang()==='en';
+  const text = _cr_en?`[DSBM Behavioral Structure Report]
+
+Type: ${report.type}
+
+${report.desc}
+
+"${report.quote}"
+
+${report.residual}
+
+▸ Dyadic Symmetry-Bottleneck Model v3.1
+https://tengyi-wang-tw.github.io/dsbm/`:`【DSBM 行為結構分析】
 
 類型：${report.type}
 
@@ -2941,7 +3474,7 @@ ${report.desc}
 
 ${report.residual}
 
-▸ 二元對稱瓶頸模型 v3.0
+▸ 二元對稱瓶頸模型 v3.1
 https://tengyi-wang-tw.github.io/dsbm/`;
 
   if (navigator.clipboard) {
@@ -3104,11 +3637,11 @@ function cm_computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, params
 
   let dirType, adj;
   if (inc_gap < 0.01 || hrs_gap < 0.01) {
-    dirType = '無顯著方向'; adj = 0;
+    dirType = getLang()==='en'?'No Significant Direction':'無顯著方向'; adj = 0;
   } else if (inc_hi_self === hrs_hi_self) {
-    dirType = '單邊過載'; adj = -(inc_gap * hrs_gap * params.overloadCoef);
+    dirType = getLang()==='en'?'Unilateral Overload':'單邊過載'; adj = -(inc_gap * hrs_gap * params.overloadCoef);
   } else {
-    dirType = '互補分工'; adj = +(inc_gap * hrs_gap * params.compCoef);
+    dirType = getLang()==='en'?'Complementary Division':'互補分工'; adj = +(inc_gap * hrs_gap * params.compCoef);
   }
   const phi = Math.max(0, Math.min(1, phi_raw + adj));
   const w = 1 - phi;
@@ -3134,65 +3667,31 @@ function cm_computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, params
 }
 
 function cm_phiStatus(phi) {
-  if (phi >= 0.80) return { text:'結構良好', color:'var(--green)' };
-  if (phi >= 0.65) return { text:'輕度不對稱', color:'var(--accent)' };
-  if (phi >= 0.50) return { text:'中度不對稱', color:'var(--yellow)' };
-  return { text:'高度不對稱', color:'var(--red)' };
+  const en=getLang()==='en';
+  if (phi >= 0.80) return { text:en?'Structurally Sound':'結構良好', color:'var(--green)' };
+  if (phi >= 0.65) return { text:en?'Mild Asymmetry':'輕度不對稱', color:'var(--accent)' };
+  if (phi >= 0.50) return { text:en?'Moderate Asymmetry':'中度不對稱', color:'var(--yellow)' };
+  return { text:en?'Severe Asymmetry':'高度不對稱', color:'var(--red)' };
 }
 function cm_aStatus(a) {
-  if (a < 0.10) return { text:'背景相近', color:'var(--green)' };
-  if (a < 0.25) return { text:'差距可接受', color:'var(--accent)' };
-  if (a < 0.50) return { text:'差距明顯', color:'var(--yellow)' };
-  return { text:'差距顯著', color:'var(--red)' };
+  const en=getLang()==='en';
+  if (a < 0.10) return { text:en?'Similar Background':'背景相近', color:'var(--green)' };
+  if (a < 0.25) return { text:en?'Acceptable Gap':'差距可接受', color:'var(--accent)' };
+  if (a < 0.50) return { text:en?'Notable Gap':'差距明顯', color:'var(--yellow)' };
+  return { text:en?'Significant Gap':'差距顯著', color:'var(--red)' };
 }
-function cm_fStatus(f) {
-  if (f < 0.10) return { text:'家境相近', color:'var(--green)' };
-  if (f < 0.30) return { text:'差距可接受', color:'var(--accent)' };
-  if (f < 0.60) return { text:'差距明顯', color:'var(--yellow)' };
-  return { text:'差距顯著', color:'var(--red)' };
-}
+function cm_fStatus(f) { return getFStatus(f); }
 
 function cm_crossDiag(phi, A, F) {
+  // Reuse the bilingual getCross function
   const phiUp = phi >= 0.65;
   const aDown = A < 0.25;
-  if (F === null) {
-    const map = {
-      '11':'φ↑ A↓ — 雙軸穩定型|貢獻對稱且年齡背景差距小，系統具備較強的外部壓力緩衝能力。',
-      '10':'φ↑ A↑ — 貢獻對稱，背景存差|當下分工均衡，但年齡差距是潛在變數，在重大決策節點才浮現。',
-      '01':'φ↓ A↓ — 背景相近，貢獻待調整|人生座標一致是有利條件，主要壓力來自貢獻不對稱。',
-      '00':'φ↓ A↑ — 雙軸壓力型|兩個軸均顯示結構壓力，貢獻不對稱更難透過溝通單獨解決。',
-    };
-    const k = (phiUp?'1':'0')+(aDown?'1':'0');
-    const parts = map[k].split('|');
-    return { tag: parts[0], desc: parts[1] };
-  } else {
-    const fDown = F < 0.30;
-    const map = {
-      '111':'φ↑ A↓ F↓ — 三軸穩定型|三個診斷軸均指向穩定，系統抗壓能力最強。',
-      '110':'φ↑ A↓ F↑ — 貢獻穩定，家境存差|當下運作穩定，但家境差距是潛在的價值觀摩擦來源。',
-      '101':'φ↑ A↑ F↓ — 貢獻對稱，年齡存差|家境背景一致降低了部分風險，仍需關注人生階段不同步。',
-      '100':'φ↑ A↑ F↑ — 貢獻對稱，雙重背景存差|當下分工均衡，但年齡與家境差距同時存在。',
-      '011':'φ↓ A↓ F↓ — 背景一致，貢獻待調整|年齡與家境均相近，溝通調整的成本相對較低。',
-      '010':'φ↓ A↓ F↑ — 貢獻失衡，家境存差|家境差距使「公平感」基準不一致，加深對貢獻不對稱的感知落差。',
-      '001':'φ↓ A↑ F↓ — 年齡存差，貢獻失衡|家境相近是相對有利條件，但年齡與貢獻不對稱同時存在。',
-      '000':'φ↓ A↑ F↑ — 三軸壓力型|三個軸均顯示結構壓力，是模型中風險最集中的組合。',
-    };
-    const k = (phiUp?'1':'0')+(aDown?'1':'0')+(fDown?'1':'0');
-    const parts = map[k].split('|');
-    return { tag: parts[0], desc: parts[1] };
-  }
+  const hasF = F !== null;
+  const fDown = hasF ? F < 0.30 : true;
+  return getCross(phiUp, aDown, hasF, fDown);
 }
 
-function cm_getSContext(s, phi) {
-  const hi = s >= 15, lo = s < 6, hp = phi >= 0.70, lp = phi < 0.50;
-  if (hi && hp) return '資源充足且結構對稱。系統在面對外部衝擊時具備較強的緩衝能力。';
-  if (hi && lp) return '資源充足但結構失衡。S 高可短期掩蓋內耗，但無法從根本解決結構問題。';
-  if (hi)       return '資源尚可，結構存在一定不對稱。';
-  if (lo && hp) return '資源有限但結構對稱。雙方共同承擔壓力，韌性相對較高。';
-  if (lo && lp) return '資源有限且結構失衡，屬於雙重風險狀態。';
-  if (lo)       return '資源偏低，建議評估整體財務規劃對關係穩定性的影響。';
-  return '資源規模中等，φ 是當前主要參考指標。';
-}
+function cm_getSContext(s, phi) { return getSContext(s, phi); }
 
 function cm_setText(id, text, color) {
   const el = document.getElementById(id);
@@ -3214,11 +3713,11 @@ function cm_calculate() {
   const fOther = foRaw !== '' ? parseInt(foRaw) : null;
 
   if ([is,io,hs,ho,ageSelf,ageOther].some(v => isNaN(v) || v < 0)) {
-    alert('請填入所有必填欄位（月收入、每週時數、年齡）的有效數值。'); return;
+    alert(getLang()==='en'?'Please fill in all required fields (income, hours, age) with valid values.':'請填入所有必填欄位（月收入、每週時數、年齡）的有效數值。'); return;
   }
-  if (ageSelf < 16 || ageOther < 16) { alert('年齡需≥16歲。'); return; }
-  if (hs > 168 || ho > 168) { alert('每週勞動時數不得超過 168 小時。'); return; }
-  if (is + io === 0 && hs + ho === 0) { alert('收入合計與時數合計不得皆為 0。'); return; }
+  if (ageSelf < 16 || ageOther < 16) { alert(getLang()==='en'?'Age must be 16 or older.':'年齡需≥16歲。'); return; }
+  if (hs > 168 || ho > 168) { alert(getLang()==='en'?'Weekly labor hours cannot exceed 168.':'每週勞動時數不得超過 168 小時。'); return; }
+  if (is + io === 0 && hs + ho === 0) { alert(getLang()==='en'?'Combined income and hours cannot both be zero.':'收入合計與時數合計不得皆為 0。'); return; }
 
   const canon = cm_computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, CM_DEFAULT);
   const custom = cm_computeDSBM(is, io, hs, ho, ageSelf, ageOther, fSelf, fOther, cm_getCustomParams());
@@ -3307,7 +3806,7 @@ function cm_calculate() {
 
   const chipsEl = document.getElementById('delta_chips');
   if (chips.length === 0) {
-    chipsEl.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:10px;color:var(--text-muted);">與官方模型相同</span>';
+    chipsEl.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:10px;color:var(--text-muted);">'+(getLang()==='en'?'Same as canonical model':'與官方模型相同')+'</span>';
   } else {
     chipsEl.innerHTML = chips.map(c =>
       `<span class="di-chip" style="color:${c.color};border-color:${c.color};">${c.text}</span>`
@@ -3328,8 +3827,9 @@ function cm_calculate() {
   cm_setText('s_ctx', cm_getSContext(s, canon.phi));
 
   // custom param desc
+  const _cm_en=getLang()==='en';
   document.getElementById('custom_param_desc').textContent =
-    `φ_money ${(cp.wMoney*100).toFixed(0)}% · 互補 ${cp.compCoef.toFixed(2)} · 過載 ${cp.overloadCoef.toFixed(2)} · F_gap ${(cp.fGapW*100).toFixed(0)}%`;
+    _cm_en?`φ_money ${(cp.wMoney*100).toFixed(0)}% · comp ${cp.compCoef.toFixed(2)} · overload ${cp.overloadCoef.toFixed(2)} · F_gap ${(cp.fGapW*100).toFixed(0)}%`:`φ_money ${(cp.wMoney*100).toFixed(0)}% · 互補 ${cp.compCoef.toFixed(2)} · 過載 ${cp.overloadCoef.toFixed(2)} · F_gap ${(cp.fGapW*100).toFixed(0)}%`;
 
   const rs = document.getElementById('cm_result_section');
   rs.classList.add('visible');
@@ -3342,13 +3842,14 @@ function cm_buildReport() {
   const axes = Array.from(document.querySelectorAll('input[name="cm_fb_axis"]:checked')).map(el => el.value);
   const text = document.getElementById('fb_text').value.trim();
   const cp = cm_getCustomParams();
+  const _fb_en = getLang()==='en';
   const lines = [
-    '[DSBM Custom Mode — 意見回報]',
+    _fb_en?'[DSBM Custom Mode — Feedback]':'[DSBM Custom Mode — 意見回報]',
     '',
-    '診斷符合程度：' + (match ? match.value : '未選擇'),
-    '最不準的軸：' + (axes.length ? axes.join('、') : '未選擇'),
+    (_fb_en?'Match level: ':'診斷符合程度：') + (match ? match.value : (_fb_en?'not selected':'未選擇')),
+    (_fb_en?'Least accurate axis: ':'最不準的軸：') + (axes.length ? axes.join(', ') : (_fb_en?'not selected':'未選擇')),
     '',
-    '使用者自定義參數：',
+    _fb_en?'User custom parameters:':'使用者自定義參數：',
     '  \u03c6_money \u6b0a\u91cd = ' + (cp.wMoney*100).toFixed(0) + '%',
     '  \u03c6_time  \u6b0a\u91cd = ' + (cp.wTime*100).toFixed(0) + '%',
     '  \u4e92\u88dc\u4fc2\u6578     = ' + cp.compCoef.toFixed(2) + '\uff08\u5b98\u65b9 0.10\uff09',
@@ -3408,9 +3909,9 @@ function cm_mailFeedback() {
 <div class="container">
 
   <div class="page-header">
-    <div class="page-tag">參數工作室</div>
-    <h1 class="page-h1">自定義模式<br><span style="color:var(--text-dim);font-size:16px;font-weight:300;">調整模型參數，對照官方診斷</span></h1>
-    <p class="page-desc">在這裡調整 DSBM 的核心係數，系統會同時顯示官方模型與你的模型的診斷結果。並排對照讓你看見自己的價值觀與模型預設值的差距。</p>
+    <div class="page-tag"><span class="zh">參數工作室</span><span class="en">Parameter Studio</span></div>
+    <h1 class="page-h1"><span class="zh">自定義模式<br><span style="color:var(--text-dim);font-size:16px;font-weight:300;">調整模型參數，對照官方診斷</span></span><span class="en">Custom Mode<br><span style="color:var(--text-dim);font-size:16px;font-weight:300;">Adjust model parameters, compare against canonical diagnosis</span></span></h1>
+    <p class="page-desc"><span class="zh">在這裡調整 DSBM 的核心係數，系統會同時顯示官方模型與你的模型的診斷結果。並排對照讓你看見自己的價值觀與模型預設值的差距。</span><span class="en">Adjust DSBM's core coefficients here. The system shows both the canonical model and your custom model side-by-side, revealing how your values diverge from the defaults.</span></p>
   </div>
 
   <!-- ── SECTION 01: 參數工作室 ── -->
@@ -3418,19 +3919,19 @@ function cm_mailFeedback() {
     <div class="sec-head">
       <div class="sec-head-left">
         <span class="sec-num">01</span>
-        <span class="sec-title studio">參數工作室</span>
+        <span class="sec-title studio"><span class="zh">參數工作室</span><span class="en">Parameter Studio</span></span>
       </div>
-      <button class="reset-btn" onclick="cm_resetParams()">↺ 重置預設</button>
+      <button class="reset-btn" onclick="cm_resetParams()">↺ <span class="zh">重置預設</span><span class="en">Reset Defaults</span></button>
     </div>
     <div class="sec-body" style="padding:0;">
 
       <!-- φ 權重區 -->
       <div class="studio-grid">
         <div class="studio-cell">
-          <div class="param-label">φ 第一維度
-            <span class="tip">i<span class="tip-popup">φ_money 與 φ_time 的權重加總鎖定為 100%。調整此滑桿，另一個會自動跟著變。</span></span>
+          <div class="param-label"><span class="zh">φ 第一維度</span><span class="en">φ First Dimension</span>
+            <span class="tip">i<span class="tip-popup"><span class="zh">φ_money 與 φ_time 的權重加總鎖定為 100%。調整此滑桿，另一個會自動跟著變。</span><span class="en">φ_money + φ_time weights are locked to 100%. Adjusting one automatically updates the other.</span></span></span>
           </div>
-          <div class="param-name">φ_money 收入對稱<br><span style="font-size:11px;color:var(--text-muted);">佔 φ 的比重</span></div>
+          <div class="param-name">φ_money <span class="zh">收入對稱</span><span class="en">Income Symmetry</span><br><span style="font-size:11px;color:var(--text-muted);"><span class="zh">佔 φ 的比重</span><span class="en">weight in φ</span></span></div>
           <div class="slider-row">
             <div class="slider-wrap">
               <input type="range" id="w_money" min="10" max="90" value="50" step="5" oninput="cm_onMoneyWeight(this.value)">
@@ -3439,15 +3940,15 @@ function cm_mailFeedback() {
             <span class="slider-val" id="wm_val">50%</span>
           </div>
           <div class="delta-row">
-            <span class="delta-label">vs 預設 50%</span>
+            <span class="delta-label">vs <span class="zh">預設</span><span class="en">default</span> 50%</span>
             <span class="delta-val zero" id="wm_delta">± 0%</span>
           </div>
         </div>
         <div class="studio-cell studio-tint">
-          <div class="param-label" style="color:var(--studio);">φ 第二維度
-            <span class="tip" style="border-color:var(--studio);color:var(--studio);">i<span class="tip-popup">與 φ_money 聯動，兩者加總永遠為 100%。</span></span>
+          <div class="param-label" style="color:var(--studio);"><span class="zh">φ 第二維度</span><span class="en">φ Second Dimension</span>
+            <span class="tip" style="border-color:var(--studio);color:var(--studio);">i<span class="tip-popup"><span class="zh">與 φ_money 聯動，兩者加總永遠為 100%。</span><span class="en">Linked with φ_money; always sums to 100%.</span></span></span>
           </div>
-          <div class="param-name">φ_time 時間對稱<br><span style="font-size:11px;color:var(--text-muted);">佔 φ 的比重</span></div>
+          <div class="param-name">φ_time <span class="zh">時間對稱</span><span class="en">Time Symmetry</span><br><span style="font-size:11px;color:var(--text-muted);"><span class="zh">佔 φ 的比重</span><span class="en">weight in φ</span></span></div>
           <div class="slider-row">
             <div class="slider-wrap">
               <input type="range" id="w_time" min="10" max="90" value="50" step="5" oninput="cm_onTimeWeight(this.value)" class="studio-range">
@@ -3481,7 +3982,7 @@ function cm_mailFeedback() {
       <div class="studio-grid" style="margin-top:1px;">
         <div class="studio-cell">
           <div class="param-label">方向性修正 — 加分
-            <span class="tip">i<span class="tip-popup">互補分工時（收入高者時數少），給予 φ 加分。預設 0.1。數值越高代表你認為互補分工的紅利越大。</span></span>
+            <span class="tip">i<span class="tip-popup"><span class="zh">互補分工時（收入高者時數少），給予 φ 加分。預設 0.1。數值越高代表你認為互補分工的紅利越大。</span><span class="en">Bonus applied when complementary division is detected (high earner works fewer hours). Default 0.1. Higher = you value complementary division more.</span></span></span>
           </div>
           <div class="param-name">互補係數<br><span style="font-size:11px;color:var(--text-muted);">complementary bonus × ?</span></div>
           <div class="slider-row">
@@ -3492,13 +3993,13 @@ function cm_mailFeedback() {
             <span class="slider-val" id="cc_val">0.10</span>
           </div>
           <div class="delta-row">
-            <span class="delta-label">vs 預設 0.10</span>
+            <span class="delta-label">vs <span class="zh">預設</span><span class="en">default</span> 0.10</span>
             <span class="delta-val zero" id="cc_delta">± 0.00</span>
           </div>
         </div>
         <div class="studio-cell studio-tint">
           <div class="param-label" style="color:var(--red);">方向性修正 — 扣分
-            <span class="tip" style="border-color:var(--red);color:var(--red);">i<span class="tip-popup">單邊過載時（收入高者時數也多），對 φ 懲罰。預設 0.4。數值越高代表你認為單邊過載的破壞力越強。</span></span>
+            <span class="tip" style="border-color:var(--red);color:var(--red);">i<span class="tip-popup"><span class="zh">單邊過載時（收入高者時數也多），對 φ 懲罰。預設 0.4。數值越高代表你認為單邊過載的破壞力越強。</span><span class="en">Penalty applied when unilateral overload is detected (high earner also works more hours). Default 0.4. Higher = you consider overload more damaging.</span></span></span>
           </div>
           <div class="param-name">過載懲罰<br><span style="font-size:11px;color:var(--text-muted);">overload penalty × ?</span></div>
           <div class="slider-row">
@@ -3509,7 +4010,7 @@ function cm_mailFeedback() {
             <span class="slider-val" id="oc_val" style="color:var(--red);">0.40</span>
           </div>
           <div class="delta-row">
-            <span class="delta-label">vs 預設 0.40</span>
+            <span class="delta-label">vs <span class="zh">預設</span><span class="en">default</span> 0.40</span>
             <span class="delta-val zero" id="oc_delta">± 0.00</span>
           </div>
         </div>
@@ -3520,7 +4021,7 @@ function cm_mailFeedback() {
       <div class="studio-grid" style="margin-top:1px;">
         <div class="studio-cell">
           <div class="param-label" style="color:var(--orange);">F 軸 — 差距維度
-            <span class="tip" style="border-color:var(--orange);color:var(--orange);">i<span class="tip-popup">F_gap 捕捉雙方家境差距的價值觀摩擦。預設 70%。調高代表你認為差距問題比資源匱乏更傷關係。</span></span>
+            <span class="tip" style="border-color:var(--orange);color:var(--orange);">i<span class="tip-popup"><span class="zh">F_gap 捕捉雙方家境差距的價值觀摩擦。預設 70%。調高代表你認為差距問題比資源匱乏更傷關係。</span><span class="en">F_gap captures value-system friction from wealth divergence. Default 70%. Higher = you think the gap matters more than scarcity.</span></span></span>
           </div>
           <div class="param-name">F_gap 差距摩擦<br><span style="font-size:11px;color:var(--text-muted);">佔 F 的比重</span></div>
           <div class="slider-row">
@@ -3531,13 +4032,13 @@ function cm_mailFeedback() {
             <span class="slider-val" id="fg_val" style="color:var(--orange);">70%</span>
           </div>
           <div class="delta-row">
-            <span class="delta-label">vs 預設 70%</span>
+            <span class="delta-label">vs <span class="zh">預設</span><span class="en">default</span> 70%</span>
             <span class="delta-val zero" id="fg_delta">± 0%</span>
           </div>
         </div>
         <div class="studio-cell studio-tint">
           <div class="param-label" style="color:var(--blue);">F 軸 — 匱乏維度
-            <span class="tip" style="border-color:var(--blue);color:var(--blue);">i<span class="tip-popup">F_base 捕捉雙方絕對資源不足的生存壓力。預設 30%。調高代表你認為「一起窮」的壓力比差距更大。兩者加總鎖定 100%。</span></span>
+            <span class="tip" style="border-color:var(--blue);color:var(--blue);">i<span class="tip-popup"><span class="zh">F_base 捕捉雙方絕對資源不足的生存壓力。預設 30%。調高代表你認為「一起窮」的壓力比差距更大。兩者加總鎖定 100%。</span><span class="en">F_base captures survival pressure from absolute resource scarcity. Default 30%. Higher = you think "being poor together" matters more than the gap. Always sums to 100%.</span></span></span>
           </div>
           <div class="param-name">F_base 資源匱乏<br><span style="font-size:11px;color:var(--text-muted);">佔 F 的比重</span></div>
           <div class="slider-row">
@@ -3548,7 +4049,7 @@ function cm_mailFeedback() {
             <span class="slider-val" id="fb_val" style="color:var(--blue);">30%</span>
           </div>
           <div class="delta-row">
-            <span class="delta-label">vs 預設 30%</span>
+            <span class="delta-label">vs <span class="zh">預設</span><span class="en">default</span> 30%</span>
             <span class="delta-val zero" id="fb_delta">± 0%</span>
           </div>
         </div>
@@ -3581,27 +4082,27 @@ function cm_mailFeedback() {
     <div class="sec-head">
       <div class="sec-head-left">
         <span class="sec-num">02</span>
-        <span class="sec-title">資料輸入</span>
+        <span class="sec-title"><span class="zh">資料輸入</span><span class="en">Data Input</span></span>
       </div>
     </div>
     <div class="sec-body">
       <div class="input-grid" style="margin-bottom:14px;">
-        <div class="input-group"><span class="input-label">項目</span></div>
-        <div class="input-group"><span class="input-label">自己</span></div>
-        <div class="input-group"><span class="input-label">對方</span></div>
+        <div class="input-group"><span class="input-label"><span class="zh">項目</span><span class="en">Field</span></span></div>
+        <div class="input-group"><span class="input-label"><span class="zh">自己</span><span class="en">Self</span></span></div>
+        <div class="input-group"><span class="input-label"><span class="zh">對方</span><span class="en">Partner</span></span></div>
       </div>
       <div class="input-grid" style="margin-bottom:10px;">
-        <div class="input-group"><span class="input-label">月收入</span><span class="input-sublabel">萬元／月</span></div>
+        <div class="input-group"><span class="input-label"><span class="zh">月收入</span><span class="en">Monthly Income</span></span><span class="input-sublabel"><span class="zh">萬元／月</span><span class="en">$K / month</span></span></div>
         <input type="number" id="cm_income_self" placeholder="例：8" min="0" step="0.1">
         <input type="number" id="cm_income_other" placeholder="例：3" min="0" step="0.1">
       </div>
       <div class="input-grid" style="margin-bottom:10px;">
-        <div class="input-group"><span class="input-label">每週勞動時數</span><span class="input-sublabel">工作＋家務＋照顧</span></div>
+        <div class="input-group"><span class="input-label"><span class="zh">每週勞動時數</span><span class="en">Weekly Labor Hours</span></span><span class="input-sublabel"><span class="zh">工作＋家務＋照顧</span><span class="en">work + housework + caregiving</span></span></div>
         <input type="number" id="cm_hours_self" placeholder="例：55" min="0" max="168" step="1">
         <input type="number" id="cm_hours_other" placeholder="例：30" min="0" max="168" step="1">
       </div>
       <div class="input-grid" style="margin-bottom:10px;">
-        <div class="input-group"><span class="input-label">年齡</span><span class="input-sublabel">實際歲數（≥16）</span></div>
+        <div class="input-group"><span class="input-label"><span class="zh">年齡</span><span class="en">Age</span></span><span class="input-sublabel"><span class="zh">實際歲數（≥16）</span><span class="en">actual age (≥16)</span></span></div>
         <input type="number" id="cm_age_self" placeholder="例：32" min="16" step="1">
         <input type="number" id="cm_age_other" placeholder="例：28" min="16" step="1">
       </div>
@@ -3627,11 +4128,11 @@ function cm_mailFeedback() {
         </div>
       </div>
       <div class="input-grid" style="margin-bottom:6px;">
-        <div class="input-group"><span class="input-label">家境等級<span class="optional-badge">選填</span></span><span class="input-sublabel">1=最富 10=最低</span></div>
+        <div class="input-group"><span class="input-label"><span class="zh">家境等級</span><span class="en">Wealth Tier</span><span class="optional-badge"><span class="zh">選填</span><span class="en">Optional</span></span></span><span class="input-sublabel"><span class="zh">1=最富 10=最低</span><span class="en">1=wealthiest · 10=lowest</span></span></div>
         <input type="number" id="cm_f_self" placeholder="1–10" min="1" max="10" step="1" class="optional">
         <input type="number" id="cm_f_other" placeholder="1–10" min="1" max="10" step="1" class="optional">
       </div>
-      <button class="calc-btn" onclick="cm_calculate()">▸ 執行對照診斷</button>
+      <button class="calc-btn" onclick="cm_calculate()"><span class="zh">▸ 執行對照診斷</span><span class="en">▸ Run Comparison Diagnosis</span></button>
     </div>
   </div>
 
@@ -3641,18 +4142,18 @@ function cm_mailFeedback() {
     <div class="sec-head" style="margin-bottom:1px;">
       <div class="sec-head-left">
         <span class="sec-num">03</span>
-        <span class="sec-title">對照診斷結果</span>
+        <span class="sec-title"><span class="zh">對照診斷結果</span><span class="en">Comparison Results</span></span>
       </div>
     </div>
 
     <!-- col headers -->
     <div class="dual-head">
       <div class="dual-col-head canonical">
-        <div class="dual-col-tag c">官方模型 — Canonical</div>
-        <div class="dual-col-desc">DSBM v3.0 預設參數</div>
+        <div class="dual-col-tag c">Canonical</div>
+        <div class="dual-col-desc"><span class="zh">DSBM v3.1 預設參數</span><span class="en">DSBM v3.1 default parameters</span></div>
       </div>
       <div class="dual-col-head custom">
-        <div class="dual-col-tag s">你的模型 — Custom</div>
+        <div class="dual-col-tag s"><span class="zh">你的模型 — Custom</span><span class="en">Your Model — Custom</span></div>
         <div class="dual-col-desc" id="custom_param_desc">—</div>
       </div>
     </div>
@@ -3676,29 +4177,29 @@ function cm_mailFeedback() {
     <!-- A & F axes -->
     <div class="dual-axes">
       <div class="axis-pair canonical">
-        <div class="ap-label">軸 A · F（A 共用；F 受權重影響）</div>
-        <div class="ap-row"><span class="ap-key">A 年齡背景</span><span class="ap-val" id="c_a">—</span></div>
-        <div class="ap-row"><span class="ap-key">A 狀態</span><span class="ap-val" id="c_a_status">—</span></div>
-        <div class="ap-row" id="c_f_row"><span class="ap-key">F 官方</span><span class="ap-val" id="c_f">—</span></div>
-        <div class="ap-row" id="c_f_status_row"><span class="ap-key">F 官方狀態</span><span class="ap-val" id="c_f_status">—</span></div>
+        <div class="ap-label"><span class="zh">軸 A · F（A 共用；F 受權重影響）</span><span class="en">Axes A · F (A shared; F weight-dependent)</span></div>
+        <div class="ap-row"><span class="ap-key"><span class="zh">A 年齡背景</span><span class="en">A Age Background</span></span><span class="ap-val" id="c_a">—</span></div>
+        <div class="ap-row"><span class="ap-key"><span class="zh">A 狀態</span><span class="en">A Status</span></span><span class="ap-val" id="c_a_status">—</span></div>
+        <div class="ap-row" id="c_f_row"><span class="ap-key"><span class="zh">F 官方</span><span class="en">F Canonical</span></span><span class="ap-val" id="c_f">—</span></div>
+        <div class="ap-row" id="c_f_status_row"><span class="ap-key"><span class="zh">F 官方狀態</span><span class="en">F Canonical Status</span></span><span class="ap-val" id="c_f_status">—</span></div>
         <div class="ap-row" id="c_f_custom_row"><span class="ap-key">F custom</span><span class="ap-val" id="c_f_custom">—</span></div>
-        <div class="ap-row" id="c_f_custom_status_row"><span class="ap-key">F custom 狀態</span><span class="ap-val" id="c_f_custom_status">—</span></div>
+        <div class="ap-row" id="c_f_custom_status_row"><span class="ap-key">F custom <span class="zh">狀態</span><span class="en">status</span></span><span class="ap-val" id="c_f_custom_status">—</span></div>
       </div>
       <div class="axis-pair custom">
-        <div class="ap-label" style="color:var(--studio);">φ 分解對照</div>
-        <div class="ap-row"><span class="ap-key">φ_money (官方)</span><span class="ap-val" id="c_pm">—</span></div>
+        <div class="ap-label" style="color:var(--studio);"><span class="zh">φ 分解對照</span><span class="en">φ Component Comparison</span></div>
+        <div class="ap-row"><span class="ap-key">φ_money (<span class="zh">官方</span><span class="en">canonical</span>)</span><span class="ap-val" id="c_pm">—</span></div>
         <div class="ap-row"><span class="ap-key">φ_money (custom)</span><span class="ap-val" id="u_pm">—</span></div>
-        <div class="ap-row"><span class="ap-key">φ_time (官方)</span><span class="ap-val" id="c_pt">—</span></div>
+        <div class="ap-row"><span class="ap-key">φ_time (<span class="zh">官方</span><span class="en">canonical</span>)</span><span class="ap-val" id="c_pt">—</span></div>
         <div class="ap-row"><span class="ap-key">φ_time (custom)</span><span class="ap-val" id="u_pt">—</span></div>
-        <div class="ap-row"><span class="ap-key">方向類型</span><span class="ap-val" id="dir_label">—</span></div>
-        <div class="ap-row"><span class="ap-key">修正值 (官方)</span><span class="ap-val" id="c_adj">—</span></div>
-        <div class="ap-row"><span class="ap-key">修正值 (custom)</span><span class="ap-val" id="u_adj">—</span></div>
+        <div class="ap-row"><span class="ap-key"><span class="zh">方向類型</span><span class="en">Direction Type</span></span><span class="ap-val" id="dir_label">—</span></div>
+        <div class="ap-row"><span class="ap-key"><span class="zh">修正值 (官方)</span><span class="en">Correction (canonical)</span></span><span class="ap-val" id="c_adj">—</span></div>
+        <div class="ap-row"><span class="ap-key"><span class="zh">修正值 (custom)</span><span class="en">Correction (custom)</span></span><span class="ap-val" id="u_adj">—</span></div>
       </div>
     </div>
 
     <!-- delta indicator -->
     <div class="delta-indicator">
-      <span class="di-label">參數偏移</span>
+      <span class="di-label"><span class="zh">參數偏移</span><span class="en">Parameter Deviation</span></span>
       <div class="di-chips" id="delta_chips">—</div>
     </div>
 
@@ -3724,21 +4225,21 @@ function cm_mailFeedback() {
     <!-- breakdown -->
     <div class="breakdown-dual">
       <div class="breakdown-col">
-        <div class="bd-title">計算明細 — 官方</div>
+        <div class="bd-title"><span class="zh">計算明細 — 官方</span><span class="en">Details — Canonical</span></div>
         <div class="bd-row"><span class="bd-key">φ_money</span><span class="bd-val" id="bd_c_pm">—</span></div>
         <div class="bd-row"><span class="bd-key">φ_time</span><span class="bd-val" id="bd_c_pt">—</span></div>
-        <div class="bd-row"><span class="bd-key">φ 原始</span><span class="bd-val" id="bd_c_raw">—</span></div>
-        <div class="bd-row"><span class="bd-key">修正值</span><span class="bd-val" id="bd_c_adj">—</span></div>
-        <div class="bd-row"><span class="bd-key">φ 最終</span><span class="bd-val" id="bd_c_phi">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">φ 原始</span><span class="en">φ raw</span></span><span class="bd-val" id="bd_c_raw">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">修正值</span><span class="en">Correction</span></span><span class="bd-val" id="bd_c_adj">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">φ 最終</span><span class="en">φ final</span></span><span class="bd-val" id="bd_c_phi">—</span></div>
         <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_c_w">—</span></div>
       </div>
       <div class="breakdown-col custom-bd">
-        <div class="bd-title" style="color:var(--studio);">計算明細 — Custom</div>
+        <div class="bd-title" style="color:var(--studio);"><span class="zh">計算明細 — Custom</span><span class="en">Details — Custom</span></div>
         <div class="bd-row"><span class="bd-key">φ_money (w=<span id="bd_wm">—</span>)</span><span class="bd-val" id="bd_u_pm">—</span></div>
         <div class="bd-row"><span class="bd-key">φ_time (w=<span id="bd_wt">—</span>)</span><span class="bd-val" id="bd_u_pt">—</span></div>
-        <div class="bd-row"><span class="bd-key">φ 原始</span><span class="bd-val" id="bd_u_raw">—</span></div>
-        <div class="bd-row"><span class="bd-key">修正值</span><span class="bd-val" id="bd_u_adj">—</span></div>
-        <div class="bd-row"><span class="bd-key">φ 最終</span><span class="bd-val" id="bd_u_phi">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">φ 原始</span><span class="en">φ raw</span></span><span class="bd-val" id="bd_u_raw">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">修正值</span><span class="en">Correction</span></span><span class="bd-val" id="bd_u_adj">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">φ 最終</span><span class="en">φ final</span></span><span class="bd-val" id="bd_u_phi">—</span></div>
         <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_u_w">—</span></div>
       </div>
     </div>
@@ -3746,16 +4247,16 @@ function cm_mailFeedback() {
     <!-- F breakdown (shown only if F data provided) -->
     <div class="breakdown-dual" id="f_bd_section" style="margin-top:1px;display:none;">
       <div class="breakdown-col">
-        <div class="bd-title" style="color:var(--orange);">F 計算明細 — 官方 (gap 70% · base 30%)</div>
+        <div class="bd-title" style="color:var(--orange);">F <span class="zh">計算明細 — 官方</span><span class="en">Details — Canonical</span> (gap 70% · base 30%)</div>
         <div class="bd-row"><span class="bd-key">F_gap</span><span class="bd-val" id="bd_c_fgap">—</span></div>
         <div class="bd-row"><span class="bd-key">F_base</span><span class="bd-val" id="bd_c_fbase">—</span></div>
-        <div class="bd-row"><span class="bd-key">F 最終</span><span class="bd-val" id="bd_c_f">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">F 最終</span><span class="en">F final</span></span><span class="bd-val" id="bd_c_f">—</span></div>
       </div>
       <div class="breakdown-col custom-bd">
         <div class="bd-title" style="color:var(--orange);">F 計算明細 — Custom (gap <span id="bd_fg_w">—</span> · base <span id="bd_fb_w">—</span>)</div>
         <div class="bd-row"><span class="bd-key">F_gap</span><span class="bd-val" id="bd_u_fgap">—</span></div>
         <div class="bd-row"><span class="bd-key">F_base</span><span class="bd-val" id="bd_u_fbase">—</span></div>
-        <div class="bd-row"><span class="bd-key">F 最終</span><span class="bd-val" id="bd_u_f">—</span></div>
+        <div class="bd-row"><span class="bd-key"><span class="zh">F 最終</span><span class="en">F final</span></span><span class="bd-val" id="bd_u_f">—</span></div>
       </div>
     </div>
 
@@ -3766,45 +4267,45 @@ function cm_mailFeedback() {
     <div class="sec-head">
       <div class="sec-head-left">
         <span class="sec-num">04</span>
-        <span class="sec-title">意見回報</span>
+        <span class="sec-title"><span class="zh">意見回報</span><span class="en">Feedback</span></span>
       </div>
     </div>
     <div class="sec-body" style="padding:0;">
       <div class="fb-grid">
         <div class="fb-cell">
-          <div class="fb-q">診斷結果符合你的感受嗎？</div>
+          <div class="fb-q"><span class="zh">診斷結果符合你的感受嗎？</span><span class="en">Does the result match your experience?</span></div>
           <div class="fb-options">
-            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="符合"> <span class="fb-opt-label">符合</span></label>
-            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="部分符合"> <span class="fb-opt-label">部分符合</span></label>
-            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="不符合"> <span class="fb-opt-label">不符合</span></label>
+            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="符合"> <span class="fb-opt-label"><span class="zh">符合</span><span class="en">Accurate</span></span></label>
+            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="部分符合"> <span class="fb-opt-label"><span class="zh">部分符合</span><span class="en">Partially accurate</span></span></label>
+            <label class="fb-opt"><input type="radio" name="cm_fb_match" value="不符合"> <span class="fb-opt-label"><span class="zh">不符合</span><span class="en">Not accurate</span></span></label>
           </div>
         </div>
         <div class="fb-cell">
-          <div class="fb-q">哪個軸你覺得最不準？</div>
+          <div class="fb-q"><span class="zh">哪個軸你覺得最不準？</span><span class="en">Which axis feels least accurate?</span></div>
           <div class="fb-options">
             <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="φ（貢獻對稱）"> <span class="fb-opt-label">φ 貢獻對稱</span></label>
             <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="A（年齡背景）"> <span class="fb-opt-label">A 年齡背景</span></label>
-            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="F（家境背景）"> <span class="fb-opt-label">F 家境背景</span></label>
-            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="方向性修正"> <span class="fb-opt-label">方向性修正</span></label>
-            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="都還好"> <span class="fb-opt-label">都還好</span></label>
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="F（家境背景）"> <span class="fb-opt-label"><span class="zh">F 家境背景</span><span class="en">F Wealth Background</span></span></label>
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="方向性修正"> <span class="fb-opt-label"><span class="zh">方向性修正</span><span class="en">Directional Correction</span></span></label>
+            <label class="fb-opt"><input type="checkbox" name="cm_fb_axis" value="都還好"> <span class="fb-opt-label"><span class="zh">都還好</span><span class="en">All fine</span></span></label>
           </div>
         </div>
       </div>
       <div class="sec-body" style="border-top:1px solid var(--border);padding:16px 20px;">
-        <div class="fb-q" style="margin-bottom:8px;">補充說明（選填）</div>
-        <textarea class="fb-text" id="fb_text" placeholder="例：我認為時間的權重應該更高，因為在我的關係裡..."></textarea>
+        <div class="fb-q" style="margin-bottom:8px;"><span class="zh">補充說明（選填）</span><span class="en">Additional Comments (optional)</span></div>
+        <textarea class="fb-text" id="fb_text" class="zh-placeholder2" placeholder="例：我認為時間的權重應該更高，因為在我的關係裡..."></textarea>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:1px;">
-      <button class="copy-btn" id="copy_btn" onclick="cm_copyFeedback()">▸ 複製回報內容</button>
-      <button class="copy-btn" id="mail_btn" onclick="cm_mailFeedback()" style="border-left:none;color:var(--accent);border-color:var(--accent);">▸ 寄出意見回報</button>
+      <button class="copy-btn" id="copy_btn" onclick="cm_copyFeedback()"><span class="zh">▸ 複製回報內容</span><span class="en">▸ Copy Feedback</span></button>
+      <button class="copy-btn" id="mail_btn" onclick="cm_mailFeedback()" style="border-left:none;color:var(--accent);border-color:var(--accent);"><span class="zh">▸ 寄出意見回報</span><span class="en">▸ Send Feedback via Email</span></button>
     </div>
   </div>
 
   <div class="note">
-    本頁為 DSBM v3.1 自定義模式（Custom Mode）。官方模型參數：φ_money:φ_time = 50:50、互補係數 0.1、過載懲罰 0.4、F_gap:F_base = 70:30。F 軸採 v3.1 公式，修正雙方同為 10 級時 F=0 的問題（現為 30%）。A 軸在兩種模式下完全相同。結果僅供結構性參考。
+    <span class="zh">本頁為 DSBM v3.1 自定義模式（Custom Mode）。官方模型參數：φ_money:φ_time = 50:50、互補係數 0.1、過載懲罰 0.4、F_gap:F_base = 70:30。F 軸採 v3.1 公式，修正雙方同為 10 級時 F=0 的問題（現為 30%）。A 軸在兩種模式下完全相同。結果僅供結構性參考。</span><span class="en">DSBM v3.1 Custom Mode. Canonical defaults: φ_money:φ_time = 50:50, complementary 0.1, overload 0.4, F_gap:F_base = 70:30. F-axis uses v3.1 formula (two Tier-10 partners now yield F=30%). A-axis is identical in both modes. Results are structural reference only.</span>
   </div>
-  <div class="version">DSBM v3.1 — Custom Mode · 獨立版 Beta</div>
+  <div class="version">DSBM v3.1 — Custom Mode · Beta</div>
 
 </div>
   </div>
