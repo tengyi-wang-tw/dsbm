@@ -6,7 +6,6 @@
 <title>DSBM — 二元對稱瓶頸模型</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
   :root {
     --bg:#0a0a0a;--surface:#111;--surface2:#161616;--border:#222;--border2:#2a2a2a;
     --accent:#c8f060;--text:#e8e8e8;--text-dim:#909090;--text-muted:#505050;
@@ -963,7 +962,7 @@
   </div>
 
   <div class="note">
-    <span class="zh">時間軸功能於 DSBM v3.1 新增。資料僅儲存於本機瀏覽器，不經過任何伺服器。建議定期截圖備份重要的歷史資料。</span><span class="en">The timeline feature was introduced in DSBM v3.1. Data is stored locally in your browser only and never sent to any server. It is recommended to take periodic screenshots to back up important records.</span>
+    <span class="zh">時間軸功能於 DSBM v3.1 新增。資料僅儲存於本機瀏覽器，不經過任何伺服器。建議定期截圖備份重要的歷史資料。</span><span class="en">The Timeline feature was introduced in DSBM v3.1. Data is stored locally in your browser only and never sent to any server. It is recommended to take periodic screenshots to back up important records.</span>
   </div>
   <div class="version">DSBM v3.1 — <span class="zh">結構時間軸</span><span class="en">Structure Timeline</span> Beta</div>
 
@@ -2058,18 +2057,28 @@
 <script>
 
 // ── LANGUAGE TOGGLE ──
-// Auto-detect language: check localStorage first, then fall back to browser setting.
-// localStorage key: 'dsbm_lang' — stores 'zh' or 'en' only when user manually toggles.
+// Priority: URL param (?lang=zh/en) → localStorage → browser language
+// URL param is useful for sharing links that force a specific language
+// (e.g. job platform links: ?lang=zh always opens Chinese regardless of WebView locale)
 (function() {
+  // 1. URL parameter — highest priority, useful for embedded WebViews (e.g. 104 app)
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlLang = urlParams.get('lang');
+  if (urlLang === 'zh' || urlLang === 'en') {
+    window.__DSBM_INIT_LANG = urlLang;
+    return;
+  }
+
+  // 2. localStorage — respect user's previous manual toggle
   const saved = localStorage.getItem('dsbm_lang');
   if (saved === 'zh' || saved === 'en') {
-    // User has explicitly chosen a language before — respect that choice.
     window.__DSBM_INIT_LANG = saved;
-  } else {
-    // No saved preference: detect from browser.
-    const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
-    window.__DSBM_INIT_LANG = browserLang.startsWith('zh') ? 'zh' : 'en';
+    return;
   }
+
+  // 3. Browser language — fallback detection
+  const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
+  window.__DSBM_INIT_LANG = browserLang.startsWith('zh') ? 'zh' : 'en';
 })();
 
 let LANG = window.__DSBM_INIT_LANG;
@@ -2139,10 +2148,6 @@ function showPage(name) {
   const pageTitles = {zh:{home:'DSBM — 二元對稱瓶頸模型',tool:'診斷工具 — DSBM',manual:'說明書 — DSBM',game:'結構模擬 — DSBM',custom:'自訂模式 — DSBM',timeline:'時間軸 — DSBM'},en:{home:'DSBM — Dyadic Symmetry-Bottleneck Model',tool:'Diagnostic Tool — DSBM',manual:'User Manual — DSBM',game:'Story Simulation — DSBM',custom:'Custom Mode — DSBM',timeline:'Timeline — DSBM'}};
   const pt = pageTitles[getLang()];
   if(pt&&pt[name]) document.title = pt[name];
-  // 切換到tool時重繪矩陣
-  if (name === 'tool' && typeof drawMatrix === 'function') {
-    setTimeout(() => { if (typeof BS !== 'undefined' && BS.phi !== null) drawMatrix(); }, 50);
-  }
   // 切換到game時重設final-mode
   if (name !== 'game') {
     const gameEl = document.getElementById('page-game');
@@ -4293,7 +4298,7 @@ function cm_mailFeedback() {
       </div>
       <div class="sec-body" style="border-top:1px solid var(--border);padding:16px 20px;">
         <div class="fb-q" style="margin-bottom:8px;"><span class="zh">補充說明（選填）</span><span class="en">Additional Comments (optional)</span></div>
-        <textarea class="fb-text" id="fb_text" class="zh-placeholder2" placeholder="例：我認為時間的權重應該更高，因為在我的關係裡..."></textarea>
+        <textarea class="fb-text zh-placeholder2" id="fb_text" placeholder="例：我認為時間的權重應該更高，因為在我的關係裡..."></textarea>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:1px;">
