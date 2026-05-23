@@ -52,7 +52,7 @@ localStorage 狀態記憶
 
 Overview
 
-DSBM is a structural relationship analysis system based on binary symmetric game theory.
+DSBM is a structural relationship analysis system based on structural relationship analysis.
 
 Rather than predicting emotions or assigning moral judgment, the project focuses on imbalance, contribution asymmetry, and long-term structural friction within interpersonal systems.
 
