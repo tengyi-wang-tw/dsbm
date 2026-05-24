@@ -980,9 +980,16 @@
 
     <!-- 記錄列表 -->
     <div class="section">
-      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
         <span><span class="zh">歷史記錄</span><span class="en">Records</span></span>
-        <button onclick="tlClearAll()" style="background:none;border:1px solid #3a1a1a;color:var(--red);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#2a1010'" onmouseout="this.style.background='none'"><span class="zh">清除全部</span><span class="en">Clear All</span></button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="tlExportJSON()" style="background:none;border:1px solid #1a2e1a;color:var(--green);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#0a180a'" onmouseout="this.style.background='none'"><span class="zh">↓ 匯出 JSON</span><span class="en">↓ Export JSON</span></button>
+          <label style="background:none;border:1px solid #1a1e2e;color:var(--blue);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#0a0e1a'" onmouseout="this.style.background='none'">
+            <span class="zh">↑ 匯入 JSON</span><span class="en">↑ Import JSON</span>
+            <input type="file" accept=".json" onchange="tlImportJSON(event)" style="display:none;">
+          </label>
+          <button onclick="tlClearAll()" style="background:none;border:1px solid #3a1a1a;color:var(--red);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#2a1010'" onmouseout="this.style.background='none'"><span class="zh">清除全部</span><span class="en">Clear All</span></button>
+        </div>
       </div>
       <div id="tl-record-list" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
@@ -990,7 +997,7 @@
   </div>
 
   <div class="note">
-    <span class="zh">時間軸功能於 DSBM v3.1 新增。資料僅儲存於本機瀏覽器，不經過任何伺服器。建議定期截圖備份重要的歷史資料。</span><span class="en">The Timeline feature was introduced in DSBM v3.1. Data is stored locally in your browser only and never sent to any server. It is recommended to take periodic screenshots to back up important records.</span>
+    <span class="zh">時間軸功能於 DSBM v3.1 新增。資料僅儲存於本機瀏覽器，不經過任何伺服器。可使用「匯出 JSON」備份記錄，並透過「匯入 JSON」在其他裝置還原。</span><span class="en">The Timeline feature was introduced in DSBM v3.1. Data is stored locally in your browser only and never sent to any server. Use "Export JSON" to back up records and "Import JSON" to restore them on another device.</span>
   </div>
   <div class="version">DSBM v3.1 — <span class="zh">結構時間軸</span><span class="en">Structure Timeline</span> Beta</div>
 
@@ -2559,6 +2566,107 @@ function tlClearAll() {
   tlUpdateBadge();
   tlRender();
 }
+
+// ── TIMELINE EXPORT / IMPORT ──
+
+function tlExportJSON() {
+  const records = tlLoadRecords();
+  if (records.length === 0) {
+    alert(getLang()==='en' ? 'No records to export.' : '尚無記錄可匯出。');
+    return;
+  }
+  const payload = {
+    version: 'dsbm-timeline-v1',
+    exported: new Date().toISOString(),
+    count: records.length,
+    records: records,
+  };
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  // Filename: dsbm-timeline-YYYYMMDD.json
+  const d    = new Date();
+  const ds   = d.getFullYear()
+    + (d.getMonth()+1).toString().padStart(2,'0')
+    + d.getDate().toString().padStart(2,'0');
+  a.href     = url;
+  a.download = 'dsbm-timeline-' + ds + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function tlImportJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  // Reset input so the same file can be re-selected if needed
+  event.target.value = '';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    let payload;
+    try {
+      payload = JSON.parse(e.target.result);
+    } catch(err) {
+      alert(getLang()==='en'
+        ? 'Invalid JSON file. Please select a file exported from DSBM.'
+        : '檔案格式錯誤，請選擇由 DSBM 匯出的 JSON 檔案。');
+      return;
+    }
+
+    // Validate structure
+    if (!payload.version || !payload.version.startsWith('dsbm-timeline') || !Array.isArray(payload.records)) {
+      alert(getLang()==='en'
+        ? 'This file does not appear to be a DSBM timeline export.'
+        : '此檔案不是 DSBM 時間軸的匯出檔案。');
+      return;
+    }
+
+    const incoming = payload.records;
+    if (incoming.length === 0) {
+      alert(getLang()==='en' ? 'The file contains no records.' : '檔案中沒有任何記錄。');
+      return;
+    }
+
+    const existing = tlLoadRecords();
+
+    // Merge: keep existing, append incoming records whose id doesn't already exist
+    const existingIds = new Set(existing.map(r => r.id));
+    const toAdd = incoming.filter(r => r.id && !existingIds.has(r.id));
+    const duplicates = incoming.length - toAdd.length;
+
+    if (toAdd.length === 0) {
+      alert(getLang()==='en'
+        ? `All ${incoming.length} records in this file already exist. Nothing was imported.`
+        : `檔案中的 ${incoming.length} 筆記錄已全部存在，無需重複匯入。`);
+      return;
+    }
+
+    // Confirm before merging
+    const msg = getLang()==='en'
+      ? `Import ${toAdd.length} record(s)?${duplicates > 0 ? ` (${duplicates} duplicate(s) skipped)` : ''}
+Existing records will be kept.`
+      : `確定匯入 ${toAdd.length} 筆記錄？${duplicates > 0 ? `（${duplicates} 筆重複，已略過）` : ''}
+現有記錄不會被刪除。`;
+
+    if (!confirm(msg)) return;
+
+    const merged = existing.concat(toAdd);
+    // Sort by timestamp ascending
+    merged.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    tlSaveRecords(merged);
+    tlUpdateBadge();
+    tlRender();
+
+    alert(getLang()==='en'
+      ? `Successfully imported ${toAdd.length} record(s).`
+      : `已成功匯入 ${toAdd.length} 筆記錄。`);
+  };
+  reader.readAsText(file);
+}
+
 
 function tlRender() {
   const records = tlLoadRecords();
