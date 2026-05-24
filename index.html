@@ -139,6 +139,17 @@
     .spa-nav{padding:0 14px;}
     .spa-nav-btn{padding:6px 8px;font-size:8px;}
   }
+  /* 極窄螢幕（<400px）精細優化 */
+  @media(max-width:400px){
+    .home-nav-item{padding:14px 14px;gap:10px;}
+    .home-nav-num{width:22px;}
+    .home-nav-title{font-size:13px;}
+    .home-nav-sub{font-size:10px;}
+    .home-container{padding:44px 14px 60px;}
+    .choice-btn{flex-wrap:wrap;}
+    .choice-effect{flex-basis:100%;padding-left:32px;padding-top:4px;}
+    input[type=number]{font-size:14px;padding:8px 9px;}
+  }
 
   
   /* ── MANUAL SPECIFIC ── */
@@ -2186,14 +2197,26 @@ function toggleRef(){
 }
 
 // ── SVG矩陣更新（不依賴任何DOM尺寸）──
-// viewBox座標系：繪圖區 x=60~700(plotW=640), y=20~270(plotH=250)
-// φ → x = 60 + phi*640
-// A → y = 270 - a*250  （Y反轉：A大=上=y小）
+// viewBox座標系：720×360，繪圖區 x=PLOT.X0~(X0+W), y=PLOT.Y0~(Y0+H)
+// φ → x = PLOT.X0 + phi * PLOT.W  （左=0，右=1）
+// A → y = PLOT.Y0 + PLOT.H - a * PLOT.H  （Y反轉：A大=上=y小）
+const PLOT = {
+  X0:     60,   // left edge of plot area
+  W:      640,  // plot width  (x: 60 → 700)
+  Y0:     30,   // top edge of plot area
+  H:      300,  // plot height (y: 30 → 330, A-axis inverted)
+  Y_BOT:  330,  // bottom edge = Y0 + H
+  R_MIN:  10,   // bubble min radius (when F provided)
+  R_MAX:  65,   // bubble max radius
+  R_NONE: 12,   // bubble radius when F not provided
+  // R formula: R_MIN + f * R_RANGE, clamped to [R_MIN, R_MAX]
+  R_RANGE: 56,  // = R_MAX - R_MIN (65 - 10 = 55 → rounded to 56 for visual feel)
+};
+
 function updateMatrix(phi, a, f, hasF, color, inDanger){
-  const plotX = 60, plotW = 640, plotY0 = 330, plotH = 300;
-  const tx = plotX + phi * plotW;
-  const ty = plotY0 - a * plotH;
-  const r  = hasF ? Math.max(10, Math.min(65, 10 + f*56)) : 12;
+  const tx = PLOT.X0 + phi * PLOT.W;
+  const ty = PLOT.Y_BOT - a * PLOT.H;
+  const r  = hasF ? Math.max(PLOT.R_MIN, Math.min(PLOT.R_MAX, PLOT.R_MIN + f * PLOT.R_RANGE)) : PLOT.R_NONE;
 
   // 移動泡泡群組
   const g = document.getElementById('svg-bubble-g');
@@ -3436,7 +3459,7 @@ function showGlobalReport() {
       <div class="report-main-type">${report.type}</div>
       <div class="report-desc">${report.desc}</div>
       <div class="report-bars">${barsHTML}</div>
-      <div class="report-quote">「${report.quote}」</div>
+      <div class="report-quote">${_r_en ? `"${report.quote}"` : `「${report.quote}」`}</div>
     </div>
     <div class="report-residual">
       <div class="report-residual-label">${_r_en?'Structural Diagnosis Notes':'結構診斷附記'}</div>
