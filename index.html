@@ -115,30 +115,41 @@
     position:fixed;top:0;left:0;right:0;z-index:100;
     background:rgba(8,8,8,0.95);backdrop-filter:blur(8px);
     border-bottom:1px solid #1a1a1a;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:0 24px;height:48px;
+    display:flex;align-items:center;
+    padding:0 12px 0 16px;height:48px;
   }
   .spa-nav-brand{
     font-family:'DM Mono',monospace;font-size:10px;
     color:#c8f060;letter-spacing:.15em;text-transform:uppercase;
-    text-decoration:none;
+    text-decoration:none;flex-shrink:0;padding-right:6px;
   }
-  .spa-nav-links{display:flex;gap:2px;}
+  /* scrollable middle zone — buttons never wrap, bar never overflows */
+  .spa-nav-links{
+    display:flex;gap:0;flex:1;min-width:0;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .spa-nav-links::-webkit-scrollbar{display:none;}
   .spa-nav-btn{
     font-family:'DM Mono',monospace;font-size:9px;
     color:#505050;letter-spacing:.1em;text-transform:uppercase;
     background:none;border:none;cursor:pointer;
-    padding:6px 12px;transition:color .15s;
+    padding:6px 10px;transition:color .15s;
+    white-space:nowrap;flex-shrink:0;
   }
   .spa-nav-btn:hover{color:#909090;}
   .spa-nav-btn.active{color:#c8f060;}
   .spa-page{display:none;padding-top:48px;}
   .spa-page.active{display:block;}
-  /* 手機版nav */
+  /* lang button is always pinned to the right and never pushed off */
+  .lang-toggle-btn{flex-shrink:0;margin-left:6px;}
   @media(max-width:480px){
-    .spa-nav{padding:0 14px;}
+    .spa-nav{padding:0 8px 0 12px;}
     .spa-nav-btn{padding:6px 8px;font-size:8px;}
   }
+  /* ── TABLE HORIZONTAL SCROLL WRAPPER ── */
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:20px 0;}
+  .table-scroll .doc-table{margin:0;}
   /* 極窄螢幕（<400px）精細優化 */
   @media(max-width:400px){
     .home-nav-item{padding:14px 14px;gap:10px;}
@@ -412,14 +423,20 @@
   .reset-btn:hover{border-color:var(--text-muted);color:var(--text);}
 
   /* ── TOOLTIP ── */
-  .tip{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid var(--text-muted);border-radius:50%;font-size:8px;color:var(--text-muted);cursor:help;position:relative;margin-left:6px;flex-shrink:0;}
+  .tip{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid var(--text-muted);border-radius:50%;font-size:8px;color:var(--text-muted);cursor:pointer;position:relative;margin-left:6px;flex-shrink:0;}
   .tip-popup{
-    display:none;position:absolute;left:20px;top:-4px;
-    width:200px;background:var(--surface2);border:1px solid var(--border2);
+    display:none;position:fixed;
+    width:220px;max-width:calc(100vw - 24px);
+    background:var(--surface2);border:1px solid var(--border2);
     padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);
-    line-height:1.6;z-index:10;pointer-events:none;
+    line-height:1.6;z-index:9999;pointer-events:none;
+    box-shadow:0 4px 16px rgba(0,0,0,0.5);
   }
-  .tip:hover .tip-popup{display:block;}
+  .tip-popup.open{display:block;}
+  /* desktop hover still works */
+  @media(hover:hover){
+    .tip:hover .tip-popup{display:block;}
+  }
 
   /* ── INPUT SECTION ── */
   .input-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end;margin-bottom:10px;}
@@ -1093,7 +1110,7 @@
       <p>必填欄位共六個數值，分為「自己」與「對方」兩組。家境等級為選填欄位，每人各一個數值。</p>
     </div>
 
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead>
         <tr><th>欄位</th><th>單位</th><th>範圍</th><th>說明</th></tr>
       </thead>
@@ -1123,7 +1140,7 @@
           <td>參考主計處家庭財富分佈資料，1 級為最高資產組（家庭淨資產 &gt; 3,391 萬），10 級為最低資產組（&lt; 143 萬）。填入最接近自身家庭狀況的等級。</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
 
     <div class="callout orange">
       <div class="callout-label">家境等級參考對照表</div>
@@ -1156,7 +1173,7 @@
       <span class="comment">── 方向性修正後得到 φ 最終值（見 §4）</span>
     </div>
 
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead>
         <tr><th>φ 範圍</th><th>狀態</th><th>診斷意義</th></tr>
       </thead>
@@ -1182,7 +1199,7 @@
           <td>高風險區間。系統韌性嚴重受限，輕微外部壓力即可能引發顯著失穩。</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
 
     <div class="prose">
       <p><strong>W — 結構內耗值</strong>定義為 W = 1 − φ，代表系統在維持運作過程中消耗於結構不對稱的比例。W 越高，有效韌性越低。</p>
@@ -1218,7 +1235,7 @@
       φ 最終 = max(0, min(1, φ_原始 + 修正值))
     </div>
 
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead>
         <tr><th>方向類型</th><th>修正方向</th><th>修正係數</th><th>說明</th></tr>
       </thead>
@@ -1242,7 +1259,7 @@
           <td>任一維度差距為零，不進行修正。</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
 
   <!-- §5 -->
@@ -1268,7 +1285,7 @@
       當 gap = mean 時，A_原始 = 100%。這等同於「大的是小的三倍」（例如 20 歲配 60 歲）。在成人關係中，真正觸發 cap 的情況極少，但確實存在。當 A 被 cap 時，報告會標注原始計算值以供參考。
     </div>
 
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead>
         <tr><th>A 範圍</th><th>狀態</th><th>診斷意義</th></tr>
       </thead>
@@ -1294,7 +1311,7 @@
           <td>背景差距是獨立的結構風險來源，在重大決策節點（生育、退休規劃）上影響尤為明顯。</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
 
   <!-- §6 -->
@@ -1326,7 +1343,7 @@
       <p>這個設計修正了舊版公式的一個盲點：當雙方家境同樣偏低時，舊版會得到 F = 0（無風險），但現實中兩個都很窮的組合面臨的是生存壓力直接壓縮關係空間的問題，風險並非為零。</p>
     </div>
 
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead>
         <tr><th>F 範圍</th><th>狀態</th><th>診斷意義</th></tr>
       </thead>
@@ -1352,7 +1369,7 @@
           <td>家境差距是獨立的高風險來源。一方的日常消費基準可能是另一方的非常態支出，價值觀落差難以透過短期溝通彌合。</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
 
     <div class="callout orange">
       <div class="callout-label">計算範例</div>
@@ -1526,7 +1543,7 @@
       <p>DSBM 是一個結構診斷工具，而非完整的關係評估系統。使用者應理解以下假設與局限：</p>
     </div>
 
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead>
         <tr><th>假設</th><th>說明</th></tr>
       </thead>
@@ -1556,7 +1573,7 @@
           <td>模型不區分性別、角色或社會文化脈絡——同樣的數值組合，無論誰是哪一方，得到的結果相同。</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
 
     <div class="callout red">
       <div class="callout-label">重要提醒</div>
@@ -1571,7 +1588,7 @@
       <span class="section-title">版本更新紀錄</span>
     </div>
 
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead>
         <tr><th>版本</th><th>更新內容</th></tr>
       </thead>
@@ -1605,7 +1622,7 @@
           <td>新增結構時間軸功能。支援手動儲存診斷記錄，以折線圖呈現 φ、A、F 三軸的歷史變化趨勢。資料儲存於本機瀏覽器（localStorage），不經過任何伺服器。同步新增說明書 §12–§14，說明時間軸、參數工作室與結構敘事模擬的設計邏輯與使用情境。</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
 
   <!-- §12 -->
@@ -1748,7 +1765,7 @@
   </div>
   <div class="doc-section">
     <div class="section-header"><span class="section-num">02</span><span class="section-title">Input Specifications</span></div>
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead><tr><th>Field</th><th>Unit</th><th>Range</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Monthly Income</td><td>$K / month</td><td>≥ 0</td><td>Pre- or post-tax, but use the same basis for both parties. Include stable salary; optionally add regular bonuses.</td></tr>
@@ -1756,7 +1773,7 @@
         <tr><td>Age</td><td>years</td><td>≥ 16</td><td>Actual age as an integer.</td></tr>
         <tr><td>Wealth Tier <span class="chip orange">Optional</span></td><td>tier (1–10)</td><td>1–10</td><td>1 = wealthiest, 10 = lowest. Enter the tier closest to your family of origin's net worth.</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <div class="callout red"><div class="callout-label">Note</div>Combined monthly income (S) and combined weekly hours cannot both be zero. A caregiver with zero income is valid as long as the partner has income. If either wealth tier is blank, the F-axis is not computed.</div>
   </div>
   <div class="doc-section">
@@ -1767,7 +1784,7 @@
       φ_raw = (φ_money + φ_time) / 2<br>
       <span class="comment">── directional correction applied → φ_final (see §4)</span>
     </div>
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead><tr><th>φ Range</th><th>Status</th><th>Diagnostic Meaning</th></tr></thead>
       <tbody>
         <tr><td>0.80–1.00</td><td><span class="chip green">Structurally Sound</span></td><td>High symmetry; structural friction W is low; strong resilience under external pressure.</td></tr>
@@ -1775,7 +1792,7 @@
         <tr><td>0.50–0.64</td><td><span class="chip yellow">Moderate Asymmetry</span></td><td>Elevated structural loss; effective resilience limited. Sustained imbalance tends to surface at high-pressure events.</td></tr>
         <tr><td>0.00–0.49</td><td><span class="chip red">Severe Asymmetry</span></td><td>High-risk zone. System resilience critically limited; minor external pressure may trigger significant instability.</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <div class="prose"><p><strong>W — Structural Friction</strong>: W = 1 − φ. The higher W is, the lower the effective resilience.</p></div>
   </div>
   <div class="doc-section">
@@ -1790,14 +1807,14 @@
       correction = +(income_gap × hours_gap × 0.1)<br><br>
       φ_final = max(0, min(1, φ_raw + correction))
     </div>
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead><tr><th>Direction Type</th><th>Adjustment</th><th>Coefficient</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Unilateral Overload</td><td><span class="chip red">Penalty</span></td><td>× 0.4</td><td>High earner also works more; other party doubly disadvantaged.</td></tr>
         <tr><td>Complementary Division</td><td><span class="chip green">Bonus</span></td><td>× 0.1</td><td>High earner works less; cross-dimension exchange logic present.</td></tr>
         <tr><td>No Significant Direction</td><td>—</td><td>× 0</td><td>Gap on one dimension is zero; no correction applied.</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
   <div class="doc-section">
     <div class="section-header"><span class="section-num">05</span><span class="section-title">Axis 2 A — Age Background Friction</span></div>
@@ -1809,7 +1826,7 @@
       A &nbsp;&nbsp;&nbsp;&nbsp;= min(1, A_raw) &nbsp;<span class="comment">── capped at 100%</span>
     </div>
     <div class="callout purple"><div class="callout-label">Cap Condition</div>A_raw = 100% when gap = mean (e.g. age 20 and 60). This is rare in adult relationships but valid. When capped, the report notes the raw value for reference.</div>
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead><tr><th>A Range</th><th>Status</th><th>Diagnostic Meaning</th></tr></thead>
       <tbody>
         <tr><td>0–9%</td><td><span class="chip green">Similar Background</span></td><td>Age gap is minimal; life coordinates are highly aligned.</td></tr>
@@ -1817,7 +1834,7 @@
         <tr><td>25–49%</td><td><span class="chip yellow">Notable Gap</span></td><td>Life stage, risk tolerance, and long-term expectations may diverge significantly.</td></tr>
         <tr><td>50–100%</td><td><span class="chip red">Significant Gap</span></td><td>Background gap is an independent structural risk factor, especially at major decision points.</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
   <div class="doc-section">
     <div class="section-header"><span class="section-num">06</span><span class="section-title">Axis 3 F — Wealth Background Friction <span style="font-size:12px;color:var(--orange);font-family:'DM Mono',monospace;">v3.0 · optional</span></span></div>
@@ -1836,7 +1853,7 @@
       Tier 1 + Tier 10: F_gap=99%, F_base=55%, F = <strong>86%</strong> (significant gap)<br>
       Tier 10 + Tier 10: F_gap=0%, F_base=100%, F = <strong>30%</strong> (resource scarcity pressure)
     </div>
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead><tr><th>F Range</th><th>Status</th><th>Diagnostic Meaning</th></tr></thead>
       <tbody>
         <tr><td>0–9%</td><td><span class="chip green">Similar Background</span></td><td>Family-of-origin resources are highly aligned; money attitudes are close.</td></tr>
@@ -1844,7 +1861,7 @@
         <tr><td>30–59%</td><td><span class="chip yellow">Notable Gap</span></td><td>Baselines for "normal" living costs may diverge; structural friction emerges at major financial decisions.</td></tr>
         <tr><td>60–100%</td><td><span class="chip red">Significant Gap</span></td><td>Wealth gap is an independent high-risk source. One party's daily baseline may be the other's exceptional expenditure.</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
   <div class="doc-section">
     <div class="section-header"><span class="section-num">07</span><span class="section-title">S — Background Context Reference</span></div>
@@ -1888,7 +1905,7 @@
   </div>
   <div class="doc-section">
     <div class="section-header"><span class="section-num">10</span><span class="section-title">Model Assumptions &amp; Limitations</span></div>
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead><tr><th>Assumption</th><th>Notes</th></tr></thead>
       <tbody>
         <tr><td>Equal Weighting</td><td>φ_money and φ_time each contribute 50%. Their relative importance varies by couple.</td></tr>
@@ -1898,12 +1915,12 @@
         <tr><td>Excluded Dimensions</td><td>Emotional labor, decision-making power, geography, and education are not modeled.</td></tr>
         <tr><td>Direction-Neutral</td><td>Same inputs yield the same result regardless of gender or role.</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <div class="callout red"><div class="callout-label">Important Reminder</div>A low φ does not mean the relationship is unhealthy. A high A or F does not mean the relationship is necessarily troubled. The model outputs a structural description, not a verdict. Interpret results in the context of your own situation.</div>
   </div>
   <div class="doc-section">
     <div class="section-header"><span class="section-num">11</span><span class="section-title">Version History</span></div>
-    <table class="doc-table">
+    <div class="table-scroll"><table class="doc-table">
       <thead><tr><th>Version</th><th>Changes</th></tr></thead>
       <tbody>
         <tr><td>v1.0</td><td>Initial release. φ as primary metric; W = 1 − φ.</td></tr>
@@ -1914,7 +1931,7 @@
         <tr><td style="color:var(--accent)">v3.1</td><td>F-axis revised: F = F_gap×0.7 + F_base×0.3. Fixes two Tier-10 → F=0 flaw.</td></tr>
         <tr><td style="color:var(--accent)">v3.1.1</td><td>Added Structure Timeline. Supports manual snapshot saving; renders φ, A, F history as a line chart. Data stored in browser localStorage, never transmitted. Added Manual §12–§14 covering Timeline, Parameter Studio, and Structural Narrative Simulation.</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
 
   <!-- §12 -->
@@ -3543,6 +3560,59 @@ function goTitle() {
   }
   window.scrollTo(0, 0);
 }
+
+// ── TOOLTIP JS ──
+// Handles click-to-open for touch devices; positions popup to stay within viewport.
+(function(){
+  let openPopup = null;
+
+  function closeAll(){
+    if(openPopup){ openPopup.classList.remove('open'); openPopup = null; }
+  }
+
+  document.addEventListener('click', function(e){
+    const tip = e.target.closest('.tip');
+    if(!tip){
+      closeAll();
+      return;
+    }
+    e.stopPropagation();
+    const popup = tip.querySelector('.tip-popup');
+    if(!popup) return;
+
+    // If already open, close it
+    if(popup === openPopup){ closeAll(); return; }
+
+    closeAll();
+
+    // Position: use fixed coords from the trigger element
+    const rect = tip.getBoundingClientRect();
+    const popupW = 220;
+    const margin = 12;
+    const viewW  = window.innerWidth;
+    const viewH  = window.innerHeight;
+
+    // Horizontal: prefer right of icon; flip left if not enough space
+    let left = rect.right + 6;
+    if(left + popupW > viewW - margin){
+      left = rect.left - popupW - 6;
+    }
+    // Clamp to viewport
+    left = Math.max(margin, Math.min(left, viewW - popupW - margin));
+
+    // Vertical: align top with icon; shift up if overflows bottom
+    let top = rect.top - 4;
+    // We don't know height yet; use 120px estimate, adjust after render
+    if(top + 120 > viewH - margin){ top = viewH - 120 - margin; }
+    top = Math.max(margin, top);
+
+    popup.style.left = left + 'px';
+    popup.style.top  = top  + 'px';
+    popup.classList.add('open');
+    openPopup = popup;
+  });
+})();
+
 
 
 // ── CUSTOM MODE JS ──
