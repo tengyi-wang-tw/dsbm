@@ -340,6 +340,38 @@
   .home-footer{display:flex;justify-content:space-between;align-items:center;padding-top:20px;border-top:1px solid #1e1e1e;}
   .home-footer-note{font-size:10px;color:#383838;line-height:1.7;}
   .home-footer-ver{font-family:'DM Mono',monospace;font-size:9px;color:#383838;letter-spacing:.1em;text-align:right;}
+  /* ── EXAMPLE LINK inside 01 card ── */
+  .home-nav-example{
+    display:inline-block;margin-top:7px;
+    font-family:'DM Mono',monospace;font-size:9px;
+    color:var(--accent);letter-spacing:.08em;
+    border-bottom:1px dotted rgba(200,240,96,0.35);
+    cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .home-nav-example:hover{border-bottom-color:var(--accent);}
+  /* ── RECOMMENDED PATH BANNER ── */
+  .home-path-banner{
+    background:#0c0c0c;border:1px solid #1e1e1e;border-left:2px solid #2a2a2a;
+    padding:16px 20px;margin-bottom:32px;
+  }
+  .home-path-label{
+    font-family:'DM Mono',monospace;font-size:9px;color:#404040;
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px;
+  }
+  .home-path-steps{display:flex;align-items:center;flex-wrap:wrap;gap:0;}
+  .home-path-step{
+    display:flex;flex-direction:column;gap:3px;padding:0 14px 0 0;
+  }
+  .home-path-step:first-child{padding-left:0;}
+  .home-path-num{font-family:'DM Mono',monospace;font-size:9px;color:#383838;letter-spacing:.08em;}
+  .home-path-name{font-size:11px;color:#686868;}
+  .home-path-arrow{font-family:'DM Mono',monospace;font-size:11px;color:#2a2a2a;padding-right:14px;align-self:center;margin-top:10px;}
+  .home-path-note{margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:10px;color:#404040;line-height:1.7;}
+  @media(max-width:480px){
+    .home-path-steps{gap:4px;}
+    .home-path-step{padding:0 8px 0 0;}
+    .home-path-arrow{padding-right:8px;}
+  }
   /* ── TOOL PAGE ── */
   .tool-container{max-width:760px;margin:0 auto;padding:20px 20px 80px;}
   /* ── MANUAL PAGE ── */
@@ -653,6 +685,7 @@
         <div class="home-nav-info">
           <div class="home-nav-title"><span class="zh">關係結構診斷工具</span><span class="en">Relationship Structure Diagnostic</span></div>
           <div class="home-nav-sub"><span class="zh">輸入收入、勞動時數、年齡、家境等級，生成 φ · A · F 三軸結構診斷與座標矩陣</span><span class="en">Enter income, labor hours, age, and wealth tier to generate φ · A · F three-axis diagnosis and coordinate matrix</span></div>
+          <span class="home-nav-example" onclick="event.stopPropagation();loadExample()"><span class="zh">↳ 試試範例數據</span><span class="en">↳ Try with example data</span></span>
         </div>
         <span class="home-nav-tag tag-tool">TOOL</span>
         <span class="home-nav-arrow">→</span>
@@ -713,6 +746,36 @@
         <span class="home-nav-arrow">→</span>
       </button>
     </div><!-- /.home-nav -->
+
+    <!-- RECOMMENDED PATH BANNER -->
+    <div class="home-path-banner">
+      <div class="home-path-label"><span class="zh">建議路徑 — 初次使用</span><span class="en">Recommended path — first time</span></div>
+      <div class="home-path-steps">
+        <div class="home-path-step">
+          <span class="home-path-num">01</span>
+          <span class="home-path-name"><span class="zh">診斷</span><span class="en">Diagnose</span></span>
+        </div>
+        <span class="home-path-arrow">→</span>
+        <div class="home-path-step">
+          <span class="home-path-num">06</span>
+          <span class="home-path-name"><span class="zh">旅程</span><span class="en">Journey</span></span>
+        </div>
+        <span class="home-path-arrow">→</span>
+        <div class="home-path-step">
+          <span class="home-path-num">07</span>
+          <span class="home-path-name"><span class="zh">對照</span><span class="en">Duo</span></span>
+        </div>
+        <span class="home-path-arrow">→</span>
+        <div class="home-path-step">
+          <span class="home-path-num">05</span>
+          <span class="home-path-name"><span class="zh">時間軸</span><span class="en">Timeline</span></span>
+        </div>
+      </div>
+      <div class="home-path-note">
+        <span class="zh">先了解結構 → 再了解自己的認知模式 → 與另一個人比較 → 追蹤長期變化。02 說明書 · 03 模擬 · 04 自訂 可按需探索。</span>
+        <span class="en">Start with structure → understand your cognitive patterns → compare with a partner → track change over time. Manual, Stories & Custom are available on demand.</span>
+      </div>
+    </div>
     <div class="home-footer">
       <div class="home-footer-note"><span class="zh">本系統基於 DSBM v3.2<br>結果僅供結構性參考，不代表任何關係判決</span><span class="en">Based on DSBM v3.2 · Results are structural reference only</span></div>
       <div class="home-footer-ver">DSBM v3.2<br>Beta</div>
@@ -2551,6 +2614,38 @@ function toggleLang() {
 }
 
 // ── SPA 頁面切換 ──
+function loadExample() {
+  // 預填範例數據並跳到診斷頁
+  showPage('tool');
+  // 範例：雙薪家庭，收入有差距，年齡近，含家境
+  const fields = {
+    income_self: 8, income_other: 3,
+    hours_self: 45, hours_other: 55,
+    age_self: 32, age_other: 29,
+    grade_self: 6, grade_other: 9
+  };
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+  // 顯示範例標注提示
+  const existingBanner = document.getElementById('example-notice');
+  if (!existingBanner) {
+    const notice = document.createElement('div');
+    notice.id = 'example-notice';
+    notice.style.cssText = 'background:#0d180d;border:1px solid #1a2e1a;border-left:2px solid #60d080;padding:10px 14px;margin-bottom:12px;font-family:\'DM Mono\',monospace;font-size:10px;color:#60d080;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center;';
+    const isEn = document.documentElement.lang.startsWith('en');
+    notice.innerHTML = `<span>${isEn ? '⬡ Example data loaded — replace with your own numbers to diagnose your relationship' : '⬡ 已載入範例數據——換成你的數字即可開始診斷'}</span><button onclick="document.getElementById(\'example-notice\').remove()" style="background:none;border:none;color:#60d080;cursor:pointer;font-family:\'DM Mono\',monospace;font-size:11px;margin-left:12px;">✕</button>`;
+    const calcBtn = document.querySelector('.calc-btn') || document.querySelector('.btn[onclick="calculate()"]');
+    if (calcBtn) calcBtn.parentNode.insertBefore(notice, calcBtn);
+  }
+  // 自動捲動到輸入區
+  setTimeout(() => {
+    const header = document.querySelector('#page-tool header');
+    if (header) header.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 100);
+}
+
 function showPage(name) {
   document.querySelectorAll('.spa-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.spa-nav-btn').forEach(b => b.classList.remove('active'));
@@ -5272,24 +5367,32 @@ function cm_mailFeedback() {
     </div>
 
     <!-- breakdown -->
-    <div class="breakdown-dual">
-      <div class="breakdown-col">
-        <div class="bd-title"><span class="zh">計算明細 — 官方</span><span class="en">Details — Canonical</span></div>
-        <div class="bd-row"><span class="bd-key">φ_money</span><span class="bd-val" id="bd_c_pm">—</span></div>
-        <div class="bd-row"><span class="bd-key">φ_time</span><span class="bd-val" id="bd_c_pt">—</span></div>
-        <div class="bd-row"><span class="bd-key"><span class="zh">φ 原始</span><span class="en">φ raw</span></span><span class="bd-val" id="bd_c_raw">—</span></div>
-        <div class="bd-row"><span class="bd-key"><span class="zh">修正值</span><span class="en">Correction</span></span><span class="bd-val" id="bd_c_adj">—</span></div>
-        <div class="bd-row"><span class="bd-key"><span class="zh">φ 最終</span><span class="en">φ final</span></span><span class="bd-val" id="bd_c_phi">—</span></div>
-        <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_c_w">—</span></div>
+    <div style="margin-bottom:1px;">
+      <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.cm-bd-arrow').style.transform=this.nextElementSibling.style.display==='none'?'':'rotate(180deg)'" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--surface2);border:1px solid var(--border);border-bottom:none;cursor:pointer;user-select:none;">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;"><span class="zh">計算明細 — φ 軸</span><span class="en">Calculation Details — φ Axis</span></span>
+        <span class="cm-bd-arrow" style="font-size:10px;color:var(--text-muted);transition:transform .2s;">▾</span>
       </div>
-      <div class="breakdown-col custom-bd">
-        <div class="bd-title" style="color:var(--studio);"><span class="zh">計算明細 — Custom</span><span class="en">Details — Custom</span></div>
-        <div class="bd-row"><span class="bd-key">φ_money (w=<span id="bd_wm">—</span>)</span><span class="bd-val" id="bd_u_pm">—</span></div>
-        <div class="bd-row"><span class="bd-key">φ_time (w=<span id="bd_wt">—</span>)</span><span class="bd-val" id="bd_u_pt">—</span></div>
-        <div class="bd-row"><span class="bd-key"><span class="zh">φ 原始</span><span class="en">φ raw</span></span><span class="bd-val" id="bd_u_raw">—</span></div>
-        <div class="bd-row"><span class="bd-key"><span class="zh">修正值</span><span class="en">Correction</span></span><span class="bd-val" id="bd_u_adj">—</span></div>
-        <div class="bd-row"><span class="bd-key"><span class="zh">φ 最終</span><span class="en">φ final</span></span><span class="bd-val" id="bd_u_phi">—</span></div>
-        <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_u_w">—</span></div>
+      <div style="display:none;">
+        <div class="breakdown-dual">
+          <div class="breakdown-col">
+            <div class="bd-title"><span class="zh">計算明細 — 官方</span><span class="en">Details — Canonical</span></div>
+            <div class="bd-row"><span class="bd-key">φ_money</span><span class="bd-val" id="bd_c_pm">—</span></div>
+            <div class="bd-row"><span class="bd-key">φ_time</span><span class="bd-val" id="bd_c_pt">—</span></div>
+            <div class="bd-row"><span class="bd-key"><span class="zh">φ 原始</span><span class="en">φ raw</span></span><span class="bd-val" id="bd_c_raw">—</span></div>
+            <div class="bd-row"><span class="bd-key"><span class="zh">修正值</span><span class="en">Correction</span></span><span class="bd-val" id="bd_c_adj">—</span></div>
+            <div class="bd-row"><span class="bd-key"><span class="zh">φ 最終</span><span class="en">φ final</span></span><span class="bd-val" id="bd_c_phi">—</span></div>
+            <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_c_w">—</span></div>
+          </div>
+          <div class="breakdown-col custom-bd">
+            <div class="bd-title" style="color:var(--studio);"><span class="zh">計算明細 — Custom</span><span class="en">Details — Custom</span></div>
+            <div class="bd-row"><span class="bd-key">φ_money (w=<span id="bd_wm">—</span>)</span><span class="bd-val" id="bd_u_pm">—</span></div>
+            <div class="bd-row"><span class="bd-key">φ_time (w=<span id="bd_wt">—</span>)</span><span class="bd-val" id="bd_u_pt">—</span></div>
+            <div class="bd-row"><span class="bd-key"><span class="zh">φ 原始</span><span class="en">φ raw</span></span><span class="bd-val" id="bd_u_raw">—</span></div>
+            <div class="bd-row"><span class="bd-key"><span class="zh">修正值</span><span class="en">Correction</span></span><span class="bd-val" id="bd_u_adj">—</span></div>
+            <div class="bd-row"><span class="bd-key"><span class="zh">φ 最終</span><span class="en">φ final</span></span><span class="bd-val" id="bd_u_phi">—</span></div>
+            <div class="bd-row"><span class="bd-key">W = 1 − φ</span><span class="bd-val" id="bd_u_w">—</span></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -6861,7 +6964,16 @@ function jShowReport() {
     <div class="j-report-desc j-fade-in">${td.desc}</div>
     <div class="j-report-quote j-fade-in">${reportQuote}</div>
     ${driftNote ? `<div class="j-report-residual j-fade-in"><div class="j-report-residual-label">${T.driftLabel}</div>${driftNote}</div>` : ''}
+    ${driftInsight ? `<div class="j-report-residual j-fade-in"><div class="j-report-residual-label">${T.driftObsLabel}</div>${driftInsight}</div>` : ''}
     ${crossReadingHTML}
+    <div class="j-fade-in" style="margin:36px 0 14px">
+      <div class="j-section-title">${T.regionTitle}</div>
+      ${regionMapHTML}
+    </div>
+    <div class="j-fade-in" style="margin:36px 0 14px">
+      <div class="j-section-title">${T.weightTitle}</div>
+      ${barsHTML}
+    </div>
     <div class="j-fade-in" style="margin:36px 0 14px">
       <div class="j-section-title">${T.trajectoryTitle}</div>
       <div style="font-size:11px;color:var(--j-text-muted);margin-bottom:10px;line-height:1.7;">${T.trajectoryDesc}</div>
@@ -6870,15 +6982,6 @@ function jShowReport() {
       </div>
       <div style="margin-top:10px;display:flex;flex-wrap:wrap;">${legend}</div>
     </div>
-    <div class="j-fade-in" style="margin:36px 0 14px">
-      <div class="j-section-title">${T.weightTitle}</div>
-      ${barsHTML}
-    </div>
-    <div class="j-fade-in" style="margin:36px 0 14px">
-      <div class="j-section-title">${T.regionTitle}</div>
-      ${regionMapHTML}
-    </div>
-    ${driftInsight ? `<div class="j-report-residual j-fade-in"><div class="j-report-residual-label">${T.driftObsLabel}</div>${driftInsight}</div>` : ''}
     <div class="j-report-residual j-fade-in">
       <div class="j-report-residual-label">${T.excludeTitle}</div>
       <div class="j-excluded-badges">
