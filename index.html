@@ -1838,7 +1838,7 @@
         </tr>
         <tr>
           <td style="color:var(--accent)">v3.2</td>
-          <td>三項使用者體驗改動。（1）<strong>語氣重寫</strong>：診斷報告從「判決式」改為「觀察式」措辭，反映模型的啟發式本質。（2）<strong>推導摺疊層</strong>：φ 與 A 軸結果旁新增可展開的「這個數字怎麼來的」區塊，將公式計算過程與白話說明內嵌於結果頁，無需切換至說明書。（3）<strong>敏感度沙盒</strong>：診斷結果下方新增壓力測試區，可拖動收入與時數滑桿即時觀察 φ 的變化，工具從靜態切片診斷升級為動態情境模擬器。另新增診斷結果分享功能（一鍵複製結構摘要）與遊戲案例行為小結（結局後顯示本次選擇分布）。<br><br><strong>新增認知策略引擎（旅程）</strong>：七種認知策略 × 六個困境區域 × 十八個敘事節點的漂移系統。旅程記錄使用者在不同情境深度下的策略路徑，生成策略權重分布與漂移報告。若使用者在旅程前已跑過 DSBM 診斷，報告末尾會自動生成「結構交叉解讀」，將主導策略類型與 φ、W、A、F 座標做語義連結。同步新增說明書 §15。</td>
+          <td>三項使用者體驗改動。（1）<strong>語氣重寫</strong>：診斷報告從「判決式」改為「觀察式」措辭，反映模型的啟發式本質。（2）<strong>推導摺疊層</strong>：φ 與 A 軸結果旁新增可展開的「這個數字怎麼來的」區塊，將公式計算過程與白話說明內嵌於結果頁，無需切換至說明書。（3）<strong>敏感度沙盒</strong>：診斷結果下方新增壓力測試區，可拖動收入與時數滑桿即時觀察 φ 的變化，工具從靜態切片診斷升級為動態情境模擬器。另新增診斷結果分享功能（一鍵複製結構摘要）與遊戲案例行為小結（結局後顯示本次選擇分布）。<br><br><strong>新增認知策略引擎（旅程）</strong>：七種認知策略 × 六個困境區域 × 十八個敘事節點的漂移系統。旅程記錄使用者在不同情境深度下的策略路徑，生成策略權重分布與漂移報告。若使用者在旅程前已跑過 DSBM 診斷，報告末尾會自動生成「結構交叉解讀」，將主導策略類型與 φ、W、A、F 座標做語義連結。同步新增說明書 §15。<br><br><strong>新增兩人對照（Duo Mirror）</strong>：兩人分別完成旅程後，可將各自的策略結果匯入同一畫面進行對照。系統生成策略分布對比、六區主導策略對比，以及共鳴與張力分析。共鳴與張力分析新增專屬文案系統：7 種相同策略組合與 21 種相異策略組合各有對應的觀察文案，說明該配對的共同盲點或潛在摩擦，取代過往的通用文案。同步新增說明書 §16。</td>
         </tr>
       </tbody>
     </table></div>
@@ -2011,7 +2011,7 @@
       對照頁生成的報告有三個部分：<br><br>
       <strong>策略分布對比</strong>——兩人的七種策略權重並排顯示，以橫條圖呈現。你可以直接看出哪些策略兩人重疊、哪些方向相反。<br><br>
       <strong>六區主導策略對比</strong>——對應六個困境區域，分別顯示兩人在那個區域啟動的主導策略。顏色一致代表同向，顏色不同代表分歧。分歧不代表問題，但值得討論。<br><br>
-      <strong>共鳴與張力分析</strong>——系統自動標記每個區域的共鳴程度（相同策略）與潛在張力（對立策略）。張力最高的組合，通常是兩人實際生活中摩擦最多的地方。
+      <strong>共鳴與張力分析</strong>——系統自動標記每個區域的共鳴程度（相同策略）與潛在張力（對立策略）。張力最高的組合，通常是兩人實際生活中摩擦最多的地方。每一種策略組合——無論是相同或相異——都有對應的專屬觀察文案：7 種相同策略配對各有一段說明共同優勢與潛在盲點的文字，21 種相異策略配對則各有一段說明兩種工具如何互動、可能形成什麼樣的張力或消耗的觀察。文案不作好壞判斷，只是讓你們更清楚地看見彼此策略的交叉點在哪裡。
     </div>
 
     <div class="callout orange">
@@ -2258,7 +2258,7 @@
         <tr><td style="color:var(--accent)">v3.0</td><td>Added Axis F (optional). Eight three-axis combinations.</td></tr>
         <tr><td style="color:var(--accent)">v3.1</td><td>F-axis revised: F = F_gap×0.7 + F_base×0.3. Fixes two Tier-10 → F=0 flaw.</td></tr>
         <tr><td style="color:var(--accent)">v3.1.1</td><td>Added Structure Timeline. Supports manual snapshot saving; renders φ, A, F history as a line chart. Data stored in browser localStorage, never transmitted. Added Manual §12–§14 covering Timeline, Parameter Studio, and Structural Narrative Simulation.</td></tr>
-        <tr><td style="color:var(--accent)">v3.2</td><td>Three UX improvements. (1) <strong>Tone rewrite</strong>: diagnostic report language shifted from verdict-style to observation-style, reflecting the model's heuristic nature. (2) <strong>Derivation layer</strong>: collapsible "how is this derived" block added inline to φ and A axis results — formula steps and plain-language explanation visible without switching to the manual. (3) <strong>Sensitivity sandbox</strong>: what-if simulator added below diagnosis results; drag income and hours sliders to see φ shift in real time. The tool becomes a dynamic structural pressure-tester rather than a static snapshot. Also added: one-click share card for diagnosis results; per-case behavior breakdown shown at each game ending.<br><br><strong>Added Cognitive Strategy Engine (Journey)</strong>: seven cognitive strategies × six difficulty zones × eighteen narrative nodes. The Journey records the strategy path a user takes across varying situational depths, and generates a strategy weight distribution and drift report. When a user has already run the DSBM diagnostic before starting the Journey, the report automatically appends a Structural Cross-Reading block — connecting the dominant strategy type with the user's φ, W, A, and F coordinates through semantic interpretation. Manual §15 added.</td></tr>
+        <tr><td style="color:var(--accent)">v3.2</td><td>Three UX improvements. (1) <strong>Tone rewrite</strong>: diagnostic report language shifted from verdict-style to observation-style, reflecting the model's heuristic nature. (2) <strong>Derivation layer</strong>: collapsible "how is this derived" block added inline to φ and A axis results — formula steps and plain-language explanation visible without switching to the manual. (3) <strong>Sensitivity sandbox</strong>: what-if simulator added below diagnosis results; drag income and hours sliders to see φ shift in real time. The tool becomes a dynamic structural pressure-tester rather than a static snapshot. Also added: one-click share card for diagnosis results; per-case behavior breakdown shown at each game ending.<br><br><strong>Added Cognitive Strategy Engine (Journey)</strong>: seven cognitive strategies × six difficulty zones × eighteen narrative nodes. The Journey records the strategy path a user takes across varying situational depths, and generates a strategy weight distribution and drift report. When a user has already run the DSBM diagnostic before starting the Journey, the report automatically appends a Structural Cross-Reading block — connecting the dominant strategy type with the user's φ, W, A, and F coordinates through semantic interpretation. Manual §15 added.<br><br><strong>Added Duo Mirror</strong>: after both people complete the Journey separately, they can load their strategy results into a shared view for comparison. The system generates a strategy distribution comparison, a six-zone dominant strategy comparison, and a Resonance &amp; Tension analysis. The Resonance &amp; Tension analysis now uses a dedicated observation text system: 7 same-strategy pairings and 21 different-strategy pairings each have their own tailored text — describing shared blind spots or potential friction for that combination — replacing the previous generic fallback text. Manual §16 added.</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -2376,7 +2376,7 @@
       The Duo Mirror report has three parts:<br><br>
       <strong>Strategy Distribution Comparison</strong> — Both people's seven strategy weights displayed side by side as horizontal bar charts. You can immediately see which strategies overlap and which point in opposite directions.<br><br>
       <strong>Six-Zone Dominant Strategy Comparison</strong> — For each of the six difficulty zones, the report shows the dominant strategy each person activated. Matching colors indicate alignment; different colors indicate divergence. Divergence isn't a problem — but it's worth talking about.<br><br>
-      <strong>Resonance and Tension Analysis</strong> — The system flags each zone's level of resonance (same strategy) and potential tension (divergent strategies), and provides a short interpretive observation for each pairing. Zones with the highest tension are usually where the most friction shows up in real life.
+      <strong>Resonance and Tension Analysis</strong> — The system flags each zone's level of resonance (same strategy) and potential tension (divergent strategies), and provides a short interpretive observation for each pairing. Zones with the highest tension are usually where the most friction shows up in real life. Each strategy pairing — whether matched or divergent — has its own dedicated observation text: 7 same-strategy pairings each have a note on shared strengths and potential blind spots, and 21 different-strategy pairings each have a note describing how the two tools interact and what kind of tension or cost they may create together. The text doesn't judge good or bad — it just helps you see more clearly where your two strategies intersect.
     </div>
 
     <div class="callout orange">
@@ -7437,88 +7437,92 @@ const SAME_STRATEGY_OBSERVATIONS = {
 
 const DIFF_STRATEGY_OBSERVATIONS = {
   obs_rep: {
-    zh: "你偏向「觀察型」，對方偏向「修復型」。\n\n你習慣先看清楚再動，他習慣先動手讓事情恢復運作。這可以是一種很好的搭配——你不會衝動，他不會拖延。\n\n但也可能出現一種消耗：你覺得他太急，他覺得你太慢。當你們都覺得「對方的方法不對」時，真正卡住的那個問題，反而沒有人處理。",
-    en: "You lean toward 'Observer', your partner leans toward 'Repairer'.\n\nYou prefer to see clearly before acting; they prefer to act first and restore function. This can be a good balance — you avoid impulsiveness, they avoid delay.\n\nBut there's a possible cost: you may find them too impatient, and they may find you too slow. When you both think the other's approach is wrong, the real issue may end up unattended."
+    zh: "[A]習慣先看清楚再動，[B]習慣先動手讓事情恢復運作。這可以是一種很好的搭配——[A]不會衝動，[B]不會拖延。\n\n但也可能出現一種消耗：[A]覺得[B]太急，[B]覺得[A]太慢。當你們都覺得「對方的方法不對」時，真正卡住的那個問題，反而沒有人處理。",
+    en: "[A] prefer to see clearly before acting; [B] prefer to act first and restore function. This can be a good balance — [A] avoid impulsiveness, [B] avoid delay.\n\nBut there's a possible cost: [A] may find [B] too impatient, and [B] may find [A] too slow. When both feel the other's approach is wrong, the real issue may end up unattended."
   },
   obs_eth: {
-    zh: "你偏向「觀察型」，對方偏向「倫理型」。\n\n你習慣先退一步看全局，他習慣先問「這樣對嗎」。你們都不太會衝動行事，這是共同的優點。\n\n但可能出現的張力是：當你還在觀察，他已經下了判斷；當他堅持原則，你覺得還不夠清楚。你們可能錯過的是：有些事，既不需要立刻判斷，也不需要無限期觀察——而是需要有人先做點什麼。",
-    en: "You lean toward 'Observer', your partner leans toward 'Ethicist'.\n\nYou prefer to step back and see the whole picture; they prefer to ask 'is this right?'. Neither of you acts impulsively — that's a shared strength.\n\nBut tension may arise: while you're still observing, they've already judged; while they're holding a principle, you feel it's not yet clear. What you might both miss is that some things need neither immediate judgment nor endless observation — they need someone to act first."
+    zh: "[A]習慣先退一步看全局，[B]習慣先問「這樣對嗎」。你們都不太會衝動行事，這是共同的優點。\n\n但可能出現的張力是：當[A]還在觀察，[B]已經下了判斷；當[B]堅持原則，[A]覺得還不夠清楚。你們可能錯過的是：有些事，既不需要立刻判斷，也不需要無限期觀察——而是需要有人先做點什麼。",
+    en: "[A] prefer to step back and see the whole picture; [B] prefer to ask 'is this right?'. Neither acts impulsively — that's a shared strength.\n\nBut tension may arise: while [A] is still observing, [B] has already judged; while [B] is holding a principle, [A] feels it's not yet clear. What both might miss is that some things need neither immediate judgment nor endless observation — the situation needs someone to act first."
   },
   obs_exit: {
-    zh: "你偏向「觀察型」，對方偏向「退出型」。\n\n你習慣看清楚再決定，他習慣在代價太高時離開。你們對「距離」都有一定的接受度，不會急著跳進去。\n\n但可能出現的盲點是：當你還在觀察，他已經在考慮離開了；當他覺得該走了，你覺得還不到時候。你們可能會一起錯過那個「還來得及做點什麼」的窗口——一個在等，一個在退，中間越拉越開。",
-    en: "You lean toward 'Observer', your partner leans toward 'Exiter'.\n\nYou prefer to see clearly before deciding; they prefer to leave when the cost gets too high. You're both comfortable with some distance and don't rush in.\n\nBut a possible blind spot: while you're still observing, they're already considering leaving; when they feel it's time to go, you feel it's not yet. You might both miss the window where something could still be done — one waiting, one withdrawing, the gap growing wider."
+    zh: "[A]習慣看清楚再決定，[B]習慣在代價太高時離開。你們對「距離」都有一定的接受度，不會急著跳進去。\n\n但可能出現的盲點是：當[A]還在觀察，[B]已經在考慮離開了；當[B]覺得該走了，[A]覺得還不到時候。你們可能會一起錯過那個「還來得及做點什麼」的窗口——一個在等，一個在退，中間越拉越開。",
+    en: "[A] prefer to see clearly before deciding; [B] prefer to leave when the cost gets too high. Both are comfortable with some distance and don't rush in.\n\nBut a possible blind spot: while [A] is still observing, [B] is already considering leaving; when [B] feels it's time to go, [A] feels it's not yet. Both might miss the window where something could still be done — one waiting, one withdrawing, the gap growing wider."
   },
   obs_fate: {
-    zh: "你偏向「觀察型」，對方偏向「宿命型」。\n\n你習慣先看清楚，他習慣接受「事情就是這樣」。你們都不太會強行改變什麼，這讓關係少了許多碰撞。\n\n但可能出現的消耗是：你觀察了很久，覺得也許可以試試看；他已經接受了現狀，覺得不需要動。你們可能會一起困在「不動」的狀態裡——不是因為不想動，而是因為沒有人說「我們動一下」。",
-    en: "You lean toward 'Observer', your partner leans toward 'Fatalist'.\n\nYou prefer to see clearly first; they prefer to accept 'this is how things are'. Neither of you tends to force change, which keeps the relationship low on conflict.\n\nBut the cost may be: after you've observed for a long time, you think maybe you could try something; they've already accepted the situation and see no need to move. You might both stay stuck — not because you don't want to move, but because no one says 'let's try shifting something'."
+    zh: "[A]習慣先看清楚，[B]習慣接受「事情就是這樣」。你們都不太會強行改變什麼，這讓關係少了許多碰撞。\n\n但可能出現的消耗是：[A]觀察了很久，覺得也許可以試試看；[B]已經接受了現狀，覺得不需要動。你們可能會一起困在「不動」的狀態裡——不是因為不想動，而是因為沒有人說「我們動一下」。",
+    en: "[A] prefer to see clearly first; [B] prefer to accept 'this is how things are'. Neither tends to force change, which keeps the relationship low on conflict.\n\nBut the cost may be: after [A] has observed for a long time and thinks maybe something could be tried, [B] has already accepted the situation and sees no need to move. Both might stay stuck — not because neither wants to move, but because no one says 'let's try shifting something'."
   },
   obs_dis: {
-    zh: "你偏向「觀察型」，對方偏向「崩解型」。\n\n你習慣先看清楚局勢，他習慣質疑問題框架本身。你們都不太會立刻跳進去行動，而是花時間理解。\n\n但可能出現的張力是：當你還在觀察「這個局怎麼回事」，他已經在懷疑「這個局為什麼存在」。你們可能會一起迷失在問題的邊界上——沒有人跨進去，也沒有人決定放棄。",
-    en: "You lean toward 'Observer', your partner leans toward 'Dissolver'.\n\nYou prefer to see the situation clearly; they prefer to question the frame itself. Neither of you jumps into action immediately — you both take time to understand.\n\nBut tension may arise: while you're still observing 'what's going on here', they're already questioning 'why does this situation even exist?'. You might both get lost at the boundary — no one steps in, no one decides to leave."
+    zh: "[A]習慣先看清楚局勢，[B]習慣質疑問題框架本身。你們都不太會立刻跳進去行動，而是花時間理解。\n\n但可能出現的張力是：當[A]還在觀察「這個局怎麼回事」，[B]已經在懷疑「這個局為什麼存在」。你們可能會一起迷失在問題的邊界上——沒有人跨進去，也沒有人決定放棄。",
+    en: "[A] prefer to see the situation clearly; [B] prefer to question the frame itself. Neither jumps into action immediately — both take time to understand.\n\nBut tension may arise: while [A] is still observing 'what's going on here', [B] is already questioning 'why does this situation even exist?'. Both might get lost at the boundary — no one steps in, no one decides to leave."
   },
   obs_str: {
-    zh: "你偏向「觀察型」，對方偏向「結構型」。\n\n你習慣先看清楚，他習慣拆解分析。你們都傾向「先想再做」，不喜歡衝動行事。\n\n但可能出現的消耗是：你觀察到的東西，他覺得還不夠系統化；他分析出來的結構，你覺得離現場太遠。你們可能一起卡在「想清楚」的階段——越分析越複雜，越觀察越模糊，但沒有人說「先試一下再說」。",
-    en: "You lean toward 'Observer', your partner leans toward 'Analyst'.\n\nYou prefer to see clearly first; they prefer to break things down and analyze. You both lean toward 'think before act' and dislike impulsiveness.\n\nBut the cost may be: what you observe, they feel isn't systematic enough; what they analyze, you feel is too far from the ground. You might both get stuck in the 'thinking' phase — the more you analyze, the more complex it gets; the more you observe, the fuzzier it becomes. No one says 'let's just try something'."
+    zh: "[A]習慣先看清楚，[B]習慣拆解分析。你們都傾向「先想再做」，不喜歡衝動行事。\n\n但可能出現的消耗是：[A]觀察到的東西，[B]覺得還不夠系統化；[B]分析出來的結構，[A]覺得離現場太遠。你們可能一起卡在「想清楚」的階段——越分析越複雜，越觀察越模糊，但沒有人說「先試一下再說」。",
+    en: "[A] prefer to see clearly first; [B] prefer to break things down and analyze. Both lean toward 'think before act' and dislike impulsiveness.\n\nBut the cost may be: what [A] observes, [B] feels isn't systematic enough; what [B] analyzes, [A] feels is too far from the ground. Both might get stuck in the 'thinking' phase — the more analysis happens, the more complex it gets; the more observation accumulates, the fuzzier it becomes. No one says 'let's just try something'."
   },
   rep_eth: {
-    zh: "你偏向「修復型」，對方偏向「倫理型」。\n\n你習慣動手讓事情恢復運作，他習慣先問「這樣對不對」。你們都有很強的行動動機，只是方向不同。\n\n可能出現的張力是：你覺得先修好再說，他覺得要先釐清責任歸屬；他覺得原則是底線，你覺得彈性才是智慧。你們可能會在「怎麼處理」上花掉比問題本身更多的力氣——而問題還在那裡。",
-    en: "You lean toward 'Repairer', your partner leans toward 'Ethicist'.\n\nYou prefer to act and restore functionality; they prefer to ask 'is this right?'. You both have strong motivations to act, just in different directions.\n\nTension may arise: you want to fix it first and talk later; they want to clarify responsibility first. They see principles as the bottom line; you see flexibility as wisdom. You might spend more energy arguing over 'how to handle it' than the problem itself takes — and the problem stays."
+    zh: "[A]習慣動手讓事情恢復運作，[B]習慣先問「這樣對不對」。你們都有很強的行動動機，只是方向不同。\n\n可能出現的張力是：[A]覺得先修好再說，[B]覺得要先釐清責任歸屬；[B]覺得原則是底線，[A]覺得彈性才是智慧。你們可能會在「怎麼處理」上花掉比問題本身更多的力氣——而問題還在那裡。",
+    en: "[A] prefer to act and restore functionality; [B] prefer to ask 'is this right?'. Both have strong motivations to act, just in different directions.\n\nTension may arise: [A] wants to fix it first and talk later; [B] wants to clarify responsibility first. [B] sees principles as the bottom line; [A] sees flexibility as wisdom. Both might spend more energy arguing over 'how to handle it' than the problem itself takes — and the problem stays."
   },
   rep_exit: {
-    zh: "你偏向「修復型」，對方偏向「退出型」。\n\n你習慣努力讓事情變好，他習慣在代價太高時離開。你們對困境的反應幾乎是光譜的兩端。\n\n可能出現的消耗是：你覺得還可以再試試，他覺得已經夠了；你覺得他太早放棄，他覺得你太執著。你們可能會互相拉扯——一個想拉住，一個想鬆手。最累的不是決定修還是走，而是兩個人一直在拔河。",
-    en: "You lean toward 'Repairer', your partner leans toward 'Exiter'.\n\nYou prefer to work hard to make things better; they prefer to leave when the cost gets too high. Your responses to difficulty are almost at opposite ends of the spectrum.\n\nThe cost may be: you feel it's still worth trying; they feel it's already enough. You think they give up too soon; they think you're too attached. You might pull against each other — one trying to hold on, one trying to let go. The most exhausting part isn't deciding to fix or leave — it's the tug-of-war itself."
+    zh: "[A]習慣努力讓事情變好，[B]習慣在代價太高時離開。你們對困境的反應幾乎是光譜的兩端。\n\n可能出現的消耗是：[A]覺得還可以再試試，[B]覺得已經夠了；[A]覺得[B]太早放棄，[B]覺得[A]太執著。你們可能會互相拉扯——一個想拉住，一個想鬆手。最累的不是決定修還是走，而是兩個人一直在拔河。",
+    en: "[A] prefer to work hard to make things better; [B] prefer to leave when the cost gets too high. Their responses to difficulty are almost at opposite ends of the spectrum.\n\nThe cost may be: [A] feels it's still worth trying; [B] feels it's already enough. [A] thinks [B] gives up too soon; [B] thinks [A] is too attached. Both might pull against each other — one trying to hold on, one trying to let go. The most exhausting part isn't deciding to fix or leave — it's the tug-of-war itself."
   },
   rep_fate: {
-    zh: "你偏向「修復型」，對方偏向「宿命型」。\n\n你習慣相信事情可以被調整，他習慣接受「事情就是這樣」。你們對改變的可能性的看法很不同。\n\n可能出現的張力是：你覺得還可以試試看，他覺得試也沒用；你覺得他太消極，他覺得你太天真。你們可能會一起卡住——你越想改變，他越不動；他越不動，你越用力。消耗的終點不是誰對誰錯，而是兩個人都累了。",
-    en: "You lean toward 'Repairer', your partner leans toward 'Fatalist'.\n\nYou believe things can be adjusted; they accept 'this is how things are'. Your views on the possibility of change differ significantly.\n\nTension may arise: you feel it's still worth trying; they feel trying won't help. You think they're too passive; they think you're too naive. You might get stuck together — the more you try to change, the less they move; the less they move, the harder you push. The exhaustion at the end isn't about who's right — it's that both of you are tired."
+    zh: "[A]習慣相信事情可以被調整，[B]習慣接受「事情就是這樣」。你們對改變的可能性的看法很不同。\n\n可能出現的張力是：[A]覺得還可以試試看，[B]覺得試也沒用；[A]覺得[B]太消極，[B]覺得[A]太天真。你們可能會一起卡住——[A]越想改變，[B]越不動；[B]越不動，[A]越用力。消耗的終點不是誰對誰錯，而是兩個人都累了。",
+    en: "[A] believes things can be adjusted; [B] accepts 'this is how things are'. Their views on the possibility of change differ significantly.\n\nTension may arise: [A] feels it's still worth trying; [B] feels trying won't help. [A] thinks [B] is too passive; [B] thinks [A] is too naive. Both might get stuck together — the more [A] tries to change, the less [B] moves; the less [B] moves, the harder [A] pushes. The exhaustion at the end isn't about who's right — it's that both are tired."
   },
   rep_dis: {
-    zh: "你偏向「修復型」，對方偏向「崩解型」。\n\n你習慣動手讓事情變好，他習慣質疑問題本身的框架。一個想在系統內運作，一個想拆掉系統。\n\n可能出現的消耗是：你在修補圍牆，他在問「這道牆為什麼在這裡」。你覺得他讓事情更複雜，他覺得你在維護一個不該存在的東西。你們可能會互相覺得對方在扯後腿——但其實你們只是在不同層面上對抗同一件事。",
-    en: "You lean toward 'Repairer', your partner leans toward 'Dissolver'.\n\nYou prefer to act and make things better; they prefer to question the frame of the problem itself. One wants to work within the system; one wants to dismantle it.\n\nThe cost may be: you're mending the wall, and they're asking 'why is this wall even here?'. You feel they're making things more complicated; they feel you're maintaining something that shouldn't exist. You might each feel the other is pulling in the wrong direction — but you're just fighting the same thing on different levels."
+    zh: "[A]習慣動手讓事情變好，[B]習慣質疑問題本身的框架。一個想在系統內運作，一個想拆掉系統。\n\n可能出現的消耗是：[A]在修補圍牆，[B]在問「這道牆為什麼在這裡」。[A]覺得[B]讓事情更複雜，[B]覺得[A]在維護一個不該存在的東西。你們可能會互相覺得對方在扯後腿——但其實你們只是在不同層面上對抗同一件事。",
+    en: "[A] prefer to act and make things better; [B] prefer to question the frame of the problem itself. One wants to work within the system; one wants to dismantle it.\n\nThe cost may be: [A] is mending the wall, and [B] is asking 'why is this wall even here?'. [A] feels [B] is making things more complicated; [B] feels [A] is maintaining something that shouldn't exist. Both might feel the other is pulling in the wrong direction — but both are just fighting the same thing on different levels."
   },
   rep_str: {
-    zh: "你偏向「修復型」，對方偏向「結構型」。\n\n你習慣動手讓事情恢復運作，他習慣先拆解分析再行動。一個偏好行動，一個偏好理解。\n\n可能出現的張力是：你覺得他分析太久、錯過時機；他覺得你行動太快、沒想清楚。你們可能會互相拖累——你等他的分析等到不耐煩，他看你行動覺得太粗糙。最可惜的不是誰對誰錯，而是你們本來可以互補，卻變成互卡。",
-    en: "You lean toward 'Repairer', your partner leans toward 'Analyst'.\n\nYou prefer to act and restore functionality; they prefer to analyze first, then act. One favors action, the other favors understanding.\n\nTension may arise: you feel they analyze too long and miss the moment; they feel you act too fast without thinking it through. You might drag each other down — you get impatient waiting for their analysis, they see your action as too rough. The real loss isn't who's right — it's that you could have complemented each other, but ended up blocking each other."
+    zh: "[A]習慣動手讓事情恢復運作，[B]習慣先拆解分析再行動。一個偏好行動，一個偏好理解。\n\n可能出現的張力是：[A]覺得[B]分析太久、錯過時機；[B]覺得[A]行動太快、沒想清楚。你們可能會互相拖累——[A]等[B]的分析等到不耐煩，[B]看[A]的行動覺得太粗糙。最可惜的不是誰對誰錯，而是你們本來可以互補，卻變成互卡。",
+    en: "[A] prefer to act and restore functionality; [B] prefer to analyze first, then act. One favors action, the other favors understanding.\n\nTension may arise: [A] feels [B] analyzes too long and misses the moment; [B] feels [A] acts too fast without thinking it through. Both might drag each other down — [A] gets impatient waiting for [B]'s analysis, [B] finds [A]'s action too rough. The real loss isn't who's right — it's that both could have complemented each other, but ended up blocking each other."
   },
   eth_exit: {
-    zh: "你偏向「倫理型」，對方偏向「退出型」。\n\n你習慣問「這樣對不對」，他習慣問「代價會不會太大」。你們都對「價值」很敏感，只是敏感的對象不同。\n\n可能出現的消耗是：你覺得離開是不負責任，他覺得留下是不愛自己；你覺得他太自私，他覺得你太死板。你們可能會在「該不該留」這個問題上無限迴圈——不是因為不願意解決，而是因為你們用的尺不一樣。",
-    en: "You lean toward 'Ethicist', your partner leans toward 'Exiter'.\n\nYou ask 'is this right?'; they ask 'is the cost too high?'. You're both sensitive to 'value', just to different aspects.\n\nThe cost may be: you think leaving is irresponsible; they think staying is self-abandonment. You see them as selfish; they see you as rigid. You might loop endlessly on 'should we stay or go' — not because you're unwilling to resolve it, but because you're using different measuring sticks."
+    zh: "[A]習慣問「這樣對不對」，[B]習慣問「代價會不會太大」。你們都對「價值」很敏感，只是敏感的對象不同。\n\n可能出現的消耗是：[A]覺得離開是不負責任，[B]覺得留下是不愛自己；[A]覺得[B]太自私，[B]覺得[A]太死板。你們可能會在「該不該留」這個問題上無限迴圈——不是因為不願意解決，而是因為你們用的尺不一樣。",
+    en: "[A] ask 'is this right?'; [B] ask 'is the cost too high?'. Both are sensitive to 'value', just to different aspects.\n\nThe cost may be: [A] thinks leaving is irresponsible; [B] thinks staying is self-abandonment. [A] sees [B] as selfish; [B] sees [A] as rigid. Both might loop endlessly on 'should we stay or go' — not because of unwillingness to resolve it, but because the measuring sticks are different."
   },
   eth_fate: {
-    zh: "你偏向「倫理型」，對方偏向「宿命型」。\n\n你習慣問「應該怎樣」，他習慣接受「實際怎樣」。你們對「現實」的態度很不同。\n\n可能出現的張力是：你覺得應該努力改變不對的事，他覺得有些事就是改不了；你覺得他放棄太早，他覺得你在跟空氣打架。你們可能會互相覺得對方不理解現實——你覺得他不夠理想，他覺得你不夠務實。而中間那個地帶，可能兩個人都沒去過。",
-    en: "You lean toward 'Ethicist', your partner leans toward 'Fatalist'.\n\nYou ask 'what should be'; they accept 'what is'. Your attitudes toward reality differ.\n\nTension may arise: you feel you should work to change what's wrong; they feel some things can't be changed. You think they give up too soon; they think you're fighting with air. You might each feel the other doesn't understand reality — you see them as insufficiently idealistic; they see you as insufficiently pragmatic. And the middle ground? Neither of you may have ever been there."
+    zh: "[A]習慣問「應該怎樣」，[B]習慣接受「實際怎樣」。你們對「現實」的態度很不同。\n\n可能出現的張力是：[A]覺得應該努力改變不對的事，[B]覺得有些事就是改不了；[A]覺得[B]放棄太早，[B]覺得[A]在跟空氣打架。你們可能會互相覺得對方不理解現實——[A]覺得[B]不夠理想，[B]覺得[A]不夠務實。而中間那個地帶，可能兩個人都沒去過。",
+    en: "[A] ask 'what should be'; [B] accepts 'what is'. Their attitudes toward reality differ.\n\nTension may arise: [A] feels [B] should work to change what's wrong; [B] feels some things can't be changed. [A] thinks [B] gives up too soon; [B] thinks [A] is fighting with air. Both might feel the other doesn't understand reality — [A] sees [B] as insufficiently idealistic; [B] sees [A] as insufficiently pragmatic. And the middle ground? Neither may have ever been there."
   },
   eth_dis: {
-    zh: "你偏向「倫理型」，對方偏向「崩解型」。\n\n你習慣訴諸穩定的原則，他習慣質疑一切框架。一個需要確定性，一個擁抱不確定性。\n\n可能出現的消耗是：你覺得他太虛無、什麼都不信；他覺得你太僵硬、什麼都信。你們可能會在「到底有沒有對錯」這個問題上卡住——你試圖建立規則，他拆掉規則。最累的不是立場不同，而是每次都要從地基開始吵。",
-    en: "You lean toward 'Ethicist', your partner leans toward 'Dissolver'.\n\nYou appeal to stable principles; they question every frame. One needs certainty, one embraces uncertainty.\n\nThe cost may be: you see them as nihilistic, believing in nothing; they see you as rigid, believing too much. You might get stuck on 'is there even a right or wrong?' — you try to build rules, they dismantle them. The exhaustion isn't from different positions; it's from having to argue from the ground up every time."
+    zh: "[A]習慣訴諸穩定的原則，[B]習慣質疑一切框架。一個需要確定性，一個擁抱不確定性。\n\n可能出現的消耗是：[A]覺得[B]太虛無、什麼都不信；[B]覺得[A]太僵硬、什麼都信。你們可能會在「到底有沒有對錯」這個問題上卡住——[A]試圖建立規則，[B]拆掉規則。最累的不是立場不同，而是每次都要從地基開始吵。",
+    en: "[A] appeals to stable principles; [B] questions every frame. One needs certainty, one embraces uncertainty.\n\nThe cost may be: [A] sees [B] as nihilistic, believing in nothing; [B] sees [A] as rigid, believing too much. Both might get stuck on 'is there even a right or wrong?' — [A] tries to build rules, [B] dismantles those rules. The exhaustion isn't from different positions; it's from having to argue from the ground up every time."
   },
   eth_str: {
-    zh: "你偏向「倫理型」，對方偏向「結構型」。\n\n你習慣問「什麼是對的」，他習慣問「問題是怎麼構成的」。你們都喜歡「想清楚」，但想的方向不同。\n\n可能出現的張力是：你覺得他分析半天卻不判斷是非；他覺得你急著下結論卻沒看透結構。你們可能會一起繞圈子——你覺得他逃避價值判斷，他覺得你簡化問題。而真正需要被處理的那件事，可能兩個人都沒有真的碰觸到。",
-    en: "You lean toward 'Ethicist', your partner leans toward 'Analyst'.\n\nYou ask 'what is right'; they ask 'how is the problem structured'. You both like to 'think clearly', but in different directions.\n\nTension may arise: you feel they analyze endlessly without making a moral judgment; they feel you rush to a conclusion without understanding the structure. You might circle together — you think they're avoiding value judgments; they think you're oversimplifying. And the thing that actually needs handling? Neither of you may have truly touched it."
+    zh: "[A]習慣問「什麼是對的」，[B]習慣問「問題是怎麼構成的」。你們都喜歡「想清楚」，但想的方向不同。\n\n可能出現的張力是：[A]覺得[B]分析半天卻不判斷是非；[B]覺得[A]急著下結論卻沒看透結構。你們可能會一起繞圈子——[A]覺得[B]逃避價值判斷，[B]覺得[A]簡化問題。而真正需要被處理的那件事，可能兩個人都沒有真的碰觸到。",
+    en: "[A] ask 'what is right'; [B] ask 'how is the problem structured'. Both like to 'think clearly', but in different directions.\n\nTension may arise: [A] feels [B] analyzes endlessly without making a moral judgment; [B] feels [A] rushes to a conclusion without understanding the structure. Both might circle together — [A] thinks [B] is avoiding value judgments; [B] thinks [A] is oversimplifying. And the thing that actually needs handling? Neither may have truly touched it."
   },
   exit_fate: {
-    zh: "你偏向「退出型」，對方偏向「宿命型」。\n\n你習慣在代價太高時離開，他習慣接受「事情就是這樣」。兩種方式都不太會正面對抗問題。\n\n可能出現的消耗是：你覺得他連離開的力氣都沒有，他覺得你連接受的耐心都沒有。你們可能會一起滑向一種「算了」的狀態——一個是因為覺得不值得，一個是因為覺得改不了。結果是同一種：沒有人再試圖改變什麼。",
-    en: "You lean toward 'Exiter', your partner leans toward 'Fatalist'.\n\nYou leave when the cost gets too high; they accept 'this is how things are'. Neither of you tends to confront problems head-on.\n\nThe cost may be: you feel they don't even have the energy to leave; they feel you don't have the patience to accept. You might both slide into a 'whatever' state — you because it's not worth it, them because it can't be changed. The result is the same: no one is trying to change anything anymore."
+    zh: "[A]習慣在代價太高時離開，[B]習慣接受「事情就是這樣」。兩種方式都不太會正面對抗問題。\n\n可能出現的消耗是：[A]覺得[B]連離開的力氣都沒有，[B]覺得[A]連接受的耐心都沒有。你們可能會一起滑向一種「算了」的狀態——[A]是因為覺得不值得，[B]是因為覺得改不了。結果是同一種：沒有人再試圖改變什麼。",
+    en: "[A] leave when the cost gets too high; [B] accepts 'this is how things are'. Neither tends to confront problems head-on.\n\nThe cost may be: [A] feels [B] doesn't even have the energy to leave; [B] feels [A] doesn't have the patience to accept. Both might slide into a 'whatever' state — [A] because it's not worth it, [B] because it can't be changed. The result is the same: no one is trying to change anything anymore."
   },
   exit_dis: {
-    zh: "你偏向「退出型」，對方偏向「崩解型」。\n\n你習慣在代價太高時離開，他習慣質疑問題的框架。兩種方式都帶著某種「不留在原處」的氣質。\n\n可能出現的張力是：你覺得他拆了半天卻不行動；他覺得你走了卻沒問「這個局為什麼會這樣」。你們可能會在「要離開還是要拆解」上消耗——一個想走，一個想搞懂，但兩個人都沒有真的面對那個卡住你們的東西。",
-    en: "You lean toward 'Exiter', your partner leans toward 'Dissolver'.\n\nYou leave when the cost gets too high; they question the frame of the problem. Both share a certain 'not staying where we are' quality.\n\nTension may arise: you feel they dismantle without acting; they feel you leave without asking 'why is this situation like this in the first place?'. You might exhaust each other on 'leave or dismantle' — one wants to go, one wants to understand, but neither of you truly faces what's actually stuck between you."
+    zh: "[A]習慣在代價太高時離開，[B]習慣質疑問題的框架。兩種方式都帶著某種「不留在原處」的氣質。\n\n可能出現的張力是：[A]覺得[B]拆了半天卻不行動；[B]覺得[A]走了卻沒問「這個局為什麼會這樣」。你們可能會在「要離開還是要拆解」上消耗——一個想走，一個想搞懂，但兩個人都沒有真的面對那個卡住你們的東西。",
+    en: "[A] leave when the cost gets too high; [B] question the frame of the problem. Both share a certain 'not staying where we are' quality.\n\nTension may arise: [A] feels [B] dismantles without acting; [B] feels [A] leaves without asking 'why is this situation like this in the first place?'. Both might exhaust each other on 'leave or dismantle' — one wants to go, one wants to understand, but neither truly faces what's actually stuck between the two."
   },
   exit_str: {
-    zh: "你偏向「退出型」，對方偏向「結構型」。\n\n你習慣問「要不要走」，他習慣問「問題是怎麼組成的」。一個傾向行動，一個傾向理解。\n\n可能出現的消耗是：你覺得他分析太久、錯過離開的時機；他覺得你離開太快、沒想清楚結構。你們可能會互相覺得對方看不懂局勢——你覺得他太理性，他覺得你太感性。而那個「到底該不該走」的問題，可能兩個人都沒有真正回答過。",
-    en: "You lean toward 'Exiter', your partner leans toward 'Analyst'.\n\nYou ask 'should I leave?'; they ask 'how is the problem structured?'. One leans toward action, the other toward understanding.\n\nThe cost may be: you feel they analyze too long and miss the moment to leave; they feel you leave too fast without understanding the structure. You might each feel the other doesn't read the situation right — you see them as too rational, they see you as too emotional. And that question of 'should I stay or go'? Neither of you may have truly answered it."
+    zh: "[A]習慣問「要不要走」，[B]習慣問「問題是怎麼組成的」。一個傾向行動，一個傾向理解。\n\n可能出現的消耗是：[A]覺得[B]分析太久、錯過離開的時機；[B]覺得[A]離開太快、沒想清楚結構。你們可能會互相覺得對方看不懂局勢——[A]覺得[B]太理性，[B]覺得[A]太感性。而那個「到底該不該走」的問題，可能兩個人都沒有真正回答過。",
+    en: "[A] ask 'should I leave?'; [B] ask 'how is the problem structured?'. One leans toward action, the other toward understanding.\n\nThe cost may be: [A] feels [B] analyzes too long and misses the moment to leave; [B] feels [A] leaves too fast without understanding the structure. Both might feel the other doesn't read the situation right — [A] sees [B] as too rational, [B] sees [A] as too emotional. And that question of 'should we stay or go'? Neither may have truly answered it."
   },
   fate_dis: {
-    zh: "你偏向「宿命型」，對方偏向「崩解型」。\n\n你習慣接受「事情就是這樣」，他習慣質疑「事情為什麼是這樣」。你們對「現實」的態度是光譜的兩端。\n\n可能出現的張力是：你覺得他想太多、問題本來就不複雜；他覺得你太懶、連問都不問。你們可能會一起停在那裡——他一直在拆，你一直不動，中間的那個「什麼」，沒有人去碰。",
-    en: "You lean toward 'Fatalist', your partner leans toward 'Dissolver'.\n\nYou accept 'this is how things are'; they question 'why is it this way?'. Your attitudes toward reality are at opposite ends.\n\nTension may arise: you feel they overthink — the problem isn't that complicated; they feel you're too lazy to even ask. You might both stay stuck — they keep dismantling, you keep still, and whatever is in between, neither of you touches."
+    zh: "[A]習慣接受「事情就是這樣」，[B]習慣質疑「事情為什麼是這樣」。你們對「現實」的態度是光譜的兩端。\n\n可能出現的張力是：[A]覺得[B]想太多、問題本來就不複雜；[B]覺得[A]太懶、連問都不問。你們可能會一起停在那裡——[B]一直在拆，[A]一直不動，中間的那個「什麼」，沒有人去碰。",
+    en: "[A] accept 'this is how things are'; [B] question 'why is it this way?'. Their attitudes toward reality are at opposite ends.\n\nTension may arise: [A] feels [B] overthinks — the problem isn't that complicated; [B] feels [A] is too passive to even ask. Both might stay stuck — [B] keeps dismantling, [A] keeps still, and whatever is in between, neither touches."
   },
   fate_str: {
-    zh: "你偏向「宿命型」，對方偏向「結構型」。\n\n你習慣接受現狀，他習慣拆解分析現狀。一個停止追問，一個不停追問。\n\n可能出現的消耗是：你覺得他分析半天也沒用；他覺得你連試都不試。你們可能會在「這到底有沒有改變的可能」上卡住——你覺得沒有，他覺得可能有但你沒試。而那個答案，可能兩個人都沒有真正驗證過。",
-    en: "You lean toward 'Fatalist', your partner leans toward 'Analyst'.\n\nYou accept the status quo; they break it down and analyze it. One stops asking, one asks relentlessly.\n\nThe cost may be: you feel their analysis is useless; they feel you won't even try. You might get stuck on 'can this really change?' — you say no, they say maybe but you haven't tried. And that answer? Neither of you has actually tested it."
+    zh: "[A]習慣接受現狀，[B]習慣拆解分析現狀。一個停止追問，一個不停追問。\n\n可能出現的消耗是：[A]覺得[B]分析半天也沒用；[B]覺得[A]連試都不試。你們可能會在「這到底有沒有改變的可能」上卡住——[A]覺得沒有，[B]覺得可能有但[A]沒試。而那個答案，可能兩個人都沒有真正驗證過。",
+    en: "[A] accept the status quo; [B] break it down and analyze it. One stops asking, one asks relentlessly.\n\nThe cost may be: [A] feels [B]'s analysis is useless; [B] feels [A] won't even try. Both might get stuck on 'can this really change?' — [A] says no, [B] says maybe but [A] hasn't tried. And that answer? Neither has actually tested it."
   },
   dis_str: {
-    zh: "你偏向「崩解型」，對方偏向「結構型」。\n\n你習慣質疑框架，他習慣分析框架。一個要拆，一個要拆開看。你們都很擅長處理「框架」本身。\n\n可能出現的張力是：你覺得他分析完還是在框架裡；他覺得你只會拆卻不建設。你們可能會一起迷失在對框架的討論裡——牆為什麼在這裡、這道牆是怎麼蓋的——但沒有人翻過去，也沒有人決定留下來。",
-    en: "You lean toward 'Dissolver', your partner leans toward 'Analyst'.\n\nYou question the frame; they analyze the frame. One wants to dismantle it, one wants to examine its parts. You're both good at dealing with the 'frame' itself.\n\nTension may arise: you feel they're still inside the frame after all that analysis; they feel you only tear things down without building anything. You might both get lost in discussions about the frame — why the wall is here, how it was built — but no one climbs over it, and no one decides to stay."
+    zh: "[A]習慣質疑框架，[B]習慣分析框架。一個要拆，一個要拆開看。你們都很擅長處理「框架」本身。\n\n可能出現的張力是：[A]覺得[B]分析完還是在框架裡；[B]覺得[A]只會拆卻不建設。你們可能會一起迷失在對框架的討論裡——牆為什麼在這裡、這道牆是怎麼蓋的——但沒有人翻過去，也沒有人決定留下來。",
+    en: "[A] question the frame; [B] analyze the frame. One wants to dismantle it, one wants to examine its parts. Both are good at dealing with the 'frame' itself.\n\nTension may arise: [A] feels [B] is still inside the frame after all that analysis; [B] feels [A] only tears things down without building anything. Both might get lost in discussions about the frame — why the wall is here, how it was built — but no one climbs over it, and no one decides to stay."
+  },
+  dis_fate: {
+    zh: "[A]習慣質疑框架，[B]習慣接受現實。一個不斷追問「為什麼會這樣」，一個已經接受「事情就是這樣」。你們對待問題的姿態截然不同。\n\n這種差異可能讓你們互相覺得對方在逃避——[A]覺得[B]放棄得太快，[B]覺得[A]鑽牛角尖。但你們其實都在用自己的方式面對同一件事：一個在問問題，一個在找平靜。\n\n值得留意的是：你們可能在「為什麼」和「就這樣」之間來回擺盪，但從來沒有真正決定過，這兩個答案之間，還有沒有第三條路。",
+    en: "[A] question the frame; [B] accept reality. One keeps asking 'why is this like this?', the other has already accepted 'this is how things are.' The postures toward difficulty are fundamentally different.\n\nThis difference may lead each to feel the other is avoiding something — [A] thinks [B] gives up too soon, [B] thinks [A] overthinks. But both are facing the same thing in their own way: one by questioning, one by finding peace.\n\nSomething to consider: both may oscillate between 'why' and 'that's just how it is' without ever deciding whether there's a third path between the two."
   }
 };
 
@@ -7886,14 +7890,28 @@ function duoBuildDiffReadings(pA, pB, diffZones, resonZones, isEn) {
   const strats = jGetStrategies();
   const readings = [];
 
-  // Helper: look up DIFF_STRATEGY_OBSERVATIONS by sorted pair key
+  // Helper: look up DIFF_STRATEGY_OBSERVATIONS by trying both key orders,
+  // then substitute [A] / [B] placeholders with the actual strategy names.
+  // keyA always corresponds to Person A, keyB to Person B — no sorting.
   function getDiffObs(keyA, keyB) {
-    const pairKey = [keyA, keyB].sort().join('_');
+    const pairKey1 = keyA + '_' + keyB;
+    const pairKey2 = keyB + '_' + keyA;
     const nameA = strats[keyA] ? strats[keyA].name : keyA;
     const nameB = strats[keyB] ? strats[keyB].name : keyB;
-    return DIFF_STRATEGY_OBSERVATIONS[pairKey] || {
-      zh: `你們分別偏向「${nameA}」和「${nameB}」。\n\n這兩種工具一起工作時，各有各的節奏。有時候這種差異可以互補，有時候會變成互相拉扯。值得留意的是：當你們都覺得對方的方式不對時，也許可以問一句——「你看到的那個東西，是我沒注意到的嗎？」`,
-      en: `You lean toward "${nameA}" and your partner leans toward "${nameB}".\n\nThese two tools have different rhythms. Sometimes they complement each other; sometimes they pull against each other. When you both feel the other's approach is wrong, it might be worth asking: "What are you seeing that I'm missing?"`
+    const raw = DIFF_STRATEGY_OBSERVATIONS[pairKey1] || DIFF_STRATEGY_OBSERVATIONS[pairKey2];
+    if (raw) {
+      // If the stored entry was written for (keyB, keyA) order, swap the names so [A]=A, [B]=B
+      const swapped = !DIFF_STRATEGY_OBSERVATIONS[pairKey1] && !!DIFF_STRATEGY_OBSERVATIONS[pairKey2];
+      const fillA = swapped ? nameB : nameA;
+      const fillB = swapped ? nameA : nameB;
+      return {
+        zh: raw.zh.replace(/\[A\]/g, fillA).replace(/\[B\]/g, fillB),
+        en: raw.en.replace(/\[A\]/g, fillA).replace(/\[B\]/g, fillB)
+      };
+    }
+    return {
+      zh: `${nameA}和${nameB}分別偏向不同的策略。\n\n這兩種工具一起工作時，各有各的節奏。有時候這種差異可以互補，有時候會變成互相拉扯。值得留意的是：當你們都覺得對方的方式不對時，也許可以問一句——「你看到的那個東西，是我沒注意到的嗎？」`,
+      en: `${nameA} and ${nameB} lean toward different strategies.\n\nThese two tools have different rhythms. Sometimes they complement each other; sometimes they pull against each other. When both feel the other's approach is wrong, it might be worth asking: "What are you seeing that I'm missing?"`
     };
   }
 
@@ -7923,44 +7941,59 @@ function duoBuildDiffReadings(pA, pB, diffZones, resonZones, isEn) {
     }
   }
 
-  // Zone-specific difference readings (dedup: same pair shown at most once)
-  const triggeredDiffObs = new Set();
-  // If the global primary pair was already rendered above, pre-seed it so zones don't repeat it
+  // Zone-specific difference readings:
+  // Group zones by strategy pair so each unique pairing shows once,
+  // with all zone names listed together in the label.
+  // Skip any pair already shown in the global primary section above.
+  const shownDiffPairs = new Set();
   if (pA.primary !== pB.primary) {
-    triggeredDiffObs.add([pA.primary, pB.primary].sort().join('_'));
+    shownDiffPairs.add(pA.primary + '_' + pB.primary);
+    shownDiffPairs.add(pB.primary + '_' + pA.primary);
   }
+  const diffZoneGroups = {};
   diffZones.forEach(r => {
-    const pairKey = [r.sa, r.sb].sort().join('_');
-    if (triggeredDiffObs.has(pairKey)) return;
-    triggeredDiffObs.add(pairKey);
-    const sa = strats[r.sa];
-    const sb = strats[r.sb];
-    const diffObs = getDiffObs(r.sa, r.sb);
+    const pairKey = r.sa + '_' + r.sb;
+    const pairKeyRev = r.sb + '_' + r.sa;
+    if (shownDiffPairs.has(pairKey) || shownDiffPairs.has(pairKeyRev)) return;
+    const canonKey = pairKey; // preserve A/B direction
+    if (!diffZoneGroups[canonKey]) diffZoneGroups[canonKey] = { sa: r.sa, sb: r.sb, rnames: [] };
+    diffZoneGroups[canonKey].rnames.push(r.rname);
+    shownDiffPairs.add(pairKey);
+    shownDiffPairs.add(pairKeyRev);
+  });
+  Object.values(diffZoneGroups).forEach(({ sa, sb, rnames }) => {
+    const diffObs = getDiffObs(sa, sb);
     const text = isEn ? diffObs.en : diffObs.zh;
     const paragraphs = text.split('\n\n').map(p => p.replace(/\n/g, '<br>')).join('<br><br>');
+    const zonesStr = rnames.join(isEn ? ', ' : '、');
     const label = isEn
-      ? `${r.rname}: ${sa.name} (A) × ${sb.name} (B)`
-      : `${r.rname}：${sa.name}（A）× ${sb.name}（B）`;
+      ? `${zonesStr}: ${strats[sa].name} (A) × ${strats[sb].name} (B)`
+      : `${zonesStr}：${strats[sa].name}（A）× ${strats[sb].name}（B）`;
     readings.push(`<strong>${label}</strong><br><br>${paragraphs}`);
   });
 
-  // Zone-level same-strategy observations (for resonance zones, inject once if strategy has an observation)
-  const triggeredSameObs = new Set();
-  // If primary is already the same, that observation has been shown — don't repeat it for resonance zones
-  if (pA.primary === pB.primary) triggeredSameObs.add(pA.primary);
+  // Zone-level same-strategy observations:
+  // Group resonance zones by strategy so each unique strategy shows once,
+  // with all zone names listed together in the label.
+  const shownSamePairs = new Set();
+  if (pA.primary === pB.primary) shownSamePairs.add(pA.primary);
+  const sameZoneGroups = {};
   resonZones.forEach(r => {
-    if (r.sa && !triggeredSameObs.has(r.sa)) {
-      const obs = SAME_STRATEGY_OBSERVATIONS[r.sa];
-      if (obs) {
-        triggeredSameObs.add(r.sa);
-        const text = isEn ? obs.en : obs.zh;
-        const paragraphs = text.split('\n\n').map(p => p.replace(/\n/g, '<br>')).join('<br><br>');
-        const label = isEn
-          ? `Shared Strategy in ${r.rname}: ${strats[r.sa].name}`
-          : `${r.rname} 共同策略：${strats[r.sa].name}`;
-        readings.push(`<strong>${label}</strong><br><br>${paragraphs}`);
-      }
-    }
+    if (!r.sa || shownSamePairs.has(r.sa)) return;
+    if (!sameZoneGroups[r.sa]) sameZoneGroups[r.sa] = [];
+    sameZoneGroups[r.sa].push(r.rname);
+    shownSamePairs.add(r.sa);
+  });
+  Object.entries(sameZoneGroups).forEach(([stratKey, rnames]) => {
+    const obs = SAME_STRATEGY_OBSERVATIONS[stratKey];
+    if (!obs) return;
+    const text = isEn ? obs.en : obs.zh;
+    const paragraphs = text.split('\n\n').map(p => p.replace(/\n/g, '<br>')).join('<br><br>');
+    const zonesStr = rnames.join(isEn ? ', ' : '、');
+    const label = isEn
+      ? `Shared Strategy in ${zonesStr}: ${strats[stratKey].name}`
+      : `${zonesStr} 共同策略：${strats[stratKey].name}`;
+    readings.push(`<strong>${label}</strong><br><br>${paragraphs}`);
   });
 
   // Resonance note if substantial
